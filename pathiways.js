@@ -2,7 +2,6 @@ function Pathiways (targetId,args){
 	var _this=this;
 	this.id = "Pathiways"+ Math.round(Math.random()*10000);
 	this.suiteId = 6;
-//	this.title = 'Variant analysis tool';
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'Path<span class="emph">i</span>ways';
 	this.description = "";
@@ -104,9 +103,8 @@ function Pathiways (targetId,args){
 
 Pathiways.prototype.sessionInitiated = function(){
 	/*action buttons*/
-	Ext.getCmp(this.id+"btnVariantEffect").enable();
-	Ext.getCmp(this.id+"btnVcfViewer").enable();
-	Ext.getCmp(this.id+"btnVCFTools").enable();
+	Ext.getCmp(this.id+"btnPathi").enable();
+	Ext.getCmp(this.id+"grnViewer").enable();
 	
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
@@ -122,13 +120,13 @@ Pathiways.prototype.sessionInitiated = function(){
 
 Pathiways.prototype.sessionFinished = function(){
 	/*action buttons*/
-	Ext.getCmp(this.id+"btnVariantEffect").disable();
-	Ext.getCmp(this.id+"btnVcfViewer").disable();
+	Ext.getCmp(this.id+"btnPathi").disable();
+	Ext.getCmp(this.id+"grnViewer").disable();
 	
 	Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).hide();
 	this.jobListWidget.clean();
-	this.dataListWidget.clean();
+	//this.dataListWidget.clean();
 	
 	while(Ext.getCmp(this.centerPanelId).items.items.length>1){
 		Ext.getCmp(this.centerPanelId).remove(Ext.getCmp(this.centerPanelId).items.items[Ext.getCmp(this.centerPanelId).items.items.length-1]);
@@ -213,36 +211,19 @@ Pathiways.prototype.getMenu = function(){
 	var _this=this;
    var menuBarItems = [
 		{
-			id:this.id+"btnVCFTools",
-			text: 'VCF Tools',
+			id:this.id+"btnPathi",
 			disabled:true,
+			text: 'Pathi',
 			handler: function(){
-				_this.showVCFtools();
+				_this.showPathi();
 			}
 		},
 		{
-			id:this.id+"btnGWAS",
-			text: 'GWAS',
+			id:this.id+"grnViewer",
 			disabled:true,
-			hidden:true,
+		    text: 'GRN Viewer',
 			handler: function(){
-				
-			}
-		},
-		{
-			id:this.id+"btnVariantEffect",
-			text: 'Variant effect',
-			disabled:true,
-			handler: function(){
-				_this.showVariantEffect();
-			}
-		},
-		{
-			id:this.id+"btnVcfViewer",
-		    text: 'VCF Viewer',
-			disabled:true,
-			handler: function(){
-				_this.showVCFviewer();
+				_this.showGRNViewer();
 		    }
 		}
     ];
@@ -287,119 +268,55 @@ Pathiways.prototype.dataItemClick = function (record){
 };
 
 
-Pathiways.prototype.showVariantEffect= function (){
-	var _this=this;
-	variantEffectJobFormPanel = new VariantEffectJobFormPanel({suiteId:this.suiteId});
-	if(Ext.getCmp(variantEffectJobFormPanel.panelId)==null){
-		variantEffectJobFormPanel.draw();
-		Ext.getCmp(this.centerPanelId).add(variantEffectJobFormPanel.panel);
-		variantEffectJobFormPanel.onRun.addEventListener(function(sender,data){
-			Ext.getCmp(_this.eastPanelId).expand();
-		});
-	}
-	Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(variantEffectJobFormPanel.panelId));
+Pathiways.prototype.showPathi = function (){
+	//var _this=this;
+	//variantEffectJobFormPanel = new VariantEffectJobFormPanel({suiteId:this.suiteId});
+	//if(Ext.getCmp(variantEffectJobFormPanel.panelId)==null){
+		//variantEffectJobFormPanel.draw();
+		//Ext.getCmp(this.centerPanelId).add(variantEffectJobFormPanel.panel);
+		//variantEffectJobFormPanel.onRun.addEventListener(function(sender,data){
+			//Ext.getCmp(_this.eastPanelId).expand();
+		//});
+	//}
+	//Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(variantEffectJobFormPanel.panelId));
 };
 
-Pathiways.prototype.showVCFtools= function (){
-	var _this=this;
-	vcfToolsJobFormPanel = new VCFToolsJobFormPanel({suiteId:this.suiteId});
-	if(Ext.getCmp(vcfToolsJobFormPanel.panelId)==null){
-		vcfToolsJobFormPanel.draw();
-		Ext.getCmp(this.centerPanelId).add(vcfToolsJobFormPanel.panel);
-		vcfToolsJobFormPanel.onRun.addEventListener(function(sender,data){
-			Ext.getCmp(_this.eastPanelId).expand();
-		});
-	}
-	Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(vcfToolsJobFormPanel.panelId));
-};
-
-Pathiways.prototype.showVCFviewer = function (){
-	var _this=this;
-	this.vcfViewer = Ext.getCmp(this.id+"_vcfViewer");
-	if(this.vcfViewer==null){
-		//Collapse to calculate width for genomeMaps
+Pathiways.prototype.showGRNViewer= function (){
+	this.grnViewer = Ext.getCmp(this.id+"_grnViewer");
+	if(this.grnViewer==null){
+		//Collapse to calculate width for CellBrowser
 		pan = 26;
 		if(!Ext.getCmp(this.eastPanelId).isHidden() || Ext.getCmp(this.eastPanelId).collapsed){
 			Ext.getCmp(this.eastPanelId).collapse();
 			pan=0;
 		}
-		var genomeMapsContainer = Ext.create('Ext.container.Container', {
-			id:this.id+'contVCFViewer'
+		var cellBrowserContainer = Ext.create('Ext.container.Container', {
+			id:this.id+'contGRNViewer'
+//			html:'<div id=grnViewerCellBrowser></div>'
 		});
 		
-		this.vcfViewer = Ext.create('Ext.panel.Panel', {
-			id:this.id+"_vcfViewer",
+		this.grnViewer = Ext.create('Ext.panel.Panel', {
+			id:this.id+"_grnViewer",
 			border: false,
-		    title: "VCF Viewer",
+		    title: "GRN Viewer",
 		    closable:true,
-		    items: genomeMapsContainer
+		    items: cellBrowserContainer
 //		    autoScroll:true
 		});
 		
-		Ext.getCmp(this.centerPanelId).add(this.vcfViewer);
+		Ext.getCmp(this.centerPanelId).add(this.grnViewer);
 
-		//Once actived, the div element is visible, and genomeMaps can be rendered
-		Ext.getCmp(this.centerPanelId).setActiveTab(this.vcfViewer);
-//				
-//		console.log(this.vcfViewer.getWidth());
-//		console.log(this.vcfViewer.getHeight());
-		
-
-		//Parse query params to get location.... Also in AVAILABLE_SPECIES, an example location is set.
-		var url = $.url();
-		var location = url.param('location');
-		if(location != null) {
-			var position = location.split(":")[1];
-			var chromosome = location.split(":")[0];
-		}
-
-		this.genomeViewer = new GenomeViewer(this.id+"contVCFViewer", DEFAULT_SPECIES,{
-            availableSpecies: AVAILABLE_SPECIES,
-            sidePanelCollapsed:true,
-			width:this.vcfViewer.getWidth(),
-			height:this.vcfViewer.getHeight()
+		//Once actived, the div element is visible, and CellBrowser can be rendered
+		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
+		this.networkViewer = new NetworkViewer(this.id+'contGRNViewer',AVAILABLE_SPECIES[0],{
+			width:this.grnViewer.getWidth()-(0/*15+pan*/),
+			height:this.grnViewer.getHeight()-0/*26*/
 		});
+		this.networkViewer.setSpeciesMenu(AVAILABLE_SPECIES);
+		this.networkViewer.draw();
 		
-		//var toolbarMenu = Ext.create('Ext.toolbar.Toolbar', {
-			//cls:'bio-menubar',
-			//height:27,
-			//padding:'0 0 0 10',
-			//margins : '0 0 0 5',
-			//items : [
-		 		//{
-					//text : 'Add track from VCF file',
-					//handler : function() {
-						//var vcfFileWidget = new VCFFileWidget({viewer:_this.genomeViewer});
-						//vcfFileWidget.draw();
-						//vcfFileWidget.onOk.addEventListener(function(sender, event) {
-							//console.log(event.fileName);
-							//var vcfTrack = new TrackData(event.fileName,{
-								//adapter: event.adapter
-							//});
-							//_this.genomeViewer.addTrack(vcfTrack,{
-								//id:event.fileName,
-								//featuresRender:"MultiFeatureRender",
-									//histogramZoom:80,
-								//height:150,
-								//visibleRange:{start:0,end:100},
-								//featureTypes:FEATURE_TYPES
-							//});
-						//});
-					//}
-				//} 
-			//]
-		//});
-		//this.genomeViewer.setMenuBar(toolbarMenu);
-		//this.genomeViewer.afterRender.addEventListener(function(sender,event){
-			//_this.setTracks(_this.genomeViewer);
-		//});
-		this.genomeViewer.afterRender.addEventListener(function(sender,event){
-			_this.setTracks(_this.genomeViewer);
-			_this.genomeViewer.addSidePanelItems(_this.getGMSidePanelItems());
-		});
-		this.genomeViewer.draw();
 	}else{
-		Ext.getCmp(this.centerPanelId).setActiveTab(this.vcfViewer);
+		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
 	}
 };
 
@@ -493,148 +410,3 @@ Pathiways.prototype.getEastPanel = function(){
 	});
 	return eastPanel;
 };
-
-Pathiways.prototype.setTracks = function(genomeViewer){
-	var geneTrack = new TrackData("gene",{
-		adapter: new CellBaseAdapter({
-			category: "genomic",
-			subCategory: "region",
-			resource: "gene",
-			species: genomeViewer.species,
-			featureCache:{
-				gzip: true,
-				chunkSize:50000
-			}
-		})
-	});
-	genomeViewer.trackSvgLayoutOverview.addTrack(geneTrack,{
-		id:"gene",
-		type:"gene",
-		featuresRender:"MultiFeatureRender",
-		histogramZoom:10,
-		labelZoom:20,
-		height:150,
-		visibleRange:{start:0,end:100},
-		titleVisibility:'hidden',
-		featureTypes:FEATURE_TYPES
-	});
-	//end region track
-	
-	
-	var seqtrack = new TrackData("Sequence",{
-		adapter: new SequenceAdapter({
-			category: "genomic",
-			subCategory: "region",
-			resource: "sequence",
-			species: genomeViewer.species,
-			featureCache:{
-				gzip: true,
-				chunkSize:1000
-			}
-		})
-	});
-	genomeViewer.addTrack(seqtrack,{
-		id:"1",
-		type:"Sequence",
-		title:"Sequenece",
-		featuresRender:"SequenceRender",
-		height:30,
-		visibleRange:{start:100,end:100}
-	});
-
-	var geneTrack = new TrackData("Gene/Transcript",{
-		adapter: new CellBaseAdapter({
-			category: "genomic",
-			subCategory: "region",
-			resource: "gene",
-			species: genomeViewer.species,
-			featureCache:{
-				gzip: true,
-				chunkSize:50000
-			}
-		})
-	});
-	genomeViewer.addTrack(geneTrack,{
-		id:"2",
-		type:"Gene/Transcript",
-		title:"Gene/Transcript",
-		featuresRender:"GeneTranscriptRender",
-		histogramZoom:20,
-		transcriptZoom:50,
-		height:24,
-		visibleRange:{start:0,end:100},
-		featureTypes:FEATURE_TYPES
-	});
-};
-
-Pathiways.prototype.addFileTrack = function(text) {
-	var  _this = this;
-	var fileWidget = null;
-	switch(text){
-		case "VCF":  fileWidget = new VCFFileWidget({viewer:_this.genomeViewer}); break;
-	}
-	if(fileWidget != null){
-		fileWidget.draw();
-		if (_this.wum){
-			_this.headerWidget.onLogin.addEventListener(function (sender){
-				fileWidget.sessionInitiated();
-			});
-			_this.headerWidget.onLogout.addEventListener(function (sender){
-				fileWidget.sessionFinished();
-			});
-		}
-		fileWidget.onOk.addEventListener(function(sender, event) {
-			var fileTrack = new TrackData(event.fileName,{
-				adapter: event.adapter
-			});
-
-			var id = Math.round(Math.random()*10000);
-			var type = text;
-			
-			_this.genomeViewer.addTrack(fileTrack,{
-				id:id,
-				title:event.fileName,
-				type:type,
-				featuresRender:"MultiFeatureRender",
-	//					histogramZoom:80,
-				height:150,
-				visibleRange:{start:0,end:100},
-				featureTypes:FEATURE_TYPES
-			});
-			
-			var title = event.fileName+'-'+id;
-			//updateActiveTracksPanel(type, title, id, true);
-		});
-	}
-};
-
-Pathiways.prototype.getGMSidePanelItems = function() {
-	var _this = this;
-	var st = Ext.create('Ext.data.TreeStore',{
-	root:{
-		expanded: true,
-		children: [
-			{ text: "VCF", iconCls:"icon-blue-box", leaf:true}
-		]
-	}
-	});
-	return [{
-			xtype:"treepanel",
-			id:this.id+"availableTracksTree",
-			title:"Add VCF track",
-			bodyPadding:"10 0 0 0",
-			useArrows:true,
-			rootVisible: false,
-			hideHeaders:true,
-			store: st,
-			listeners : {
-				itemclick : function (este, record, item, index, e, eOpts){
-					if(record.isLeaf()){
-						_this.addFileTrack("VCF");
-					}
-				}
-			}
-	},
-
-	];
-}
