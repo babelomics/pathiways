@@ -1,7 +1,7 @@
 function Pathiways (targetId,args){
 	var _this=this;
 	this.id = "Pathiways"+ Math.round(Math.random()*10000);
-	this.suiteId = 6;
+	this.suiteId = 22;
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'Path<span class="emph">i</span>ways';
 	this.description = "";
@@ -293,8 +293,9 @@ Pathiways.prototype.showPathi = function (){
 };
 
 Pathiways.prototype.showGRNViewer= function (){
+var _this = this;
 	this.grnViewer = Ext.getCmp(this.id+"_grnViewer");
-	if(this.grnViewer==null){
+	if(this.grnViewer==null) {
 		//Collapse to calculate width for CellBrowser
 		pan = 26;
 		if(!Ext.getCmp(this.eastPanelId).isHidden() || Ext.getCmp(this.eastPanelId).collapsed){
@@ -309,8 +310,8 @@ Pathiways.prototype.showGRNViewer= function (){
 		this.grnViewer = Ext.create('Ext.panel.Panel', {
 			id:this.id+"_grnViewer",
 			border: false,
-		    title: "GRN Viewer",
-		    closable:true,
+		    title: "Workspace",
+//		    closable:true,
 		    items: cellBrowserContainer
 //		    autoScroll:true
 		});
@@ -319,14 +320,55 @@ Pathiways.prototype.showGRNViewer= function (){
 
 		//Once actived, the div element is visible, and CellBrowser can be rendered
 		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
-		this.networkViewer = new NetworkViewer(this.id+'contGRNViewer',AVAILABLE_SPECIES[0],{
+		this.networkViewer = new NetworkViewer(this.id+'contGRNViewer', {
 			width:this.grnViewer.getWidth()-(0/*15+pan*/),
-			height:this.grnViewer.getHeight()-0/*26*/
+			height:this.grnViewer.getHeight()-0/*26*/,
+			//menuBar:this.getMenuBar(),
+			overview:true,
+			version:'<span class="info">Cell Browser v'+this.version+'</span>'
 		});
-		this.networkViewer.setSpeciesMenu(AVAILABLE_SPECIES);
+//		this.networkViewer.setSpeciesMenu(AVAILABLE_SPECIES);
 		this.networkViewer.draw();
 		
-	}else{
+		this.nodeAttributeEditWidget = new AttributeEditWidget(this.networkViewer.getNetworkData().getNodeAttributes(), "Node");
+		this.nodeAttributeFilterWidget = new AttributeFilterWidget(this.networkViewer.getNetworkData().getNodeAttributes(), "Node");
+		
+		this.edgeAttributeEditWidget = new AttributeEditWidget(this.networkViewer.getNetworkData().getEdgeAttributes(), "Edge");
+		this.edgeAttributeFilterWidget = new AttributeFilterWidget(this.networkViewer.getNetworkData().getEdgeAttributes(), "Edge");
+		
+		this.networkViewer.onSelectionChange.addEventListener(function(sender,data){
+			if(Ext.getCmp("editNodeAttrWindow")){
+				_this.nodeAttributeEditWidget.selectRowsById(data);
+			}
+			if(Ext.getCmp("filterNodeAttrWindow")){
+				_this.nodeAttributeFilterWidget.selectRowsById(data);
+			}
+		});
+		
+		this.nodeAttributeEditWidget.onSelectNodes.addEventListener(function(sender, data) {
+			_this.networkViewer.selectNodes(data);
+		});
+		
+		this.nodeAttributeFilterWidget.onSelectNodes.addEventListener(function(sender, data) {
+			_this.networkViewer.selectNodes(data);
+		});
+		
+		this.nodeAttributeFilterWidget.onDeselectNodes.addEventListener(function() {
+			_this.networkViewer.deselectAllNodes();
+		});
+		
+		this.nodeAttributeFilterWidget.onFilterNodes.addEventListener(function(sender, data) {
+			_this.networkViewer.filterNodes(data);
+		});
+		
+		this.nodeAttributeFilterWidget.onRestoreNodes.addEventListener(function() {
+			_this.networkViewer.refresh();
+		});
+
+
+		_this.networkViewer
+	}
+	else {
 		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
 	}
 };
@@ -347,7 +389,8 @@ Pathiways.prototype.getPanel = function(){
 	
 		//background-image:url(\'http:\/\/jsapi.bioinfo.cipf.es\/libs\/resources\/img\/wordle_tuned_white_crop.jpg\')
 		var suiteInfo =  '<div style=" width: 800px;">'
-			+'<h1>Overview</h1><br><span align="justify">VARIANT (VARIant ANalysis Tool) can report the functional properties of any variant in all the human, mouse or rat genes (and soon new model organisms will be added) and the corresponding neighborhoods. Also other non-coding extra-genic regions, such as miRNAs are included in the analysis.<br><br>	VARIANT not only reports the obvious functional effects in the coding regions but also analyzes noncoding SNVs situated both within the gene and in the neighborhood that could affect different regulatory motifs, splicing signals, and other structural elements. These include: Jaspar regulatory motifs, miRNA targets, splice sites, exonic splicing silencers, calculations of selective pressures on the particular polymorphic positions, etc.</span>'
+			+'<h1>Overview</h1><br>'
+			+'<span align="justify">La info de Pathiways!!!!!!!!!!!!!!!!!!!!!!!!!</span>'
 			+'<br><br><br>'
 			+'<p align="justify"><h1>Note</h1><br>This web application makes an intensive use of new web technologies and standards like HTML5, so browsers that are fully supported for this site are: Chrome 14+, Firefox 7+, Safari 5+ and Opera 11+. Older browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported at all.</p>'
 			+'</div>';
