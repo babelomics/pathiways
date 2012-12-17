@@ -147,7 +147,7 @@ Pathiways.prototype.setAccountInfo = function(response) {
 	if(response.accountId != null){
 		this.accountData = response;
 		this.headerWidget.setAccountData(_this.accountData);
-		this.jobListWidget.setAccountData(_this.accountData);
+//		this.jobListWidget.setAccountData(_this.accountData);
 		console.log("accountData has been modified since last call");
 	}
 };	
@@ -279,6 +279,17 @@ Pathiways.prototype.showPathi = function (){
 		//});
 	//}
 	//Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(variantEffectJobFormPanel.panelId));
+	
+	var _this=this;
+	pathiwaysForm = new PathiwaysForm();
+	if(Ext.getCmp(pathiwaysForm.panelId)==null){
+		var panel = pathiwaysForm.draw();
+		Ext.getCmp(this.centerPanelId).add(panel);
+		pathiwaysForm.onRun.addEventListener(function(sender,data){
+			Ext.getCmp(_this.eastPanelId).expand();
+		});
+	}
+	Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
 };
 
 Pathiways.prototype.showGRNViewer= function (){
