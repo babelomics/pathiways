@@ -213,7 +213,7 @@ Pathiways.prototype.getMenu = function(){
 		{
 			id:this.id+"btnPathi",
 			disabled:true,
-			text: 'Pathi',
+			text: 'Pathiways',
 			handler: function(){
 				_this.showPathi();
 			}
@@ -283,11 +283,11 @@ Pathiways.prototype.showPathi = function (){
 	var _this=this;
 	pathiwaysForm = new PathiwaysForm();
 	if(Ext.getCmp(pathiwaysForm.panelId)==null){
-		var panel = pathiwaysForm.draw();
+		var panel = pathiwaysForm.draw({title: "Pathiways"});
 		Ext.getCmp(this.centerPanelId).add(panel);
-		pathiwaysForm.onRun.addEventListener(function(sender,data){
-			Ext.getCmp(_this.eastPanelId).expand();
-		});
+//		pathiwaysForm.onRun.addEventListener(function(sender,data){
+//			Ext.getCmp(_this.eastPanelId).expand();
+//		});
 	}
 	Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
 };

@@ -33,8 +33,8 @@ PathiwaysForm.prototype.beforeRun = function() {
 PathiwaysForm.prototype.getPanels = function() {
 	return [
 	         this._getSpeciesPanel(),
-	         this._getOptionsPanel(),
-	         this._getDatabasesPanel()
+	         this._getSelectDataPanel(),
+	         this._getSelectPathwayPanel()
 	        ];
 };
 
@@ -64,21 +64,32 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 		       ]
 	});
 	
-	var listener = {change: { element: 'el', fn: function(){
-//		combo2.clearValue();
-		console.log(this.getValue());
-//		combo2.bindStore(mouseValues);
-	}}};
-	var combo1 = this.createCombobox("species", "Species", speciesValues, 0, listener);
+	var combo1 = this.createCombobox("species", "Species", speciesValues, 0);
 	var combo2 = this.createCombobox("species2", "", hsapiensValues, 0);
+	function changeCombo() {
+		switch (combo1.getValue()) {
+		case "hsapiens":
+			combo2.clearValue();
+			combo2.bindStore(hsapiensValues);
+			combo2.setValue("HG-U133");
+			break;
+		case "mmusculus":
+			combo2.clearValue();
+			combo2.bindStore(mouseValues);
+			combo2.setValue("MoGene");
+			break;
+		}
+	};
+	combo1.on({select: changeCombo, scope: this});
 	
 	return Ext.create('Ext.panel.Panel', {
 		title: 'Species',
 		border: true,
-		bodyPadding: "5",
+		bodyPadding: "10",
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
+		layout: 'hbox',
 		items:[
 		       combo1,
 		       combo2
@@ -86,187 +97,71 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 	});
 };
 
-PathiwaysForm.prototype._getOptionsPanel = function() {
-	var fisherValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"twoTailed", "name":"Two tailed"},
-		        {"value":"5", "name":"Over-represented terms in selected nodes (genome comparison)"},
-		        {"value":"100", "name":"Over-represented terms in non-selected nodes"}
-		       ]
+PathiwaysForm.prototype._getSelectDataPanel = function() {
+	var btnBrowse1 = Ext.create('Ext.button.Button', {
+        text: 'Browse data',
+        margin: '5 0 0 0',
+        handler: function (){
+   		}
 	});
 	
-	var duplicateValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"never", "name":"Never"},
-		        {"value":"separately", "name":"Remove on each selection separately"},
-		        {"value":"commonIds", "name":"Remove on each selection and common ids"},
-		        {"value":"complementary", "name":"Remove from non-selected those appearing in selected (complementary list)"}
-		       ]
+	var btnBrowse2 = Ext.create('Ext.button.Button', {
+		text: 'Browse data',
+		margin: '5 0 0 0',
+		handler: function (){
+		}
 	});
 	
 	return Ext.create('Ext.panel.Panel', {
-		title: 'Options',
+		title: 'Select your data',
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
+		layout: 'vbox',
 		items:[
-		       this.createCombobox("fisher", "Fisher exact test", fisherValues, 0, 115),
-		       this.createCombobox("duplicates", "Remove duplicates?", duplicateValues, 0)
-		       ]
+		       {xtype: 'text', text: 'Normalized matrix:'},
+		       btnBrowse1,
+		       {xtype: 'text', text: 'Experimental design:', margin: '15 0 0 0'},
+		       btnBrowse2
+		      ]
 	});
 };
 
-PathiwaysForm.prototype._getDatabasesPanel = function() {
-	var organismValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"hsapiens", "name":"Human (homo sapiens)"},
-		        {"value":"mmusculus", "name":"Mouse (mus musculus)"}
-//		        {"value":"rnorvegicus", "name":"Rat (rattus norvegicus)"},
-//		        {"value":"dmelanogaster", "name":"Fruitfly (drosophila melanogaster)"},
-//		        {"value":"btaurus", "name":"Cow (bos taurus)"},
-//		        {"value":"drerio", "name":"Zebrafish (danio rerio)"},
-//		        {"value":"scerevisiae", "name":"Saccharomyces cerevisiae"},
-//		        {"value":"celegans", "name":"Caenorhabditis elegans"},
-//		        {"value":"athaliana", "name":"Arabidopsis thaliana"}
-		       ]
-	});
+PathiwaysForm.prototype._getSelectPathwayPanel = function() {
+	function checkAll(allValue) {
+		pathways.items.each(function(item) {
+		    item.setValue(allValue.value);
+		});
+	};
 	
-	var goBPContainer = Ext.create('Ext.container.Container', {
-		layout: "hbox",
-		items:[
-		       this.createCheckBox("goBP", "GO biological process", false, '8 0 0 0', false),
-		       {
-		           xtype: 'numberfield',
-		           name: 'goBPMin',
-		           margin: '5 0 0 20',
-		           width: '10',
-		           flex: 0.5,
-		           fieldLabel: 'Min',
-		           labelWidth: '20',
-		           value: 5,
-		           minValue: 0
-		       },
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goBPMax',
-		    	   margin: '5 0 0 20',
-		    	   width: '10',
-		           flex: 0.5,
-		    	   fieldLabel: 'Max',
-		    	   labelWidth: '22',
-		    	   value: 1000,
-		    	   minValue: 0
-		       }
-		      ]
-	});
-	
-	var goMFContainer = Ext.create('Ext.container.Container', {
-		layout: "hbox",
-		items:[
-		       this.createCheckBox("goMF", "GO molecular function", false, '8 0 0 0', false),
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goMFMin',
-		    	   margin: '5 0 0 19',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Min',
-		    	   labelWidth: '20',
-		    	   value: 5,
-		    	   minValue: 0
-		       },
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goMFMax',
-		    	   margin: '5 0 0 20',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Max',
-		    	   labelWidth: '22',
-		    	   value: 1000,
-		    	   minValue: 0
-		       }
-		       ]
-	});
-	
-	var goCCContainer = Ext.create('Ext.container.Container', {
-		layout: "hbox",
-		items:[
-		       this.createCheckBox("goCC", "GO cellular component", false, '8 0 0 0', false),
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goCCMin',
-		    	   margin: '5 0 0 15',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Min',
-		    	   labelWidth: '20',
-		    	   value: 5,
-		    	   minValue: 0
-		       },
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goCCMax',
-		    	   margin: '5 0 0 20',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Max',
-		    	   labelWidth: '22',
-		    	   value: 1000,
-		    	   minValue: 0
-		       }
-		       ]
-	});
-	
-	var goSlimContainer = Ext.create('Ext.container.Container', {
-		layout: "hbox",
-		items:[
-		       this.createCheckBox("goSlim", "GOSlim GOA", false, '8 0 0 0', false),
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goSlimMin',
-		    	   margin: '5 0 0 69',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Min',
-		    	   labelWidth: '20',
-		    	   value: 5,
-		    	   minValue: 0
-		       },
-		       {
-		    	   xtype: 'numberfield',
-		    	   name: 'goSlimMax',
-		    	   margin: '5 0 0 20',
-		    	   width: '10',
-		    	   flex: 0.5,
-		    	   fieldLabel: 'Max',
-		    	   labelWidth: '22',
-		    	   value: 1000,
-		    	   minValue: 0
-		       }
+	var pathways = Ext.create('Ext.form.CheckboxGroup', {
+//		fieldLabel: 'Pathways',
+		// Arrange checkboxes into two columns, distributed vertically
+		columns: 2,
+		vertical: true,
+		defaults: {margin: '0 15 0 0'},
+		items: [
+		        { boxLabel: 'Item 1', name: 'pathways1', inputValue: 'i1' },
+		        { boxLabel: 'Item 2', name: 'pathways2', inputValue: 'i2' },
+		        { boxLabel: 'Item 3', name: 'pathways3', inputValue: 'i3' },
+		        { boxLabel: 'Item 4', name: 'pathways4', inputValue: 'i4' },
+		        { boxLabel: 'Item 5', name: 'pathways5', inputValue: 'i5' },
+		        { boxLabel: 'Item 6', name: 'pathways6', inputValue: 'i6' }
 		       ]
 	});
 	
 	return Ext.create('Ext.panel.Panel', {
-		title: 'Databases',
+		title: 'Select pathway',
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
 		items:[
-		       this.createCombobox("organism", "Organism", organismValues, 0),
-		       goBPContainer,
-		       goMFContainer,
-		       goCCContainer,
-		       goSlimContainer,
-		       this.createCheckBox("miRNA", "miRNA targets", false, '8 0 0 0', false),
-		       this.createCheckBox("tfbs", "Jaspar TFBS", false, '8 0 0 0', false)
+		       {xtype: 'checkboxfield', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4'},
+		       pathways
 		      ]
 	});
 };
