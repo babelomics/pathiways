@@ -217,15 +217,15 @@ Pathiways.prototype.getMenu = function(){
 			handler: function(){
 				_this.showPathi();
 			}
-		},
-		{
-			id:this.id+"grnViewer",
-			disabled:true,
-		    text: 'GRN Viewer',
-			handler: function(){
-				_this.showGRNViewer();
-		    }
 		}
+//		{
+//			id:this.id+"grnViewer",
+//			disabled:true,
+//		    text: 'GRN Viewer',
+//			handler: function(){
+//				_this.showGRNViewer();
+//		    }
+//		}
     ];
 	var menubar = new Ext.create('Ext.toolbar.Toolbar', {
 		dock: 'top',

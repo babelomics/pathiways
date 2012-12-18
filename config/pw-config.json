@@ -14,7 +14,7 @@ if(window.location.host.indexOf("fsalavert")!=-1 ||
 //		this.host = "http://fsalavert:8080/cellbase/rest";
 //		this.host = "http://rsanchez:8080/cellbase/rest";
 //		this.host = "http://imedina:8080/cellbase/rest";
-	GCSA_HOST = "http://fsalavert:8080/gcsa/rest";
+	GCSA_HOST = "http://rsanchez:8080/gcsa/rest";
 }
 
 /** List of available species in the cellbase service **/

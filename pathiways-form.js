@@ -28,14 +28,54 @@ function PathiwaysForm() {
 };
 
 PathiwaysForm.prototype.beforeRun = function() {
+	var pathways = "";
+	Ext.getCmp('pathways'+this.id).items.each(function(item) {
+		var value = item.getSubmitValue();
+		if(value != null) pathways += value+"\n";
+	});
+	this.paramsWS["pathways"] = pathways;
 };
 
 PathiwaysForm.prototype.getPanels = function() {
 	return [
+	         this._getExamplesPanel(),
 	         this._getSpeciesPanel(),
 	         this._getSelectDataPanel(),
-	         this._getSelectPathwayPanel()
+	         this._getExpDesignPanel(),
+	         this._getPathwaysPanel()
 	        ];
+};
+
+PathiwaysForm.prototype._getExamplesPanel = function() {
+	var _this = this;
+	
+	var example1 = Ext.create('Ext.Component', {
+		html:'<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">HG-U133 Plus 2.0</span></span>',
+		cls:'dedo',
+		listeners:{
+			afterrender:function(){
+				this.getEl().on("click",function(){_this.loadExample1();Ext.example.msg("Example loaded","");});
+			}
+		}
+	});
+	var example2 = Ext.create('Ext.Component', {
+		html:'<span class="u"><span class="emph u">Load example 2.</span> <span class="info s110">VCF file with ~5000 variants</span></span>',
+		cls:'dedo',
+		listeners:{
+			afterrender:function(){
+				this.getEl().on("click",function(){_this.loadExample2();Ext.example.msg("Example loaded","");});
+			}
+		}
+	});
+	
+	var exampleForm = Ext.create('Ext.container.Container', {
+		bodyPadding:10,
+		margin: '0 0 10 0',
+		defaults:{margin:'0 0 5 0'},
+		items: [example1]
+	});
+	
+	return exampleForm;
 };
 
 PathiwaysForm.prototype._getSpeciesPanel = function() {
@@ -52,20 +92,20 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 	var hsapiensValues = Ext.create('Ext.data.Store', {
 		fields: ['value', 'name'],
 		data : [
-		        {"value":"HG-U133", "name":"HG-U133 Plus 2.0"},
-		        {"value":"HG-U133A", "name":"HG-U133A"}
+		        {"value":"HGU133Plus2", "name":"Affymetrix Human Genome U133 Plus 2.0 Array"},
+		        {"value":"HGU133A", "name":"Affymetrix Human Genome U133A Array"}
 		       ]
 	});
 	
 	var mouseValues = Ext.create('Ext.data.Store', {
 		fields: ['value', 'name'],
 		data : [
-		        {"value":"MoGene", "name":"MoGene"}
+		        {"value":"MoGene", "name":"Affymetrix Mouse Gene 1.0 ST Array"}
 		       ]
 	});
 	
 	var combo1 = this.createCombobox("species", "Species", speciesValues, 0);
-	var combo2 = this.createCombobox("species2", "", hsapiensValues, 0);
+	var combo2 = this.createCombobox("species2", "Platform", hsapiensValues, 0, null, '0 0 0 20');
 	function changeCombo() {
 		switch (combo1.getValue()) {
 		case "hsapiens":
@@ -98,18 +138,21 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 };
 
 PathiwaysForm.prototype._getSelectDataPanel = function() {
-	var btnBrowse1 = Ext.create('Ext.button.Button', {
+	var btnBrowse = Ext.create('Ext.button.Button', {
         text: 'Browse data',
-        margin: '5 0 0 0',
+        margin: '0 0 0 10',
         handler: function (){
    		}
 	});
 	
-	var btnBrowse2 = Ext.create('Ext.button.Button', {
-		text: 'Browse data',
-		margin: '5 0 0 0',
-		handler: function (){
-		}
+	var normMatrix = Ext.create('Ext.container.Container', {
+//		bodyPadding:10,
+//		defaults:{margin:'5 0 0 5'},
+//		margin: '5 0 0 0',
+		items: [
+		        {xtype: 'label', text: 'Normalized matrix:', margin:'5 0 0 5'},
+		        btnBrowse
+		       ]
 	});
 	
 	return Ext.create('Ext.panel.Panel', {
@@ -120,16 +163,58 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		width: "100%",
 		buttonAlign:'center',
 		layout: 'vbox',
+		items:[normMatrix]
+	});
+};
+
+PathiwaysForm.prototype._getExpDesignPanel = function() {
+	var btnBrowse = Ext.create('Ext.button.Button', {
+		text: 'Browse data',
+		margin: '0 0 0 10',
+		handler: function (){
+		}
+	});
+	
+	var expDesign = Ext.create('Ext.container.Container', {
+//		bodyPadding:10,
+//		defaults:{margin:'5 0 0 5'},
+//		margin: '10 0 5 0',
+		items: [
+		        {xtype: 'label', text: 'Experimental design data:', margin:'5 0 0 5'},
+		        btnBrowse
+		       ]
+	});
+	
+	var summValues = Ext.create('Ext.data.Store', {
+		fields: ['value', 'name'],
+		data : [
+		        {"value":"mean", "name":"mean"},
+		        {"value":"median", "name":"median"},
+		        {"value":"max", "name":"max"},
+		        {"value":"min", "name":"minimum"},
+		        {"value":"per90", "name":"90th percentile"},
+		        {"value":"per95", "name":"95th percentile"},
+		        {"value":"per99", "name":"99th percentile"}
+		       ]
+	});
+	var summ = this.createCombobox("summ", "Summ", summValues, 0, null, '10 0 0 5');
+	
+	return Ext.create('Ext.panel.Panel', {
+		title: 'Experimental design',
+		border: true,
+		bodyPadding: "5",
+		margin: "0 0 5 0",
+		width: "100%",
+		buttonAlign:'center',
+		layout: 'vbox',
 		items:[
-		       {xtype: 'text', text: 'Normalized matrix:'},
-		       btnBrowse1,
-		       {xtype: 'text', text: 'Experimental design:', margin: '15 0 0 0'},
-		       btnBrowse2
+		       expDesign,
+		       summ
 		      ]
 	});
 };
 
-PathiwaysForm.prototype._getSelectPathwayPanel = function() {
+PathiwaysForm.prototype._getPathwaysPanel = function() {
 	function checkAll(allValue) {
 		pathways.items.each(function(item) {
 		    item.setValue(allValue.value);
@@ -139,28 +224,42 @@ PathiwaysForm.prototype._getSelectPathwayPanel = function() {
 	var pathways = Ext.create('Ext.form.CheckboxGroup', {
 //		fieldLabel: 'Pathways',
 		// Arrange checkboxes into two columns, distributed vertically
+		id: 'pathways'+this.id,
 		columns: 2,
 		vertical: true,
 		defaults: {margin: '0 15 0 0'},
 		items: [
-		        { boxLabel: 'Item 1', name: 'pathways1', inputValue: 'i1' },
-		        { boxLabel: 'Item 2', name: 'pathways2', inputValue: 'i2' },
-		        { boxLabel: 'Item 3', name: 'pathways3', inputValue: 'i3' },
-		        { boxLabel: 'Item 4', name: 'pathways4', inputValue: 'i4' },
-		        { boxLabel: 'Item 5', name: 'pathways5', inputValue: 'i5' },
-		        { boxLabel: 'Item 6', name: 'pathways6', inputValue: 'i6' }
+		        { boxLabel: 'PPAR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa03320' },
+		        { boxLabel: 'ERBB SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04012' },
+		        { boxLabel: 'CALCIUM SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04020' },
+		        { boxLabel: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION', name: 'pathways', inputValue: 'hsa04080' },
+		        { boxLabel: 'APOPTOSIS', name: 'pathways', inputValue: 'hsa04210' },
+		        { boxLabel: 'WNT SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04310' },
+		        { boxLabel: 'NOTCH SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04330' },
+		        { boxLabel: 'VEGF SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04370' },
+		        { boxLabel: 'CELL ADHESION MOLECULES', name: 'pathways', inputValue: 'hsa04514' },
+		        { boxLabel: 'GAP JUNCTION', name: 'pathways', inputValue: 'hsa04540' },
+		        { boxLabel: 'ANTIGEN PROCESING AND PRESENTATION', name: 'pathways', inputValue: 'hsa04612' },
+		        { boxLabel: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04620' },
+		        { boxLabel: 'JAK-STAT SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04630' },
+		        { boxLabel: 'B CELL RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04662' },
+		        { boxLabel: 'Fc EPSILON RI SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04664' },
+		        { boxLabel: 'INSULIN SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04910' },
+		        { boxLabel: 'GnRH SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04912' },
+		        { boxLabel: 'MELANOGENESIS', name: 'pathways', inputValue: 'hsa04916' },
+		        { boxLabel: 'ADIPOCYTOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04920' }
 		       ]
 	});
 	
 	return Ext.create('Ext.panel.Panel', {
-		title: 'Select pathway',
+		title: 'Pathways',
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
 		items:[
-		       {xtype: 'checkboxfield', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4'},
+		       {xtype: 'checkboxfield', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4', inputValue: "Funciona"},
 		       pathways
 		      ]
 	});
