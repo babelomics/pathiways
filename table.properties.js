@@ -113,9 +113,9 @@ var tables = [
 },
 {
 	name : "PATHIWAY_TABLE",
-	colNames : ["Subpathway Name","Mean","Lower limit","Upper Limit","Significance"],
-	colTypes : ["text","number","number","number","text"],
-	colVisibility : [1,1,1,1,0],
-	colOrder : [0,1,2,3,4]
+	colNames : ["Subpathway Name","Mean","Lower limit","Upper Limit", "UP/DOWN", "Significance"],
+	colTypes : ["text","number","number","number","text","text"],
+	colVisibility : [1,1,1,1,1,0],
+	colOrder : [0,1,2,3,4,5]
 }
 ];
