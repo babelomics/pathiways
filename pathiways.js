@@ -86,6 +86,10 @@ function Pathiways (targetId,args){
 			_this.sessionFinished();
 		});
 
+		this.headerWidget.gcsaBrowserWidget.onNeedRefresh.addEventListener (function (sender) {
+			_this.getAccountInfo();
+		});
+		
 		this.headerWidget.adapter.onGetAccountInfo.addEventListener(function (evt, response){
 			_this.setAccountInfo(response);
 		});
@@ -104,14 +108,13 @@ function Pathiways (targetId,args){
 Pathiways.prototype.sessionInitiated = function(){
 	/*action buttons*/
 	Ext.getCmp(this.id+"btnPathi").enable();
-//	Ext.getCmp(this.id+"grnViewer").enable();
 	
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
 
 	/**LOAD GCSA**/
 	this.getAccountInfo();//first call
-	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 4000);
+	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 40000);
 	
 	this.jobListWidget.draw();
 	//this.dataListWidget.draw();
@@ -121,7 +124,6 @@ Pathiways.prototype.sessionInitiated = function(){
 Pathiways.prototype.sessionFinished = function(){
 	/*action buttons*/
 	Ext.getCmp(this.id+"btnPathi").disable();
-	Ext.getCmp(this.id+"grnViewer").disable();
 	
 	Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).hide();
@@ -147,7 +149,7 @@ Pathiways.prototype.setAccountInfo = function(response) {
 	if(response.accountId != null){
 		this.accountData = response;
 		this.headerWidget.setAccountData(_this.accountData);
-//		this.jobListWidget.setAccountData(_this.accountData);
+		this.jobListWidget.setAccountData(_this.accountData);
 		console.log("accountData has been modified since last call");
 	}
 };	
@@ -269,17 +271,6 @@ Pathiways.prototype.dataItemClick = function (record){
 
 
 Pathiways.prototype.showPathi = function (){
-	//var _this=this;
-	//variantEffectJobFormPanel = new VariantEffectJobFormPanel({suiteId:this.suiteId});
-	//if(Ext.getCmp(variantEffectJobFormPanel.panelId)==null){
-		//variantEffectJobFormPanel.draw();
-		//Ext.getCmp(this.centerPanelId).add(variantEffectJobFormPanel.panel);
-		//variantEffectJobFormPanel.onRun.addEventListener(function(sender,data){
-			//Ext.getCmp(_this.eastPanelId).expand();
-		//});
-	//}
-	//Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(variantEffectJobFormPanel.panelId));
-	
 	var _this=this;
 	pathiwaysForm = new PathiwaysForm();
 	if(Ext.getCmp(pathiwaysForm.panelId)==null){
