@@ -28,12 +28,14 @@ function PathiwaysForm() {
 };
 
 PathiwaysForm.prototype.beforeRun = function() {
-	var pathways = "";
+	var pathways = [];
 	Ext.getCmp('pathways'+this.id).items.each(function(item) {
 		var value = item.getSubmitValue();
-		if(value != null) pathways += value+"\n";
+		if(value != null) pathways.push(value);
 	});
-	this.paramsWS["pathways"] = pathways;
+	
+	if(pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
+	else this.paramsWS["pathways"] = "";
 };
 
 PathiwaysForm.prototype.getPanels = function() {
@@ -42,6 +44,7 @@ PathiwaysForm.prototype.getPanels = function() {
 	         this._getSpeciesPanel(),
 	         this._getSelectDataPanel(),
 	         this._getExpDesignPanel(),
+	         this._getOtherParamsPanel(),
 	         this._getPathwaysPanel()
 	        ];
 };
@@ -81,46 +84,101 @@ PathiwaysForm.prototype._getExamplesPanel = function() {
 PathiwaysForm.prototype._getSpeciesPanel = function() {
 	var _this = this;
 	
-	var speciesValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"hsapiens", "name":"Human (homo sapiens)"},
-		        {"value":"mmusculus", "name":"Mouse (mus musculus)"}
-		       ]
+//	var speciesValues = Ext.create('Ext.data.Store', {
+//		fields: ['value', 'name'],
+//		data : [
+//		        {"value":"hsapiens", "name":"Human (Homo sapiens)"},
+//		        {"value":"mmusculus", "name":"Mouse (Mus musculus)"}
+//		       ]
+//	});
+//	
+//	var hsapiensValues = Ext.create('Ext.data.Store', {
+//		fields: ['value', 'name'],
+//		data : [
+//		        {"value":"HGU133Plus2", "name":"Affymetrix Human Genome U133 Plus 2.0 Array"},
+//		        {"value":"HGU133A", "name":"Affymetrix Human Genome U133A Array"}
+//		       ]
+//	});
+//	
+//	var mouseValues = Ext.create('Ext.data.Store', {
+//		fields: ['value', 'name'],
+//		data : [
+//		        {"value":"MoGene", "name":"Affymetrix Mouse Gene 1.0 ST Array"}
+//		       ]
+//	});
+//	
+//	var combo1 = this.createCombobox("species", "Species", speciesValues, 0);
+//	var combo2 = this.createCombobox("species2", "Platform", hsapiensValues, 0, null, '0 0 0 20');
+//	function changeCombo() {
+//		switch (combo1.getValue()) {
+//		case "hsapiens":
+//			combo2.clearValue();
+//			combo2.bindStore(hsapiensValues);
+//			combo2.setValue("HG-U133");
+//			break;
+//		case "mmusculus":
+//			combo2.clearValue();
+//			combo2.bindStore(mouseValues);
+//			combo2.setValue("MoGene");
+//			break;
+//		}
+//	};
+//	combo1.on({select: changeCombo, scope: this});
+	
+	var species = Ext.create('Ext.form.RadioGroup', {
+		layout: 'vbox',
+		fieldLabel: 'Species',
+		margin: "0 0 10 0",
+		defaults: {
+			name: 'species'
+		},
+		items: [{
+			inputValue: 'hsapiens',
+			boxLabel: 'Human (Homo sapiens)',
+			checked: true,
+			listeners: {click: { element: 'el', fn: function(){
+				platform.removeAll();
+				platform.add(humanItems);
+			}}}
+		}, {
+			inputValue: 'mmusculus',
+			boxLabel: 'Mouse (Mus musculus)',
+			listeners: {click: { element: 'el', fn: function(){
+				platform.removeAll();
+				platform.add(mouseItems);
+			}}}
+		}]
 	});
 	
-	var hsapiensValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"HGU133Plus2", "name":"Affymetrix Human Genome U133 Plus 2.0 Array"},
-		        {"value":"HGU133A", "name":"Affymetrix Human Genome U133A Array"}
-		       ]
-	});
+	var humanItems = [
+	                  {
+	                	  inputValue: 'HGU133Plus2',
+	                	  boxLabel: 'Affymetrix Human Genome U133 Plus 2.0 Array',
+	                	  checked: true
+	                  },
+	                  {
+	                	  inputValue: 'HGU133A',
+	                	  boxLabel: 'Affymetrix Human Genome U133A Array',
+	                  }
+	                 ];
 	
-	var mouseValues = Ext.create('Ext.data.Store', {
-		fields: ['value', 'name'],
-		data : [
-		        {"value":"MoGene", "name":"Affymetrix Mouse Gene 1.0 ST Array"}
-		       ]
-	});
+	var mouseItems = [
+	                  {
+	                	  inputValue: 'MoGene',
+	                	  boxLabel: 'Affymetrix Mouse Gene 1.0 ST Array',
+	                	  checked: true
+	                  }
+	                 ];
 	
-	var combo1 = this.createCombobox("species", "Species", speciesValues, 0);
-	var combo2 = this.createCombobox("species2", "Platform", hsapiensValues, 0, null, '0 0 0 20');
-	function changeCombo() {
-		switch (combo1.getValue()) {
-		case "hsapiens":
-			combo2.clearValue();
-			combo2.bindStore(hsapiensValues);
-			combo2.setValue("HG-U133");
-			break;
-		case "mmusculus":
-			combo2.clearValue();
-			combo2.bindStore(mouseValues);
-			combo2.setValue("MoGene");
-			break;
-		}
-	};
-	combo1.on({select: changeCombo, scope: this});
+	var platform = Ext.create('Ext.form.RadioGroup', {
+		layout: 'vbox',
+		fieldLabel: 'Platform',
+		margin: "0 0 0 0",
+		defaults: {
+			name: 'platform'
+		},
+		items: humanItems
+	});
 	
 	return Ext.create('Ext.panel.Panel', {
 		title: 'Species',
@@ -129,32 +187,15 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
-		layout: 'hbox',
+//		layout: 'hbox',
 		items:[
-		       combo1,
-		       combo2
+		       species,
+		       platform
 		      ]
 	});
 };
 
 PathiwaysForm.prototype._getSelectDataPanel = function() {
-	var btnBrowse = Ext.create('Ext.button.Button', {
-        text: 'Browse data',
-        margin: '0 0 0 10',
-        handler: function (){
-   		}
-	});
-	
-	var normMatrix = Ext.create('Ext.container.Container', {
-//		bodyPadding:10,
-//		defaults:{margin:'5 0 0 5'},
-//		margin: '5 0 0 0',
-		items: [
-		        {xtype: 'label', text: 'Normalized matrix:', margin:'5 0 0 5'},
-		        btnBrowse
-		       ]
-	});
-	
 	return Ext.create('Ext.panel.Panel', {
 		title: 'Select your data',
 		border: true,
@@ -163,28 +204,59 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		width: "100%",
 		buttonAlign:'center',
 		layout: 'vbox',
-		items:[normMatrix]
+		items:[this.createGcsaBrowserCmp('Normalized matrix:')]
 	});
 };
 
 PathiwaysForm.prototype._getExpDesignPanel = function() {
-	var btnBrowse = Ext.create('Ext.button.Button', {
-		text: 'Browse data',
-		margin: '0 0 0 10',
-		handler: function (){
-		}
+//	var btnBrowse = Ext.create('Ext.button.Button', {
+//		text: 'Browse data',
+//		margin: '0 0 0 10',
+//		handler: function (){
+//		}
+//	});
+//	
+//	var expDesign = Ext.create('Ext.container.Container', {
+////		bodyPadding:10,
+////		defaults:{margin:'5 0 0 5'},
+////		margin: '10 0 5 0',
+//		items: [
+//		        {xtype: 'label', text: 'Experimental design data:', margin:'5 0 0 5'},
+//		        btnBrowse
+//		       ]
+//	});
+	
+	var control = Ext.create('Ext.form.field.Text', {
+		name: "control",
+		fieldLabel:'Control',
+		margin: '10 0 0 5',
+		allowBlank: false
 	});
 	
-	var expDesign = Ext.create('Ext.container.Container', {
-//		bodyPadding:10,
-//		defaults:{margin:'5 0 0 5'},
-//		margin: '10 0 5 0',
-		items: [
-		        {xtype: 'label', text: 'Experimental design data:', margin:'5 0 0 5'},
-		        btnBrowse
-		       ]
+	var disease = Ext.create('Ext.form.field.Text', {
+		name: "disease",
+		fieldLabel:'Disease',
+		margin: '10 0 0 5',
+		allowBlank: false
 	});
 	
+	return Ext.create('Ext.panel.Panel', {
+		title: 'Experimental design',
+		border: true,
+		bodyPadding: "5",
+		margin: "0 0 5 0",
+		width: "100%",
+		buttonAlign:'center',
+		layout: 'vbox',
+		items:[
+		       this.createGcsaBrowserCmp('Experimental design data:'),
+		       control,
+		       disease
+		      ]
+	});
+};
+
+PathiwaysForm.prototype._getOtherParamsPanel = function() {
 	var summValues = Ext.create('Ext.data.Store', {
 		fields: ['value', 'name'],
 		data : [
@@ -197,20 +269,17 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 		        {"value":"per99", "name":"99th percentile"}
 		       ]
 	});
-	var summ = this.createCombobox("summ", "Summ", summValues, 0, null, '10 0 0 5');
+	var summ = this.createCombobox("summ", "Summ", summValues, 4, 100, '5 0 5 5');
 	
 	return Ext.create('Ext.panel.Panel', {
-		title: 'Experimental design',
+		title: 'Other parameters',
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
 		width: "100%",
 		buttonAlign:'center',
 		layout: 'vbox',
-		items:[
-		       expDesign,
-		       summ
-		      ]
+		items: [summ]
 	});
 };
 

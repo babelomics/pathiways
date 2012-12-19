@@ -104,7 +104,7 @@ function Pathiways (targetId,args){
 Pathiways.prototype.sessionInitiated = function(){
 	/*action buttons*/
 	Ext.getCmp(this.id+"btnPathi").enable();
-	Ext.getCmp(this.id+"grnViewer").enable();
+//	Ext.getCmp(this.id+"grnViewer").enable();
 	
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
