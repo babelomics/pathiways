@@ -245,15 +245,14 @@ Pathiways.prototype.getMenu = function(){
 
 
 Pathiways.prototype.jobItemClick = function (record){
-	this.jobId = record.data.jobId;
+	this.jobId = record.data.id;
 	var _this=this;
 	if(record.data.visites >= 0 ){
 		
 		if(!Ext.getCmp(this.eastPanelId).isHidden() || Ext.getCmp(this.eastPanelId).collapsed){
 			Ext.getCmp(this.eastPanelId).collapse();
 		}
-		
-		resultWidget = new ResultWidget({targetId:this.centerPanelId,application:'variant',app:this});
+		resultWidget = new ResultWidget({targetId:this.centerPanelId,application:'pathiway',app:this});
 //		resultWidget.onRendered.addEventListener(function (sender, targetId){
 //			_this.createGenomeMaps(targetId);
 //		});
