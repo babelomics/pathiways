@@ -21,9 +21,10 @@
 
 PathiwaysForm.prototype = new GenericFormPanel("pathiways");
 
-function PathiwaysForm() {
+function PathiwaysForm(webapp) {
 	this.id = Math.round(Math.random() * 10000000);
 	
+	this.gcsaBrowserWidget = webapp.headerWidget.gcsaBrowserWidget;
 	this.onSelectNodes = new Event(this);
 };
 
@@ -36,6 +37,8 @@ PathiwaysForm.prototype.beforeRun = function() {
 	
 	if(pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
 	else this.paramsWS["pathways"] = "";
+	
+	this.paramsWS["exp-name"] = this.paramsWS["jobname"];
 };
 
 PathiwaysForm.prototype.getPanels = function() {
@@ -204,7 +207,7 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		width: "100%",
 		buttonAlign:'center',
 		layout: 'vbox',
-		items:[this.createGcsaBrowserCmp('Normalized matrix:')]
+		items:[this.createGcsaBrowserCmp('Normalized matrix:', 'norm-matrix')]
 	});
 };
 
@@ -249,7 +252,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 		buttonAlign:'center',
 		layout: 'vbox',
 		items:[
-		       this.createGcsaBrowserCmp('Experimental design data:'),
+		       this.createGcsaBrowserCmp('Experimental design data:', 'exp-design'),
 		       control,
 		       disease
 		      ]
@@ -332,4 +335,8 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 		       pathways
 		      ]
 	});
+};
+
+PathiwaysForm.prototype.loadExample1 = function() {
+	
 };
