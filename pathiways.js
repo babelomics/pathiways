@@ -272,7 +272,7 @@ Pathiways.prototype.dataItemClick = function (record){
 
 Pathiways.prototype.showPathi = function (){
 	var _this=this;
-	pathiwaysForm = new PathiwaysForm();
+	pathiwaysForm = new PathiwaysForm(this);
 	if(Ext.getCmp(pathiwaysForm.panelId)==null){
 		var panel = pathiwaysForm.draw({title: "Pathiways"});
 		Ext.getCmp(this.centerPanelId).add(panel);
