@@ -188,7 +188,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 		border: true,
 		bodyPadding: "10",
 		margin: "0 0 5 0",
-		width: "100%",
+		width: "99%",
 		buttonAlign:'center',
 //		layout: 'hbox',
 		items:[
@@ -204,7 +204,7 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
-		width: "100%",
+		width: "99%",
 		buttonAlign:'center',
 		layout: 'vbox',
 		items:[this.createGcsaBrowserCmp('Normalized matrix:', 'norm-matrix')]
@@ -248,7 +248,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
-		width: "100%",
+		width: "99%",
 		buttonAlign:'center',
 		layout: 'vbox',
 		items:[
@@ -279,7 +279,7 @@ PathiwaysForm.prototype._getOtherParamsPanel = function() {
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
-		width: "100%",
+		width: "99%",
 		buttonAlign:'center',
 		layout: 'vbox',
 		items: [summ]
@@ -328,7 +328,7 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 		border: true,
 		bodyPadding: "5",
 		margin: "0 0 5 0",
-		width: "100%",
+		width: "99%",
 		buttonAlign:'center',
 		items:[
 		       {xtype: 'checkboxfield', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4', inputValue: "Funciona"},

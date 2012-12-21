@@ -2,6 +2,7 @@ function Pathiways (targetId,args){
 	var _this=this;
 	this.id = "Pathiways"+ Math.round(Math.random()*10000);
 	this.suiteId = 22;
+	this.tools = ["pathiways"];
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'Path<span class="emph">i</span>ways';
 	this.description = "";
@@ -33,6 +34,7 @@ function Pathiways (targetId,args){
 	this.jobListWidget = new JobListWidget({
 		"timeout":4000,
 		"suiteId":this.suiteId,
+		"tools":this.tools,
 		"pagedViewList":{
 			"title": 'Jobs',
 			"pageSize": 7, 
@@ -116,7 +118,7 @@ Pathiways.prototype.sessionInitiated = function(){
 	this.getAccountInfo();//first call
 	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 40000);
 	
-	this.jobListWidget.draw();
+	//this.jobListWidget.draw();
 	//this.dataListWidget.draw();
 	
 };
