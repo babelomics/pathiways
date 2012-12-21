@@ -56,7 +56,7 @@ PathiwaysForm.prototype._getExamplesPanel = function() {
 	var _this = this;
 	
 	var example1 = Ext.create('Ext.Component', {
-		html:'<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">HG-U133 Plus 2.0</span></span>',
+		html:'<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">Colorectal cancer</span></span>',
 		cls:'dedo',
 		listeners:{
 			afterrender:function(){
@@ -230,6 +230,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 //	});
 	
 	var control = Ext.create('Ext.form.field.Text', {
+		id: "control",
 		name: "control",
 		fieldLabel:'Control',
 		margin: '10 0 0 5',
@@ -237,6 +238,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 	});
 	
 	var disease = Ext.create('Ext.form.field.Text', {
+		id: "disease",
 		name: "disease",
 		fieldLabel:'Disease',
 		margin: '10 0 0 5',
@@ -331,12 +333,25 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 		width: "100%",
 		buttonAlign:'center',
 		items:[
-		       {xtype: 'checkboxfield', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4', inputValue: "Funciona"},
+		       {xtype: 'checkboxfield', id: 'allPathways', name: 'allPathways', boxLabel: 'All', handler: checkAll, margin: '0 0 2 4', inputValue: "Funciona"},
 		       pathways
 		      ]
 	});
 };
 
 PathiwaysForm.prototype.loadExample1 = function() {
+	this.paramsWS['example'] = true;
 	
+	Ext.getCmp('norm-matrix').setText("Example colorectal cancer");
+	this.paramsWS['norm-matrix'] = "GSE4107.txt";
+	
+	Ext.getCmp('exp-design').setText("Example colorectal cancer");
+	this.paramsWS['exp-design'] = "ED_GSE4107.txt";
+	
+	Ext.getCmp('control').setValue("CONTROL");
+	Ext.getCmp('disease').setValue("CRC");
+	Ext.getCmp('allPathways').setValue(true);
+	
+	Ext.getCmp('jobname').setValue("Example 1");
+	Ext.getCmp('jobdescription').setValue("Colorectal cancer");
 };
