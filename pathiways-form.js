@@ -162,6 +162,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 	                  {
 	                	  inputValue: 'HGU133A',
 	                	  boxLabel: 'Affymetrix Human Genome U133A Array',
+				  checked: false
 	                  }
 	                 ];
 	
