@@ -116,7 +116,7 @@ Pathiways.prototype.sessionInitiated = function(){
 
 	/**LOAD GCSA**/
 	this.getAccountInfo();//first call
-	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 40000);
+	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 4000);
 	
 	//this.jobListWidget.draw();
 	//this.dataListWidget.draw();
@@ -154,7 +154,7 @@ Pathiways.prototype.setAccountInfo = function(response) {
 		this.jobListWidget.setAccountData(_this.accountData);
 		console.log("accountData has been modified since last call");
 	}
-};	
+};
 
 Pathiways.prototype.getAccountInfo = function() {
 	_this = this;
@@ -183,7 +183,7 @@ Pathiways.prototype.setSize = function(width,height){
 	
 	if(Ext.getCmp(this.jobListWidget.pagedListViewWidget.id+"view")!=null){
 		Ext.getCmp(this.jobListWidget.pagedListViewWidget.id+"view").setSize(null,height-200);
-		Ext.getCmp(this.dataListWidget.pagedListViewWidget.id+"view").setSize(null,height-200);
+		//Ext.getCmp(this.dataListWidget.pagedListViewWidget.id+"view").setSize(null,height-200);
 	}
 };
 
