@@ -4,7 +4,7 @@ function Pathiways (targetId,args){
 	this.suiteId = 22;
 	this.tools = ["pathiways"];
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
-	this.title = 'Path<span class="emph">i</span>ways';
+	this.title = 'PATH<span class="emph">i</span>WAYS';
 	this.description = "";
 	this.wum=true;
 	
@@ -217,7 +217,7 @@ Pathiways.prototype.getMenu = function(){
 		{
 			id:this.id+"btnPathi",
 			disabled:true,
-			text: 'Pathiways',
+			text: '<span class="emph">Press to run PATHiWAYS<span>',
 			handler: function(){
 				_this.showPathi();
 			}
@@ -275,7 +275,7 @@ Pathiways.prototype.showPathi = function (){
 	var _this=this;
 	pathiwaysForm = new PathiwaysForm(this);
 	if(Ext.getCmp(pathiwaysForm.panelId)==null){
-		var panel = pathiwaysForm.draw({title: "Pathiways"});
+		var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
 		Ext.getCmp(this.centerPanelId).add(panel);
 //		pathiwaysForm.onRun.addEventListener(function(sender,data){
 //			Ext.getCmp(_this.eastPanelId).expand();
@@ -382,7 +382,7 @@ Pathiways.prototype.getPanel = function(){
 		//background-image:url(\'http:\/\/jsapi.bioinfo.cipf.es\/libs\/resources\/img\/wordle_tuned_white_crop.jpg\')
 		var suiteInfo =  '<div style=" width: 800px;">'
 			+'<h1>Overview</h1><br>'
-			+'<span align="justify">La info de Pathiways!!!!!!!!!!!!!!!!!!!!!!!!!</span>'
+			+'<span align="justify">PATHiWAYS is a web tool for the interpretation of the consequences of the combined changes in expression levels of genes in the context of signaling pathways. Specifically, this tool allows the user to identify the stimulus-response subpathways that are significantly activated or deactivated in the typical case/control experiment. PATHiWAYS identifies all the stimulus-response subpathways of KEGG signaling pathways, calculates the probability of activation of each one, based on the individual gene expression values and identifies those with a significant differential activity between the two conditions compared.</span>'
 			+'<br><br><br>'
 			+'<p align="justify"><h1>Note</h1><br>This web application makes an intensive use of new web technologies and standards like HTML5, so browsers that are fully supported for this site are: Chrome 14+, Firefox 7+, Safari 5+ and Opera 11+. Older browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported at all.</p>'
 			+'</div>';
