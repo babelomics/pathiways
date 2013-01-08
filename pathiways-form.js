@@ -298,32 +298,31 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 	};
 	
 	var pathways = Ext.create('Ext.form.CheckboxGroup', {
-//		fieldLabel: 'Pathways',
 		// Arrange checkboxes into two columns, distributed vertically
 		id: 'pathways'+this.id,
 		columns: 2,
 		vertical: true,
 		defaults: {margin: '0 15 0 0'},
 		items: [
-		        { boxLabel: 'PPAR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa03320' },
-		        { boxLabel: 'ERBB SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04012' },
-		        { boxLabel: 'CALCIUM SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04020' },
-		        { boxLabel: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION', name: 'pathways', inputValue: 'hsa04080' },
-		        { boxLabel: 'APOPTOSIS', name: 'pathways', inputValue: 'hsa04210' },
-		        { boxLabel: 'WNT SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04310' },
-		        { boxLabel: 'NOTCH SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04330' },
-		        { boxLabel: 'VEGF SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04370' },
-		        { boxLabel: 'CELL ADHESION MOLECULES', name: 'pathways', inputValue: 'hsa04514' },
-		        { boxLabel: 'GAP JUNCTION', name: 'pathways', inputValue: 'hsa04540' },
-		        { boxLabel: 'ANTIGEN PROCESING AND PRESENTATION', name: 'pathways', inputValue: 'hsa04612' },
-		        { boxLabel: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04620' },
-		        { boxLabel: 'JAK-STAT SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04630' },
-		        { boxLabel: 'B CELL RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04662' },
-		        { boxLabel: 'Fc EPSILON RI SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04664' },
-		        { boxLabel: 'INSULIN SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04910' },
-		        { boxLabel: 'GnRH SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04912' },
-		        { boxLabel: 'MELANOGENESIS', name: 'pathways', inputValue: 'hsa04916' },
-		        { boxLabel: 'ADIPOCYTOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: 'hsa04920' }
+		        { boxLabel: 'PPAR SIGNALING PATHWAY', name: 'pathways', inputValue: '03320' },
+		        { boxLabel: 'ERBB SIGNALING PATHWAY', name: 'pathways', inputValue: '04012' },
+		        { boxLabel: 'CALCIUM SIGNALING PATHWAY', name: 'pathways', inputValue: '04020' },
+		        { boxLabel: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION', name: 'pathways', inputValue: '04080' },
+		        { boxLabel: 'APOPTOSIS', name: 'pathways', inputValue: '04210' },
+		        { boxLabel: 'WNT SIGNALING PATHWAY', name: 'pathways', inputValue: '04310' },
+		        { boxLabel: 'NOTCH SIGNALING PATHWAY', name: 'pathways', inputValue: '04330' },
+		        { boxLabel: 'VEGF SIGNALING PATHWAY', name: 'pathways', inputValue: '04370' },
+		        { boxLabel: 'CELL ADHESION MOLECULES', name: 'pathways', inputValue: '04514' },
+		        { boxLabel: 'GAP JUNCTION', name: 'pathways', inputValue: '04540' },
+		        { boxLabel: 'ANTIGEN PROCESING AND PRESENTATION', name: 'pathways', inputValue: '04612' },
+		        { boxLabel: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04620' },
+		        { boxLabel: 'JAK-STAT SIGNALING PATHWAY', name: 'pathways', inputValue: '04630' },
+		        { boxLabel: 'B CELL RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04662' },
+		        { boxLabel: 'Fc EPSILON RI SIGNALING PATHWAY', name: 'pathways', inputValue: '04664' },
+		        { boxLabel: 'INSULIN SIGNALING PATHWAY', name: 'pathways', inputValue: '04910' },
+		        { boxLabel: 'GnRH SIGNALING PATHWAY', name: 'pathways', inputValue: '04912' },
+		        { boxLabel: 'MELANOGENESIS', name: 'pathways', inputValue: '04916' },
+		        { boxLabel: 'ADIPOCYTOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: '04920' }
 		       ]
 	});
 	
