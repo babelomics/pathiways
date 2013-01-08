@@ -30,8 +30,9 @@ function PathiwaysForm(webapp) {
 
 PathiwaysForm.prototype.beforeRun = function() {
 	var pathways = [];
+	var speciesPrefix = this.paramsWS["species"].substring(0,3);
 	Ext.getCmp('pathways'+this.id).items.each(function(item) {
-		var value = item.getSubmitValue();
+		var value = speciesPrefix + item.getSubmitValue();
 		if(value != null) pathways.push(value);
 	});
 	
