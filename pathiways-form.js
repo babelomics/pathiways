@@ -234,7 +234,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 	var control = Ext.create('Ext.form.field.Text', {
 		id: "control",
 		name: "control",
-		fieldLabel:'Control',
+		fieldLabel:'Condition 1',
 		margin: '10 0 0 5',
 		allowBlank: false
 	});
@@ -242,7 +242,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 	var disease = Ext.create('Ext.form.field.Text', {
 		id: "disease",
 		name: "disease",
-		fieldLabel:'Disease',
+		fieldLabel:'Condition 2',
 		margin: '10 0 0 5',
 		allowBlank: false
 	});
