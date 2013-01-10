@@ -343,10 +343,10 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 PathiwaysForm.prototype.loadExample1 = function() {
 	this.paramsWS['example'] = true;
 	
-	Ext.getCmp('norm-matrix').setText("Example colorectal cancer");
+	Ext.getCmp('norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);
 	this.paramsWS['norm-matrix'] = "GSE4107.txt";
 	
-	Ext.getCmp('exp-design').setText("Example colorectal cancer");
+	Ext.getCmp('exp-design').setText('<span class="emph">Example colorectal cancer</span>', false);
 	this.paramsWS['exp-design'] = "ED_GSE4107.txt";
 	
 	Ext.getCmp('control').setValue("CONTROL");
