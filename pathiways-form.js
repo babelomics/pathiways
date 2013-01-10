@@ -209,7 +209,7 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		width: "99%",
 		buttonAlign:'center',
 		layout: 'vbox',
-		items:[this.createGcsaBrowserCmp('Normalized matrix:', 'norm-matrix')]
+		items:[this.createGcsaBrowserCmp('Normalized matrix:', 'norm-matrix', 'fileSelection')]
 	});
 };
 
@@ -256,7 +256,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 		buttonAlign:'center',
 		layout: 'vbox',
 		items:[
-		       this.createGcsaBrowserCmp('Experimental design data:', 'exp-design'),
+		       this.createGcsaBrowserCmp('Experimental design data:', 'exp-design', 'fileSelection'),
 		       control,
 		       disease
 		      ]
