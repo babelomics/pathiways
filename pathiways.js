@@ -146,8 +146,8 @@ Pathiways.prototype.sessionFinished = function(){
 
 Pathiways.prototype.setAccountInfo = function(response) {
 	_this = this;
-	console.log("checking account info")
-	console.log(response)
+	console.log("checking account info");
+	console.log(response);
 	if(response.accountId != null){
 		this.accountData = response;
 		this.headerWidget.setAccountData(_this.accountData);
