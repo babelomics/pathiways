@@ -116,7 +116,7 @@ Pathiways.prototype.sessionInitiated = function(){
 
 	/**LOAD GCSA**/
 	this.getAccountInfo();//first call
-	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 40000);
+	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 4000);
 	
 	//this.jobListWidget.draw();
 	//this.dataListWidget.draw();
