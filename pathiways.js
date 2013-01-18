@@ -286,8 +286,8 @@ Pathiways.prototype.showPathi = function (){
 
 Pathiways.prototype.showGRNViewer= function (){
 var _this = this;
-	this.grnViewer = Ext.getCmp(this.id+"_grnViewer");
-	if(this.grnViewer==null) {
+	this.viewer = Ext.getCmp(this.id+"_grnViewer");
+	if(this.viewer==null) {
 		//Collapse to calculate width for CellBrowser
 		pan = 26;
 		if(!Ext.getCmp(this.eastPanelId).isHidden() || Ext.getCmp(this.eastPanelId).collapsed){
@@ -299,7 +299,7 @@ var _this = this;
 //			html:'<div id=grnViewerCellBrowser></div>'
 		});
 		
-		this.grnViewer = Ext.create('Ext.panel.Panel', {
+		this.viewer = Ext.create('Ext.panel.Panel', {
 			id:this.id+"_grnViewer",
 			border: false,
 		    title: "Workspace",
@@ -308,13 +308,13 @@ var _this = this;
 //		    autoScroll:true
 		});
 		
-		Ext.getCmp(this.centerPanelId).add(this.grnViewer);
+		Ext.getCmp(this.centerPanelId).add(this.viewer);
 
 		//Once actived, the div element is visible, and CellBrowser can be rendered
-		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
+		Ext.getCmp(this.centerPanelId).setActiveTab(this.viewer);
 		this.networkViewer = new NetworkViewer(this.id+'contGRNViewer', {
-			width:this.grnViewer.getWidth()-(0/*15+pan*/),
-			height:this.grnViewer.getHeight()-0/*26*/,
+			width:this.viewer.getWidth()-(0/*15+pan*/),
+			height:this.viewer.getHeight()-0/*26*/,
 			//menuBar:this.getMenuBar(),
 			overview:true,
 			version:'<span class="info">Cell Browser v'+this.version+'</span>'
@@ -361,7 +361,7 @@ var _this = this;
 		_this.networkViewer
 	}
 	else {
-		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
+		Ext.getCmp(this.centerPanelId).setActiveTab(this.viewer);
 	}
 };
 
