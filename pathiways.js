@@ -88,13 +88,9 @@ function Pathiways (targetId,args){
 			_this.sessionFinished();
 		});
 
-		this.headerWidget.gcsaBrowserWidget.onNeedRefresh.addEventListener (function (sender) {
-			_this.getAccountInfo();
-		});
-		
-		this.headerWidget.adapter.onGetAccountInfo.addEventListener(function (evt, response){
-			_this.setAccountInfo(response);
-		});
+        this.headerWidget.onGetAccountInfo.addEventListener(function (sender, response){
+            _this.setAccountData(response);
+        });
 		
 		this.headerWidget.userBarWidget.onProjectChange.addEventListener(function (sender){
 			_this.jobListWidget.getResponse();
@@ -105,7 +101,7 @@ function Pathiways (targetId,args){
 		_this.setSize($(window).width(),$(window).height());
 	});
 	
-};
+}
 
 Pathiways.prototype.sessionInitiated = function(){
 	/*action buttons*/
@@ -114,10 +110,6 @@ Pathiways.prototype.sessionInitiated = function(){
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
 
-	/**LOAD GCSA**/
-	this.getAccountInfo();//first call
-	this.accountInfoInterval = setInterval(function(){_this.getAccountInfo();}, 4000);
-	
 	//this.jobListWidget.draw();
 	//this.dataListWidget.draw();
 	
@@ -136,33 +128,15 @@ Pathiways.prototype.sessionFinished = function(){
 		Ext.getCmp(this.centerPanelId).remove(Ext.getCmp(this.centerPanelId).items.items[Ext.getCmp(this.centerPanelId).items.items.length-1]);
 	}
 
-
 	this.accountData = null;
-	clearInterval(this.accountInfoInterval);
 
 //	console.log(this.centerPanel.items.items)
 //	this.centerPanel.removeChildEls(function(o) { return o.title != 'Home'; });
 };
 
-Pathiways.prototype.setAccountInfo = function(response) {
-	_this = this;
-	console.log("checking account info");
-	console.log(response);
-	if(response.accountId != null){
-		this.accountData = response;
-		this.headerWidget.setAccountData(_this.accountData);
-		this.jobListWidget.setAccountData(_this.accountData);
-		console.log("accountData has been modified since last call");
-	}
-};
-
-Pathiways.prototype.getAccountInfo = function() {
-	_this = this;
-	var lastActivity = null;
-	if(this.accountData != null){
-		lastActivity =  this.accountData.lastActivity;
-	}
-	this.headerWidget.adapter.getAccountInfo($.cookie('bioinfo_account'), $.cookie('bioinfo_sid'), lastActivity);
+Pathiways.prototype.setAccountData = function(response) {
+	this.accountData = response;
+	this.jobListWidget.setAccountData(this.accountData);
 };
 
 Pathiways.prototype.setSize = function(width,height){
@@ -187,7 +161,6 @@ Pathiways.prototype.setSize = function(width,height){
 	}
 };
 
-/** appInterface **/
 Pathiways.prototype.draw = function(){
 	
 	if(this._wrapPanel==null){
@@ -356,9 +329,6 @@ var _this = this;
 		this.nodeAttributeFilterWidget.onRestoreNodes.addEventListener(function() {
 			_this.networkViewer.refresh();
 		});
-
-
-		_this.networkViewer
 	}
 	else {
 		Ext.getCmp(this.centerPanelId).setActiveTab(this.grnViewer);
@@ -369,7 +339,7 @@ var _this = this;
 Pathiways.prototype.getPanel = function(){
 	
 	if(this._centerPanel == null){
-		
+
 	//		var loginButton = new Ext.create('Ext.button.Button', {
 	//		text:'Sign in',
 	//		margin: '0 0 20 0',
@@ -378,7 +348,7 @@ Pathiways.prototype.getPanel = function(){
 	////				this.hide();
 	//		}
 	//	});
-	
+
 		//background-image:url(\'http:\/\/jsapi.bioinfo.cipf.es\/libs\/resources\/img\/wordle_tuned_white_crop.jpg\')
 		var suiteInfo =  '<div style=" width: 800px;">'
 			+'<h1>Overview</h1><br>'
