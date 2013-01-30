@@ -91,10 +91,6 @@ function Pathiways (targetId,args){
         this.headerWidget.onGetAccountInfo.addEventListener(function (sender, response){
             _this.setAccountData(response);
         });
-		
-		this.headerWidget.userBarWidget.onProjectChange.addEventListener(function (sender){
-			_this.jobListWidget.getResponse();
-		});
 	}
 	//RESIZE EVENT
 	$(window).smartresize(function(a){
@@ -105,7 +101,7 @@ function Pathiways (targetId,args){
 
 Pathiways.prototype.sessionInitiated = function(){
 	/*action buttons*/
-	Ext.getCmp(this.id+"btnPathi").enable();
+//	Ext.getCmp(this.id+"btnPathi").enable();
 	
 	Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).show();
@@ -117,7 +113,7 @@ Pathiways.prototype.sessionInitiated = function(){
 
 Pathiways.prototype.sessionFinished = function(){
 	/*action buttons*/
-	Ext.getCmp(this.id+"btnPathi").disable();
+//	Ext.getCmp(this.id+"btnPathi").disable();
 	
 	Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
 	Ext.getCmp(this.eastPanelId).hide();
@@ -189,7 +185,7 @@ Pathiways.prototype.getMenu = function(){
    var menuBarItems = [
 		{
 			id:this.id+"btnPathi",
-			disabled:true,
+//			disabled:true,
 			text: '<span class="emph">Press to run PATHiWAYS<span>',
 			handler: function(){
 				_this.showPathi();

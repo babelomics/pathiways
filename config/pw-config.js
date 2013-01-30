@@ -2,7 +2,7 @@
 //CELLBASE_HOST = "http://usa.cellbase.org:8080/cellbase/rest";
 CELLBASE_HOST = "http://ws.bioinfo.cipf.es/cellbase/rest";
 GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsa/rest";
-WUM_HOST = "http://ws.bioinfo.cipf.es/wum/rest";
+WUM_HOST = "http://ws.bioinfo.cipf.es/gcsa/rest";
 
 if(window.location.host.indexOf("fsalavert")!=-1 ||
    window.location.host.indexOf("rsanchez")!=-1 ||

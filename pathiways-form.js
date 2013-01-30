@@ -23,23 +23,23 @@ PathiwaysForm.prototype = new GenericFormPanel("pathiways");
 
 function PathiwaysForm(webapp) {
 	this.id = Math.round(Math.random() * 10000000);
-	
+	this.headerWidget =  webapp.headerWidget;
 	this.gcsaBrowserWidget = webapp.headerWidget.gcsaBrowserWidget;
 	this.onSelectNodes = new Event(this);
-};
+}
 
 PathiwaysForm.prototype.beforeRun = function() {
-	var pathways = [];
-	var speciesPrefix = this.paramsWS["species"].substring(0,3);
-	Ext.getCmp('pathways'+this.id).items.each(function(item) {
-		var value = speciesPrefix + item.getSubmitValue();
-		if(value != null) pathways.push(value);
-	});
-	
-	if(pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
-	else this.paramsWS["pathways"] = "";
-	
-	this.paramsWS["exp-name"] = this.paramsWS["jobname"];
+    var pathways = [];
+    var speciesPrefix = this.paramsWS["species"].substring(0,3);
+    Ext.getCmp('pathways'+this.id).items.each(function(item) {
+        var value = speciesPrefix + item.getSubmitValue();
+        if(value != null) pathways.push(value);
+    });
+
+    if(pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
+    else this.paramsWS["pathways"] = "";
+
+    this.paramsWS["exp-name"] = this.paramsWS["jobname"];
 };
 
 PathiwaysForm.prototype.getPanels = function() {
