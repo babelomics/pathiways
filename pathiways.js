@@ -5,7 +5,8 @@ function Pathiways (targetId,args){
 	this.tools = ["pathiways"];
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'PATH<span class="emph">i</span>WAYS';
-	this.description = "";
+	this.description = '';
+    this.version = '0.0.3';
 	this.wum=true;
 	
 	
@@ -74,6 +75,7 @@ function Pathiways (targetId,args){
 		this.headerWidget = new HeaderWidget({
 			appname: this.title,
 			description: this.description,
+            version: this.version,
 			suiteId : this.suiteId
 		});
 		
@@ -94,7 +96,6 @@ function Pathiways (targetId,args){
 	}
 	//RESIZE EVENT
 	$(window).smartresize(function(a){
-        debugger
 		_this.setSize($(window).width(),$(window).height());
 	});
 	
