@@ -6,7 +6,7 @@ function Pathiways (targetId,args){
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'PATH<span class="emph">i</span>WAYS';
 	this.description = '';
-    this.version = '0.0.3';
+    this.version = '1.0.3';
 	this.wum=true;
 	
 	
