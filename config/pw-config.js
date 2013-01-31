@@ -15,7 +15,7 @@ if(window.location.host.indexOf("fsalavert")!=-1 ||
 //		this.host = "http://rsanchez:8080/cellbase/rest";
 //		this.host = "http://imedina:8080/cellbase/rest";
 	GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsa/rest";
-	GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsabeta/rest";
+//	GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsabeta/rest";
 }
 
 /** List of available species in the cellbase service **/

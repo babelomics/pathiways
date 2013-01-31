@@ -94,6 +94,7 @@ function Pathiways (targetId,args){
 	}
 	//RESIZE EVENT
 	$(window).smartresize(function(a){
+        debugger
 		_this.setSize($(window).width(),$(window).height());
 	});
 	
