@@ -1,8 +1,9 @@
 //CELLBASE_HOST = "http://ws.bioinfo.cipf.es/cellbase/rest";
 //CELLBASE_HOST = "http://usa.cellbase.org:8080/cellbase/rest";
 CELLBASE_HOST = "http://ws.bioinfo.cipf.es/cellbase/rest";
-GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsa/rest";
-WUM_HOST = "http://ws.bioinfo.cipf.es/gcsa/rest";
+//OPENCGA_HOST = "http://ws.bioinfo.cipf.es/opencga/rest";
+OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
+WUM_HOST = "http://ws.bioinfo.cipf.es/opencga/rest";
 
 if(window.location.host.indexOf("fsalavert")!=-1 ||
    window.location.host.indexOf("rsanchez")!=-1 ||
@@ -10,12 +11,13 @@ if(window.location.host.indexOf("fsalavert")!=-1 ||
    window.location.href.indexOf("http://bioinfo.cipf.es/apps-beta")!=-1
 ){
 //		this.host = "http://ralonso:8080/naranjoma-ws/rest";
-	CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
+//	CELLBASE_HOST = "http://ws-beta.bioinfo.cipf.es/cellbase/rest";
 //		this.host = "http://fsalavert:8080/cellbase/rest";
 //		this.host = "http://rsanchez:8080/cellbase/rest";
 //		this.host = "http://imedina:8080/cellbase/rest";
-	GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsa/rest";
-//	GCSA_HOST = "http://ws-beta.bioinfo.cipf.es/gcsabeta/rest";
+//	OPENCGA_HOST = "http://mem15:8080/opencga/rest";
+//	OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
+//	OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencgabeta/rest";
 }
 
 /** List of available species in the cellbase service **/
@@ -169,13 +171,13 @@ var DAS_TRACKS = [
 				   "categories":[
 				      {"name":"Core",
 					   "sources":[
-                	        {"name":"GRC Region GRCh37","url":"http://das.sanger.ac.uk/das/grc_region_GRCh37/features","checked":false},
-                	        {"name":"Vega genes","url":"http://das.sanger.ac.uk/das/vega_ens_zv8_genes/features","checked":false}
+                	        {"name":"GRC Region GRCh37","url":"http://das.sanger.ac.uk/das/grc_region_GRCh37/featuresSvgNode","checked":false},
+                	        {"name":"Vega genes","url":"http://das.sanger.ac.uk/das/vega_ens_zv8_genes/featuresSvgNode","checked":false}
                 	        ]
 				      },
 				      {"name":"Variation",
 					   "sources":[
-                	        {"name":"Cosmic Mutations GRCh37","url":"http://das.sanger.ac.uk/das/cosmic_mutations_GRCh37/features","checked":false}
+                	        {"name":"Cosmic Mutations GRCh37","url":"http://das.sanger.ac.uk/das/cosmic_mutations_GRCh37/featuresSvgNode","checked":false}
                 	        ]
 				      },
 				      {"name":"Regulatory",

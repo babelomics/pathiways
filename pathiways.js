@@ -6,7 +6,7 @@ function Pathiways (targetId,args){
 	this.title = '<span class="emph">Path</span>i<span class="emph">ways</span>';
 	this.title = 'PATH<span class="emph">i</span>WAYS';
 	this.description = '';
-    this.version = '1.0.3';
+    this.version = '1.0.7';
 	this.wum=true;
 	
 	
@@ -184,24 +184,14 @@ Pathiways.prototype.draw = function(){
 /*****/
 Pathiways.prototype.getMenu = function(){
 	var _this=this;
-   var menuBarItems = [
-		{
-			id:this.id+"btnPathi",
+    var menuBarItems = [{
+        id:this.id+"btnPathi",
 //			disabled:true,
-			text: '<span class="emph">Press to run PATHiWAYS<span>',
-			handler: function(){
-				_this.showPathi();
-			}
-		}
-//		{
-//			id:this.id+"grnViewer",
-//			disabled:true,
-//		    text: 'GRN Viewer',
-//			handler: function(){
-//				_this.showGRNViewer();
-//		    }
-//		}
-    ];
+        text: '<span class="link emph">Press to run PATHiWAYS<span>',
+        handler: function(){
+            _this.showPathi();
+        }
+    }];
 	var menubar = new Ext.create('Ext.toolbar.Toolbar', {
 		dock: 'top',
 		cls:'bio-menubar',
@@ -211,6 +201,9 @@ Pathiways.prototype.getMenu = function(){
 		region:'north',
 		minHeight:27,
 		maxHeight:27,
+        defaults:{
+            listeners: {render: function() {this.addCls("x-btn-default-small");this.removeCls("x-btn-default-toolbar-small");}}
+        },
 		items:menuBarItems
 	});
 	return menubar;
@@ -244,16 +237,30 @@ Pathiways.prototype.dataItemClick = function (record){
 
 Pathiways.prototype.showPathi = function (){
 	var _this=this;
-	pathiwaysForm = new PathiwaysForm(this);
-	if(Ext.getCmp(pathiwaysForm.panelId)==null){
-		var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
-		Ext.getCmp(this.centerPanelId).add(panel);
-//		pathiwaysForm.onRun.addEventListener(function(sender,data){
-//			Ext.getCmp(_this.eastPanelId).expand();
-//		});
-	}
-	Ext.getCmp(this.centerPanelId).setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
+    var showForm = function(){
+        pathiwaysForm = new PathiwaysForm(_this);
+        if(Ext.getCmp(pathiwaysForm.panelId)==null){
+            var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
+            Ext.getCmp(_this.centerPanelId).add(panel);
+    //		pathiwaysForm.onRun.addEventListener(function(sender,data){
+    //			Ext.getCmp(_this.eastPanelId).expand();
+    //		});
+        }
+        Ext.getCmp(_this.centerPanelId).setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
+    };
+
+    if(!$.cookie('bioinfo_sid')){
+        _this.headerWidget.onLogin.addEventListener(function (sender, data){
+            showForm();
+        });
+        _this.headerWidget.loginWidget.anonymousSign();
+    }else{
+        showForm();
+    }
+
 };
+
+
 
 Pathiways.prototype.showGRNViewer= function (){
 var _this = this;
@@ -335,6 +342,7 @@ var _this = this;
 
 
 Pathiways.prototype.getPanel = function(){
+    var _this = this;
 	
 	if(this._centerPanel == null){
 
@@ -361,7 +369,7 @@ Pathiways.prototype.getPanel = function(){
 			padding : 30,
 			border:false,
 			autoScroll:true,
-			html: suiteInfo+loginInfo,
+			html: suiteInfo/*+loginInfo*/,
 			bodyPadding:30,
 			flex:1
 		});
@@ -373,25 +381,35 @@ Pathiways.prototype.getPanel = function(){
 	//		bodyPadding:30,
 	//		flex:0.3
 	//	});
-		
+
+
+
 		var homepanel = Ext.create('Ext.panel.Panel', {
 	//		padding : 30,
 //			margin:"10 0 0 0",
 			title:'Home',
 	//		html: suiteInfo,
 			border:0,
-			layout: {
-		        type: 'vbox',
-		        align: 'stretch'
-		    },
-			items: [homeLeft]
+//			layout: {
+//		        type: 'vbox',
+//		        align: 'stretch'
+//		    },
+			items: [homeLeft,{
+                xtype:'button',
+                padding : 20,
+                margin:'0 0 0 150',
+                text:'Run PATHiWAYS',
+                handler: function(){
+                    _this.showPathi();
+                }
+            }]
 		});
 		var centerPanel = Ext.create('Ext.tab.Panel', {
 			id: this.centerPanelId,
 			region: 'center',
 			border:false,
 			activeTab: 0,
-			items : homepanel
+			items : [homepanel]
 		});
 		
 		this._centerPanel = Ext.create('Ext.panel.Panel', {

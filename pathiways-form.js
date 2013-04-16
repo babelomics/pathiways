@@ -24,7 +24,7 @@ PathiwaysForm.prototype = new GenericFormPanel("pathiways");
 function PathiwaysForm(webapp) {
 	this.id = Math.round(Math.random() * 10000000);
 	this.headerWidget =  webapp.headerWidget;
-	this.gcsaBrowserWidget = webapp.headerWidget.gcsaBrowserWidget;
+	this.opencgaBrowserWidget = webapp.headerWidget.opencgaBrowserWidget;
 	this.onSelectNodes = new Event(this);
 }
 
@@ -146,6 +146,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 			listeners: {click: { element: 'el', fn: function(){
 				platform.removeAll();
 				platform.add(humanItems);
+                Ext.getCmp('pathways04620'+_this.id).enable();
 			}}}
 		}, {
 			inputValue: 'mmusculus',
@@ -153,6 +154,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 			listeners: {click: { element: 'el', fn: function(){
 				platform.removeAll();
 				platform.add(mouseItems);
+                Ext.getCmp('pathways04620'+_this.id).setValue(false).disable();
 			}}}
 		}]
 	});
@@ -204,6 +206,30 @@ PathiwaysForm.prototype._getSpeciesPanel = function() {
 };
 
 PathiwaysForm.prototype._getSelectDataPanel = function() {
+
+    var items = [
+        {
+            inputValue: true,
+            boxLabel: 'CEL compressed file',
+            checked: false
+        },
+        {
+            inputValue: false,
+            boxLabel: 'Affymetrix matrix',
+            checked: true
+        }
+    ];
+    var matrixOrCel = Ext.create('Ext.form.RadioGroup', {
+        layout: 'vbox',
+        fieldLabel: 'Platform',
+        margin: "0 0 0 0",
+        defaults: {
+            name: 'cel-compressed-file'
+        },
+        items: items
+    });
+
+
 	return Ext.create('Ext.panel.Panel', {
 		title: 'Select your data',
 		border: true,
@@ -212,7 +238,7 @@ PathiwaysForm.prototype._getSelectDataPanel = function() {
 		width: "99%",
 		buttonAlign:'center',
 		layout: 'vbox',
-		items:[this.createGcsaBrowserCmp('Normalized matrix:', 'norm-matrix', 'fileSelection')]
+		items:[matrixOrCel, this.createOpencgaBrowserCmp('Input file:', 'norm-matrix', 'fileSelection')]
 	});
 };
 
@@ -259,7 +285,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function() {
 		buttonAlign:'center',
 		layout: 'vbox',
 		items:[
-		       this.createGcsaBrowserCmp('Experimental design data:', 'exp-design', 'fileSelection'),
+		       this.createOpencgaBrowserCmp('Experimental design data:', 'exp-design', 'fileSelection'),
 		       control,
 		       disease
 		      ]
@@ -296,7 +322,9 @@ PathiwaysForm.prototype._getOtherParamsPanel = function() {
 PathiwaysForm.prototype._getPathwaysPanel = function() {
 	function checkAll(allValue) {
 		pathways.items.each(function(item) {
-		    item.setValue(allValue.value);
+            if(!item.isDisabled()){
+		        item.setValue(allValue.value);
+            }
 		});
 	};
 	
@@ -318,7 +346,7 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 		        { boxLabel: 'CELL ADHESION MOLECULES', name: 'pathways', inputValue: '04514' },
 		        { boxLabel: 'GAP JUNCTION', name: 'pathways', inputValue: '04540' },
 		        { boxLabel: 'ANTIGEN PROCESING AND PRESENTATION', name: 'pathways', inputValue: '04612' },
-		        { boxLabel: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04620' },
+		        { boxLabel: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04620', id:'pathways04620'+this.id},
 		        { boxLabel: 'JAK-STAT SIGNALING PATHWAY', name: 'pathways', inputValue: '04630' },
 		        { boxLabel: 'B CELL RECEPTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04662' },
 		        { boxLabel: 'Fc EPSILON RI SIGNALING PATHWAY', name: 'pathways', inputValue: '04664' },
@@ -344,13 +372,12 @@ PathiwaysForm.prototype._getPathwaysPanel = function() {
 };
 
 PathiwaysForm.prototype.loadExample1 = function() {
-	this.paramsWS['example'] = true;
 	
 	Ext.getCmp('norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);
-	this.paramsWS['norm-matrix'] = "GSE4107.txt";
+	this.paramsWS['norm-matrix'] = "example_GSE4107.txt";
 	
 	Ext.getCmp('exp-design').setText('<span class="emph">Example colorectal cancer</span>', false);
-	this.paramsWS['exp-design'] = "ED_GSE4107.txt";
+	this.paramsWS['exp-design'] = "example_ED_GSE4107.txt";
 	
 	Ext.getCmp('control').setValue("CONTROL");
 	Ext.getCmp('disease').setValue("CRC");
