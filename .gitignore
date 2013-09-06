@@ -1,2 +1,2 @@
-/build
-.dependencies
+build
+node_modules
