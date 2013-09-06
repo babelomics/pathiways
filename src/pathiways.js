@@ -21,6 +21,8 @@ function Pathiways(args) {
 
     this.accountData = null;
 
+    this.resizing = false;
+
     this.rendered = false;
     if (this.autoRender) {
         this.render();
@@ -282,29 +284,12 @@ Pathiways.prototype.setAccountData = function (response) {
 };
 
 Pathiways.prototype.setSize = function (width, height) {
-    if (width < 500) {
-        width = 500;
-    }
-    if (width > 2400) {
-        width = 2400;
-    }//if bigger does not work TODO why?
-
     this.width = width;
     this.height = height;
 
-    this._wrapPanel.setSize(width, height);
-
-    this.getPanel().setSize(width, height - this.headerWidget.height);
-    if (this.genomeViewer != null) {
-        this.genomeViewer.setSize(Ext.getCmp(this.id + "_vcfViewer").getWidth(), Ext.getCmp(this.id + "_vcfViewer").getHeight());
-    }
-
     this.headerWidget.setWidth(width);
-
-    if (Ext.getCmp(this.jobListWidget.pagedListViewWidget.id + "view") != null) {
-        Ext.getCmp(this.jobListWidget.pagedListViewWidget.id + "view").setSize(null, height - 200);
-        //Ext.getCmp(this.dataListWidget.pagedListViewWidget.id+"view").setSize(null,height-200);
-    }
+    this.menu.setWidth($(this.menuDiv).width());
+    this.panel.setWidth($(this.panelDiv).width());
 };
 
 Pathiways.prototype.jobItemClick = function (record) {
