@@ -43,30 +43,20 @@ Pathiways.prototype = {
 
         $(this.div).append('<div id="pw-header-widget"></div>');
         $(this.div).append('<div id="pw-menu"></div>');
-        this.wrapDiv = $('<div id="pw-wrap" style="height:100%;"></div>')[0];
+        this.wrapDiv = $('<div id="pw-wrap" style="height:100%;position:relative;"></div>')[0];
         $(this.div).append(this.wrapDiv);
 
-        ///
-//        <div id="column1-wrap">
-//            <div id="column1">Column 1</div>
-//        </div>
-//        <div id="column2">Column 2</div>
+
+        this.sidePanelDiv = $('<div id="pw-sidePanel" style="position:absolute; z-index:50;right:0px;"></div>')[0];
+        $(this.wrapDiv).append(this.sidePanelDiv);
 
         this.panelDiv = $('<div id="pw-panel"></div>')[0];
-        this.sidePanelDiv = $('<div id="pw-sidePanel"></div>')[0];
         $(this.panelDiv).css({
-            float: 'left',
-            width: 'calc(100% - 280px)'
-        });
-        $(this.sidePanelDiv).css({
-            float: 'right',
-            width: 280
+            width: '100%'
         });
         $(this.wrapDiv).append(this.panelDiv);
-        $(this.wrapDiv).append(this.sidePanelDiv);
-        $(this.wrapDiv).append('<div style="clear:both;"></div>');
 
-        ///
+
         this.width = ($(this.div).width());
         this.height = ($(this.div).height());
 
@@ -96,15 +86,6 @@ Pathiways.prototype = {
             return;
         }
 
-//        /////////
-//
-//        /** ID for sencha components**/
-//        this.eastPanelId = this.id + "_eastPanelID";
-//        this.centerPanelId = this.id + "_centerPanelID";
-//
-//        /////////
-
-
         /* Header Widget */
         this.headerWidget = this._createHeaderWidget('pw-header-widget');
 
@@ -123,12 +104,12 @@ Pathiways.prototype = {
         this.jobListWidget = this._createJobListWidget('pw-sidePanel');
 
 
-        //check login
-//        if ($.cookie('bioinfo_sid') != null) {
-//            this.sessionInitiated();
-//        } else {
-//            this.sessionFinished();
-//        }
+       /*check login*/
+        if ($.cookie('bioinfo_sid') != null) {
+            this.sessionInitiated();
+        } else {
+            this.sessionFinished();
+        }
     },
     _createHeaderWidget: function (targetId) {
         var _this = this;
@@ -160,6 +141,7 @@ Pathiways.prototype = {
         return headerWidget;
     },
     _createMenu: function (targetId) {
+        var _this = this;
         var toolbar = Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "navToolbar",
             renderTo: targetId,
@@ -175,6 +157,24 @@ Pathiways.prototype = {
                     handler: function () {
                         _this.showPathi();
                     }
+                },
+                '->'
+                ,
+                {
+                    id:this.id+'jobsButton',
+                    tooltip: 'Show Jobs',
+                    text: '<span class="emph"> Hide jobs </span>',
+                    enableToggle: true,
+                    pressed: true,
+                    toggleHandler: function () {
+                        if(this.pressed){
+                            this.setText('<span class="emph"> Hide jobs </span>');
+                            _this.jobListWidget.show();
+                        }else{
+                            this.setText('<span class="emph"> Show jobs </span>');
+                            _this.jobListWidget.hide();
+                        }
+                    }
                 }
             ]
         });
@@ -183,7 +183,7 @@ Pathiways.prototype = {
     _createPanel: function (targetId) {
         var _this = this;
 
-        var homePanel = Ext.create('Ext.panel.Panel', {
+        homePanel = Ext.create('Ext.panel.Panel', {
 //            padding: 30,
 //            margin: "10 0 0 0",
             title: 'Home',
@@ -230,81 +230,50 @@ Pathiways.prototype = {
         var _this = this;
 
         var jobListWidget = new JobListWidget({
-            "timeout": 4000,
-            "suiteId": this.suiteId,
-            "tools": this.tools,
-            "pagedViewList": {
-                "title": 'Jobs',
-                "pageSize": 7,
-                "targetId": targetId,
-                "order": 0,
-                "width": 280,
-                "height": 650,
-                "mode": "view"
+            'timeout': 4000,
+            'suiteId': this.suiteId,
+            'tools': this.tools,
+            'pagedViewList': {
+                'title': 'Jobs',
+                'pageSize': 7,
+                'targetId': targetId,
+                'order': 0,
+                'width': 280,
+                'height': 625,
+                border:true,
+                'mode': 'view'
             }
         });
-
-        //this.dataListWidget = new DataListWidget({
-        //"timeout":4000,
-        //"suiteId":this.suiteId,
-        //"pagedViewList":{
-        //"title": 'Data',
-        //"pageSize": 7,
-        //"targetId": this.eastPanelId,
-        //"order" : 1,
-        //"width": 280,
-        //"height": 650,
-        //"mode":"view"  //allowed grid | view
-        //}
-        //});
-
 
         /**Atach events i listen**/
         jobListWidget.pagedListViewWidget.onItemClick.addEventListener(function (sender, record) {
             _this.jobItemClick(record);
         });
-
-        //this.dataListWidget.pagedListViewWidget.onItemClick.addEventListener(function (sender, record){
-        //_this.dataItemClick(record);
-        //});
-
         jobListWidget.draw();
 
         return jobListWidget;
-    },
-
-
+    }
 }
 
 Pathiways.prototype.sessionInitiated = function () {
-    /*action buttons*/
-//	Ext.getCmp(this.id+"btnPathi").enable();
-
-    Ext.getCmp(this.eastPanelId).expand();//se expande primero ya que si se hide() estando collapsed peta.
-    Ext.getCmp(this.eastPanelId).show();
-
+    Ext.getCmp(this.id+'jobsButton').enable();
+    Ext.getCmp(this.id+'jobsButton').toggle(true);
     //this.jobListWidget.draw();
     //this.dataListWidget.draw();
-
 };
 
 Pathiways.prototype.sessionFinished = function () {
-    /*action buttons*/
-//	Ext.getCmp(this.id+"btnPathi").disable();
+    Ext.getCmp(this.id+'jobsButton').disable();
+    Ext.getCmp(this.id+'jobsButton').toggle(false);
 
-    Ext.getCmp(this.eastPanelId).expand(); //se expande primero ya que si se hide() estando collapsed peta.
-    Ext.getCmp(this.eastPanelId).hide();
     this.jobListWidget.clean();
-    //this.dataListWidget.clean();
-
-    while (Ext.getCmp(this.centerPanelId).items.items.length > 1) {
-        Ext.getCmp(this.centerPanelId).remove(Ext.getCmp(this.centerPanelId).items.items[Ext.getCmp(this.centerPanelId).items.items.length - 1]);
-    }
-
     this.accountData = null;
 
-//	console.log(this.centerPanel.items.items)
-//	this.centerPanel.removeChildEls(function(o) { return o.title != 'Home'; });
+    this.panel.items.each(function(child){
+        if(child.title != 'Home'){
+            child.destroy();
+        }
+    })
 };
 
 Pathiways.prototype.setAccountData = function (response) {
@@ -338,63 +307,16 @@ Pathiways.prototype.setSize = function (width, height) {
     }
 };
 
-
-/*****/
-//Pathiways.prototype.getMenu = function () {
-//    var _this = this;
-//    var menuBarItems = [
-//        {
-//            id: this.id + "btnPathi",
-////			disabled:true,
-//            text: '<span class="link emph">Press to run PATHiWAYS<span>',
-//            handler: function () {
-//                _this.showPathi();
-//            }
-//        }
-//    ];
-//    var menubar = new Ext.create('Ext.toolbar.Toolbar', {
-//        dock: 'top',
-//        cls: 'bio-menubar',
-//        height: 27,
-//        padding: '0 0 0 10',
-//        style: 'border: 1',
-//        region: 'north',
-//        minHeight: 27,
-//        maxHeight: 27,
-//        defaults: {
-//            listeners: {render: function () {
-//                this.addCls("x-btn-default-small");
-//                this.removeCls("x-btn-default-toolbar-small");
-//            }}
-//        },
-//        items: menuBarItems
-//    });
-//    return menubar;
-//};
-
-
 Pathiways.prototype.jobItemClick = function (record) {
-    this.jobId = record.data.id;
     var _this = this;
+    this.jobId = record.data.id;
     if (record.data.visites >= 0) {
 
-        if (!Ext.getCmp(this.eastPanelId).isHidden() || Ext.getCmp(this.eastPanelId).collapsed) {
-            Ext.getCmp(this.eastPanelId).collapse();
-        }
-        resultWidget = new ResultWidget({targetId: this.centerPanelId, application: 'pathiway', app: this});
-//		resultWidget.onRendered.addEventListener(function (sender, targetId){
-//			_this.createGenomeMaps(targetId);
-//		});
-        resultWidget.draw($.cookie('bioinfo_sid'), record);
-        //TODO: borrar
-        this.resultWiget = resultWidget;
+        Ext.getCmp(this.id+'jobsButton').toggle(false);
 
-//		this.resultWidget.draw($.cookie('bioinfo_sid'),record);
+        var resultWidget = new ResultWidget({targetId: this.panel.getId(), application: 'pathiway', app: this});
+        resultWidget.draw($.cookie('bioinfo_sid'), record);
     }
-};
-Pathiways.prototype.dataItemClick = function (record) {
-//	console.log(record.data.name);
-//	_this.adapter.-------(record.data.DATAID, "js", $.cookie('bioinfo_sid'));	
 };
 
 
@@ -404,12 +326,9 @@ Pathiways.prototype.showPathi = function () {
         var pathiwaysForm = new PathiwaysForm(_this);
         if (Ext.getCmp(pathiwaysForm.panelId) == null) {
             var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
-            Ext.getCmp(_this.centerPanelId).add(panel);
-            //		pathiwaysForm.onRun.addEventListener(function(sender,data){
-            //			Ext.getCmp(_this.eastPanelId).expand();
-            //		});
+            _this.panel.add(panel);
         }
-        Ext.getCmp(_this.centerPanelId).setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
+        _this.panel.setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
     };
 
     if (!$.cookie('bioinfo_sid')) {
@@ -422,7 +341,6 @@ Pathiways.prototype.showPathi = function () {
     }
 
 };
-
 
 Pathiways.prototype.showGRNViewer = function () {
     var _this = this;
@@ -502,27 +420,3 @@ Pathiways.prototype.showGRNViewer = function () {
     }
 };
 
-
-Pathiways.prototype.getPanel = function () {
-    var _this = this;
-
-
-};
-
-Pathiways.prototype.getEastPanel = function () {
-    //var eastPanel = Ext.create('Ext.tab.Panel', {
-    var eastPanel = Ext.create('Ext.panel.Panel', {
-        id: this.eastPanelId,
-        region: 'east',
-        style: 'border: 0',
-        //title: 'Jobs & Data list',
-        title: 'Jobs',
-        collapsible: true,
-        titleCollapse: true,
-        animCollapse: false,
-        width: 280,
-        collapseDirection: 'top',
-        activeTab: 0
-    });
-    return eastPanel;
-};

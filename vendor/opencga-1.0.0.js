@@ -1478,7 +1478,6 @@ function JobListWidget (args){
 	this.bar = new Ext.create('Ext.toolbar.Toolbar', {
 //		vertical : true,
 		id:this.id+"jobsFilterBar",
-		style : 'border : 0',
 		dock : 'top',
 		items :  [
                   //this.projectFilterButton,
@@ -1538,6 +1537,13 @@ function JobListWidget (args){
 ///*HARDCODED check job status*/
 
 	
+};
+
+JobListWidget.prototype.show = function (){
+    this.pagedListViewWidget.show();
+};
+JobListWidget.prototype.hide = function (){
+    this.pagedListViewWidget.hide();
 };
 
 //override
@@ -3222,7 +3228,7 @@ PagedViewListWidget.prototype.render = function() {
 						padding:15,
 						store: this.store,
 					    tpl: this.tpl,
-					    height:$(document).height()-200,
+					    height:this.height,
 					    trackOver: true,
 					    autoScroll:true,
 	           			overItemCls: 'list-item-hover',
@@ -3361,7 +3367,7 @@ PagedViewListWidget.prototype.render = function() {
 				
 				this.panel = Ext.create('Ext.panel.Panel', {
 					id : this.panelId,
-					//title : this.title,
+					title : this.title,
 					border:this.border,
 				    width: this.width,
 				    tbar : this.pagBar,
@@ -3381,6 +3387,16 @@ PagedViewListWidget.prototype.render = function() {
 	}
 };
 
+PagedViewListWidget.prototype.show = function (){
+    if (this.panel != null){
+        this.panel.show();
+    }
+};
+PagedViewListWidget.prototype.hide = function (){
+    if (this.panel != null){
+        this.panel.hide();
+    }
+};
 
 /** Paging bar Events **/
 //PagedViewListWidget.prototype.onPageChange = function (object, event, option){
