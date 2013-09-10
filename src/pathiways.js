@@ -9,7 +9,7 @@ function Pathiways(args) {
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
     this.version = '1.0.10';
-    this.tools = ["pathiways"];
+    this.tools = ['pathiways','pathipred'];
     this.border = true;
     this.targetId;
     this.width;
@@ -94,7 +94,7 @@ Pathiways.prototype = {
         /* Header Widget */
         this.menu = this._createMenu('pw-menu');
 
-
+        /* check height */
         var topOffset = $('#pw-header-widget').height() + $('#pw-menu').height();
         $(this.panelDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
         $(this.sidePanelDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
@@ -157,7 +157,15 @@ Pathiways.prototype = {
 //                    disabled: true,
                     text: '<span class="link emph">Press to run PATHiWAYS<span>',
                     handler: function () {
-                        _this.showPathi();
+                        _this.showPathiwaysForm();
+                    }
+                },
+                {
+                    id: this.id + "btnPred",
+//                    disabled: true,
+                    text: '<span class="link emph">Press to run PATHiPRED<span>',
+                    handler: function () {
+                        _this.showPathipredForm();
                     }
                 },
                 '->'
@@ -212,7 +220,16 @@ Pathiways.prototype = {
                     margin: '0 0 0 150',
                     text: 'Run PATHiWAYS',
                     handler: function () {
-                        _this.showPathi();
+                        _this.showPathiwaysForm();
+                    }
+                },
+                {
+                    xtype: 'button',
+                    padding: 20,
+                    margin: '0 0 0 150',
+                    text: 'Run PATHiPRED',
+                    handler: function () {
+                        _this.showPathipredForm();
                     }
                 }
             ]
@@ -305,7 +322,7 @@ Pathiways.prototype.jobItemClick = function (record) {
 };
 
 
-Pathiways.prototype.showPathi = function () {
+Pathiways.prototype.showPathiwaysForm = function () {
     var _this = this;
     var showForm = function () {
         var pathiwaysForm = new PathiwaysForm(_this);
@@ -315,17 +332,34 @@ Pathiways.prototype.showPathi = function () {
         }
         _this.panel.setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
     };
+    this._checkLogin(showForm);
+};
 
+
+Pathiways.prototype.showPathipredForm = function () {
+    var _this = this;
+    var showForm = function () {
+        var pathipredForm = new PathipredForm(_this);
+        if (Ext.getCmp(pathipredForm.panelId) == null) {
+            var panel = pathipredForm.draw({title: "PATHiPRED"});
+            _this.panel.add(panel);
+        }
+        _this.panel.setActiveTab(Ext.getCmp(pathipredForm.panelId));
+    };
+    this._checkLogin(showForm);
+};
+
+Pathiways.prototype._checkLogin = function (showForm) {
     if (!$.cookie('bioinfo_sid')) {
-        _this.headerWidget.onLogin.addEventListener(function (sender, data) {
+        this.headerWidget.onLogin.addEventListener(function (sender, data) {
             showForm();
         });
-        _this.headerWidget.loginWidget.anonymousSign();
+        this.headerWidget.loginWidget.anonymousSign();
     } else {
         showForm();
     }
-
 };
+
 
 Pathiways.prototype.showGRNViewer = function () {
     var _this = this;

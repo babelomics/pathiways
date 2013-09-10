@@ -1,4 +1,4 @@
-/*! Genome Viewer - v1.0.2 - 2013-09-06
+/*! Genome Viewer - v1.0.2 - 2013-09-10
 * http://https://github.com/opencb-bigdata-viz/js-common-libs/
 * Copyright (c) 2013  Licensed GPLv2 */
 function UserListWidget (args){
@@ -122,7 +122,7 @@ GenericFormPanel.prototype.getPanels = function () {
 GenericFormPanel.prototype.getJobPanel = function () {
     var _this = this;
     var jobNameField = Ext.create('Ext.form.field.Text', {
-        id: "jobname",
+        id: this.id+"jobname",
         name: "jobname",
         fieldLabel: 'Name',
         emptyText: "Job name",
@@ -131,7 +131,7 @@ GenericFormPanel.prototype.getJobPanel = function () {
     });
 
     var jobDescriptionField = Ext.create('Ext.form.field.TextArea', {
-        id: "jobdescription",
+        id: this.id+"jobdescription",
         name: "jobdescription",
         fieldLabel: 'Description',
         emptyText: "Description",
@@ -294,14 +294,14 @@ GenericFormPanel.prototype.createOpencgaBrowserCmp = function (args) {//fieldLab
     });
 
     var fileSelectedLabel = Ext.create('Ext.form.Label', {
-        id: args.dataParamName,
+        id: args.id,
         text: args.defaultFileLabel || "No file selected",
         margin: '5 0 0 15'
     });
 
     //not shown, just for validation
     var hiddenField = Ext.create('Ext.form.field.Text', {
-        id: args.dataParamName+'hidden',
+        id: args.id+'hidden',
         name: args.dataParamName,
         hidden: true,
         allowBlank: (args.allowBlank || false),
@@ -1060,6 +1060,7 @@ function HeaderWidget(args){
 	this.news='';
     this.checkTimeInterval = 4000;
     this.version = '';
+    this.allowLogin = true;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -1336,6 +1337,7 @@ HeaderWidget.prototype = {
                     }
                 },{
                     id: this.id+'btnSignin',
+                    disabled:!this.allowLogin,
                     text: '<span class="emph">sign in</span>',
                     handler: function (){
                         _this.loginWidget.draw();
@@ -1370,7 +1372,7 @@ HeaderWidget.prototype = {
                     items:[{
                         id: this.id + "appTextItem",
                         xtype: 'tbtext',
-                        margin:'15 0 0 20',
+                        margin:'25 0 0 20',
                         //		        	html: '<span class="appName">Vitis vinifera&nbsp; '+this.args.appname +'</span> <span class="appDesc">'+this.args.description+'</span>&nbsp;&nbsp;&nbsp;&nbsp;<span><img height="30" src="http://www.demeter.es/imagenes/l_demeter.gif"></span>',
                         text: '<span class="appName">' + this.appname + '</span> ' +
                             '<span id="' + this.id + 'description" class="appDesc">' + this.description + '</span>' +
