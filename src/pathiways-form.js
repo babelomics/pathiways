@@ -19,7 +19,7 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-PathiwaysForm.prototype = new GenericFormPanel("pathiways");
+PathiwaysForm.prototype = new GenericFormPanel("pathiways.pathiways");
 
 function PathiwaysForm(webapp) {
     this.id = Utils.genId("PathiwaysForm");

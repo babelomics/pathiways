@@ -19,7 +19,7 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-PathipredForm.prototype = new GenericFormPanel("pathipred");
+PathipredForm.prototype = new GenericFormPanel("pathiways.pathipred");
 
 function PathipredForm(webapp) {
     this.id = Utils.genId("PathipredForm");
@@ -43,7 +43,7 @@ PathipredForm.prototype.beforeRun = function () {
     else this.paramsWS["pathways"] = "";
     this.paramsWS["exp-name"] = this.paramsWS["jobname"];
 
-    this.testing = true;
+//    this.testing = true;
 };
 
 PathipredForm.prototype.getPanels = function () {
@@ -61,7 +61,7 @@ PathipredForm.prototype._getExamplesPanel = function () {
     var _this = this;
 
     var example1 = Ext.create('Ext.Component', {
-        html: '<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">Colorectal cancer</span></span>',
+        html: '<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">Breast cancer</span></span>',
         cls: 'dedo',
         listeners: {
             afterrender: function () {
@@ -478,16 +478,16 @@ PathipredForm.prototype._getPathwaysPanel = function () {
 };
 
 PathipredForm.prototype.loadExample1 = function () {
-    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);
-    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE4107.txt');
+    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example breast cancer</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE27562.txt');
 
-    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example colorectal cancer</span>', false);
-    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE4107.txt');
+    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example breast cancer</span>', false);
+    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE27562.txt');
 
     Ext.getCmp(this.id + 'control').setValue("CONTROL");
     Ext.getCmp(this.id + 'disease').setValue("CRC");
     Ext.getCmp(this.id + 'allPathways').setValue(true);
 
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
-    Ext.getCmp(this.id + 'jobdescription').setValue("Colorectal cancer");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Breast cancer");
 };

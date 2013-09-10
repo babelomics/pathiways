@@ -4904,6 +4904,7 @@ ResultWidget.prototype = {
             Ext.getCmp(this.targetId).setActiveTab(this.panel);
             this.panel.setLoading("Loading job info...");
 
+
             var url = this.adapter.jobResultUrl($.cookie("bioinfo_account"), sid, this.jobId, "json");
             $.getScript(url,function(){
 		        _this.panel.setLoading(false);

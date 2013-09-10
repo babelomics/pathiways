@@ -9,7 +9,7 @@ function Pathiways(args) {
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
     this.version = '1.0.10';
-    this.tools = ['pathiways','pathipred'];
+    this.tools = ['pathiways','pathiways.pathiways','pathiways.pathipred'];
     this.border = true;
     this.targetId;
     this.width;
