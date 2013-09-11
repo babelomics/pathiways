@@ -19,16 +19,16 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-PathiwaysForm.prototype = new GenericFormPanel("pathiways.pathiways");
+PathipredForm.prototype = new GenericFormPanel("pathiways.pathipred");
 
-function PathiwaysForm(webapp) {
-    this.id = Utils.genId("PathiwaysForm");
+function PathipredForm(webapp) {
+    this.id = Utils.genId("PathipredForm");
     this.headerWidget = webapp.headerWidget;
     this.opencgaBrowserWidget = webapp.headerWidget.opencgaBrowserWidget;
     this.onSelectNodes = new Event(this);
 }
 
-PathiwaysForm.prototype.beforeRun = function () {
+PathipredForm.prototype.beforeRun = function () {
     var pathways = [];
     var speciesPrefix = this.paramsWS["species"].substring(0, 3);
     Ext.getCmp('pathways' + this.id).items.each(function (item) {
@@ -42,25 +42,26 @@ PathiwaysForm.prototype.beforeRun = function () {
     if (pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
     else this.paramsWS["pathways"] = "";
     this.paramsWS["exp-name"] = this.paramsWS["jobname"];
+
+//    this.testing = true;
 };
 
-PathiwaysForm.prototype.getPanels = function () {
+PathipredForm.prototype.getPanels = function () {
     return [
         this._getExamplesPanel(),
         this._getSpeciesPanel(),
         this._getSelectDataPanel(),
         this._getExpDesignPanel(),
         this._getOtherParamsPanel(),
-        this._getComparisonTestsPanel(),
         this._getPathwaysPanel()
     ];
 };
 
-PathiwaysForm.prototype._getExamplesPanel = function () {
+PathipredForm.prototype._getExamplesPanel = function () {
     var _this = this;
 
     var example1 = Ext.create('Ext.Component', {
-        html: '<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">Colorectal cancer</span></span>',
+        html: '<span class="u"><span class="emph u">Load example 1.</span> <span class="info s110">Breast cancer</span></span>',
         cls: 'dedo',
         listeners: {
             afterrender: function () {
@@ -94,7 +95,7 @@ PathiwaysForm.prototype._getExamplesPanel = function () {
     return exampleForm;
 };
 
-PathiwaysForm.prototype._getSpeciesPanel = function () {
+PathipredForm.prototype._getSpeciesPanel = function () {
     var _this = this;
 
 //	var speciesValues = Ext.create('Ext.data.Store', {
@@ -248,7 +249,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function () {
     });
 };
 
-PathiwaysForm.prototype._getSelectDataPanel = function () {
+PathipredForm.prototype._getSelectDataPanel = function () {
     var _this = this;
 
 
@@ -306,7 +307,7 @@ PathiwaysForm.prototype._getSelectDataPanel = function () {
     return panel;
 };
 
-PathiwaysForm.prototype._getExpDesignPanel = function () {
+PathipredForm.prototype._getExpDesignPanel = function () {
 //	var btnBrowse = Ext.create('Ext.button.Button', {
 //		text: 'Browse data',
 //		margin: '0 0 0 10',
@@ -363,7 +364,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function () {
     });
 };
 
-PathiwaysForm.prototype._getOtherParamsPanel = function () {
+PathipredForm.prototype._getOtherParamsPanel = function () {
     var summValues = Ext.create('Ext.data.Store', {
         fields: ['value', 'name'],
         data: [
@@ -392,6 +393,17 @@ PathiwaysForm.prototype._getOtherParamsPanel = function () {
         allowBlank: false
     });
 
+
+    var kfold = Ext.create('Ext.form.field.Number', {
+        id: this.id + "kfold",
+        name: "k",
+        fieldLabel: 'K-fold',
+        margin: '10 0 0 5',
+        value: 10,
+        minValue: 1,
+        allowBlank: false
+    });
+
     return Ext.create('Ext.panel.Panel', {
         title: 'Other parameters',
         border: true,
@@ -400,86 +412,12 @@ PathiwaysForm.prototype._getOtherParamsPanel = function () {
         width: "99%",
         buttonAlign: 'center',
         layout: 'vbox',
-        items: [summ]
+        items: [summ,kfold]
     });
 };
 
-PathiwaysForm.prototype._getComparisonTestsPanel = function () {
-    var tests = Ext.create('Ext.form.RadioGroup', {
-        layout: 'vbox',
-        fieldLabel: 'Test',
-        margin: "0 0 10 0",
-        defaults: {
-            name: 'test'
-        },
-        items: [
-            {
-                inputValue: 'multilevel',
-                boxLabel: 'Multilevel test',
-                checked: true,
-                listeners: {click: { element: 'el', fn: function () {
-                    paired.hide();
-                    paired.setValue({'paired': 'null'});
-                }}}
-            },
-            {
-                inputValue: 'wilcoxon',
-                boxLabel: 'Wilcoxon test',
-                listeners: {click: { element: 'el', fn: function () {
-                    paired.show();
-                    paired.setValue({'paired': 'true'});
-                }}}
-            }
-        ]
-    });
 
-    var wilcoxonItems = [
-        {
-            inputValue: 'TRUE',
-            boxLabel: 'Paired',
-            checked: false
-        },
-        {
-            inputValue: 'FALSE',
-            boxLabel: 'No Paired',
-            checked: false
-        },
-        {
-            inputValue: 'NULL',
-            boxLabel: 'null',
-            hidden: true,
-            checked: true
-        }
-    ];
-
-    var paired = Ext.create('Ext.form.RadioGroup', {
-        layout: 'vbox',
-        hidden: true,
-        fieldLabel: ' ',
-        margin: "-10 0 0 15",
-        defaults: {
-            name: 'paired'
-        },
-        items: wilcoxonItems
-    });
-
-    var panel = Ext.create('Ext.panel.Panel', {
-        title: 'Comparison tests',
-        border: true,
-        bodyPadding: "10",
-        margin: "0 0 5 0",
-        width: "99%",
-        buttonAlign: 'center',
-//		layout: 'hbox',
-        items: [
-            tests,
-            paired
-        ]
-    });
-    return panel
-};
-
-PathiwaysForm.prototype._getPathwaysPanel = function () {
+PathipredForm.prototype._getPathwaysPanel = function () {
     var checkAll = function (allValue) {
         pathways.items.each(function (item) {
             if (!item.isDisabled()) {
@@ -539,17 +477,17 @@ PathiwaysForm.prototype._getPathwaysPanel = function () {
     });
 };
 
-PathiwaysForm.prototype.loadExample1 = function () {
-    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);
-    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE4107.txt');
+PathipredForm.prototype.loadExample1 = function () {
+    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example breast cancer</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE27562.txt');
 
-    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example colorectal cancer</span>', false);
-    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE4107.txt');
+    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example breast cancer</span>', false);
+    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE27562.txt');
 
     Ext.getCmp(this.id + 'control').setValue("CONTROL");
     Ext.getCmp(this.id + 'disease').setValue("CRC");
     Ext.getCmp(this.id + 'allPathways').setValue(true);
 
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
-    Ext.getCmp(this.id + 'jobdescription').setValue("Colorectal cancer");
+    Ext.getCmp(this.id + 'jobdescription').setValue("Breast cancer");
 };

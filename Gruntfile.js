@@ -5,7 +5,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Metadata.
         meta: {
-            version: '1.0.9',
+            version: '1.0.10',
             commons: {
                 dir: '../js-common-libs/',
                 //genome viewer contains cellbse and utils
@@ -27,7 +27,7 @@ module.exports = function (grunt) {
                 stripBanners: true
             },
             build: {
-                src: ['src/pw-config.js','src/pathiways.js', 'src/pathiways-form.js'],
+                src: ['src/pw-config.js','src/pathiways.js', 'src/pathiways-form.js', 'src/pathipred-form.js'],
                 dest: 'build/<%= meta.version %>/pathiways-<%= meta.version %>.js'
             }
         },
@@ -68,16 +68,6 @@ module.exports = function (grunt) {
         qunit: {
             files: ['test/**/*.html']
         },
-        watch: {
-            gruntfile: {
-                files: '<%= jshint.gruntfile.src %>',
-                tasks: ['jshint:gruntfile']
-            },
-            lib_test: {
-                files: '<%= jshint.lib_test.src %>',
-                tasks: ['jshint:lib_test', 'qunit']
-            }
-        },
 
         copy: {
             build: {
@@ -93,7 +83,7 @@ module.exports = function (grunt) {
             },
             styles: {
                 files: [
-                    {   expand: true, cwd: '<%= meta.commons.dir %>styles/', src: ['**'], dest: 'styles' },
+                    {   expand: true, cwd: '<%= meta.commons.dir %>styles/', src: ['**'], dest: 'styles' }
                 ]
             },
             map: {
@@ -164,7 +154,7 @@ module.exports = function (grunt) {
 
         watch: {
             commons: {
-                files: ['<%= meta.commons.opencga.dir %>*/**'],
+                files: ['<%= meta.commons.opencga.dir %>**'],
                 tasks: ['commons'],
                 options: {
                     spawn: false
@@ -179,20 +169,19 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
 //    grunt.loadNpmTasks('grunt-contrib-qunit');
 //    grunt.loadNpmTasks('grunt-contrib-jshint');
-//    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-rename');
     grunt.loadNpmTasks('grunt-html-build');
     grunt.loadNpmTasks('grunt-curl');
-    grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default task.
     grunt.registerTask('default', ['clean', 'concat', 'uglify', 'copy:build', 'htmlbuild', 'rename:html']);
     grunt.registerTask('vendor', ['curl-dir']);
 
     // dependencies from js-common-libs
-    grunt.registerTask('commons', ['copy:opencga']);
+    grunt.registerTask('commons', ['copy:opencga', 'copy:styles']);
     grunt.registerTask('deploy', ['scp']);
 
 };

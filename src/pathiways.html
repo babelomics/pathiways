@@ -4,26 +4,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Pathiways</title>
 
-    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/css/ext-all.css">
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext/gpl/4.2.1/resources/css/ext-all.css">
 
     <!-- CSS from vendors -->
     <!-- build:style vendor -->
-    <link type="text/css" rel="stylesheet" href="../vendor/jquery.qtip.min.css" />
+    <link type="text/css" rel="stylesheet" href="../vendor/jquery.qtip.min.css"/>
     <!-- /build -->
 
     <!-- CSS from Styles -->
     <!-- build:style css -->
-    <link type="text/css" rel="stylesheet" href="../styles/css/style.css" />
+    <link type="text/css" rel="stylesheet" href="../styles/css/style.css"/>
     <!-- /build -->
 
 
-	<!-- Sencha Ext -->
-	<script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js"></script>
-    <script type="text/javascript" src="http://cdn.sencha.io/ext-4.2.0-gpl/examples/shared/examples.js"></script>
+    <!-- Sencha Ext -->
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/ext-all.js"></script>
+    <script type="text/javascript" src="http://cdn.sencha.io/ext/gpl/4.2.1/examples/shared/examples.js"></script>
 
 
-
-	<!-- Workers directory -->
+    <!-- Workers directory -->
     <script type="text/javascript">
         WORKERS_PATH = "vendor/";
     </script>
@@ -49,15 +48,16 @@
 
     <!-- JS from Pathiways -->
     <!-- build:script js -->
-	<script type="text/javascript" src="./pw-config.js"></script>
-	<script type="text/javascript" src="./pathiways.js"></script>
-	<script type="text/javascript" src="./pathiways-form.js"></script>
+    <script type="text/javascript" src="./pw-config.js"></script>
+    <script type="text/javascript" src="./pathiways.js"></script>
+    <script type="text/javascript" src="./pathiways-form.js"></script>
+    <script type="text/javascript" src="./pathipred-form.js"></script>
     <!-- /build -->
 
 
     <script>
         Ext.Loader.setConfig({enabled: true});
-        Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext-4.2.0-gpl/examples/ux');
+        Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
         Ext.QuickTips.init();
         Ext.require([
             'Ext.ux.grid.FiltersFeature',
@@ -66,21 +66,36 @@
 //	    'Ext.ux.data.PagingMemoryProxy'
         ]);
 
-        var variant;
-        Ext.onReady(function run(){
-            CheckBrowser("pathiways");
-            pathiways = new Pathiways("mydiv",{targetId:null,wum:true,east:true});
+        var pathiways;
+        Ext.onReady(function run() {
+//            CheckBrowser("pathiways");
+            pathiways = new Pathiways({
+                targetId: 'application',
+                autoRender: true,
+                east: true
+            });
             pathiways.draw();
         });
     </script>
-	
-	<STYLE type="text/css">
- 	</STYLE>
+
+    <STYLE type="text/css">
+        html {
+            /*overflow-y: scroll;*/
+            /*overflow-x: hidden;*/
+            height: 100%;
+        }
+        body {
+            background-color: #f5f5f5;
+            padding: 4px;
+            height: 100%;
+        }
+        #application {
+            height: 100%;
+        }
+    </STYLE>
 </head>
 <body style="overflow: hidden">
-	<div id="checkBrowser"></div>
-	<div id="mydiv"></div>
-	<div id="gv_div1"></div>
-	<div id="gv_div2"></div>
+<div id="checkBrowser"></div>
+<div id="application"></div>
 </body>
 </html>
