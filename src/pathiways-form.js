@@ -165,7 +165,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function () {
                     Ext.getCmp('pathways04115' + _this.id).enable();
                     Ext.getCmp('pathways04530' + _this.id).enable();
                     Ext.getCmp('pathways04660' + _this.id).enable();
-                    Ext.getCmp('pathways04062' + _this.id).disable();
+//                    Ext.getCmp('pathways04062' + _this.id).disable();
                 }}}
             },
             {
@@ -186,7 +186,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function () {
                     Ext.getCmp('pathways04115' + _this.id).setValue(false).disable();
                     Ext.getCmp('pathways04530' + _this.id).setValue(false).disable();
                     Ext.getCmp('pathways04660' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04062' + _this.id).setValue(false).disable();
+//                    Ext.getCmp('pathways04062' + _this.id).setValue(false).disable();
                 }}}
             }
         ]
@@ -499,7 +499,7 @@ PathiwaysForm.prototype._getPathwaysPanel = function () {
             { boxLabel: 'ERBB SIGNALING PATHWAY', name: 'pathways', inputValue: '04012' },
             { boxLabel: 'CALCIUM SIGNALING PATHWAY', name: 'pathways', inputValue: '04020' },
             { boxLabel: 'CYTOKINE-CYTOKINE RECEPTOR', name: 'pathways', inputValue: '04060', id: 'pathways04060' + this.id},
-            { boxLabel: 'CHEMOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: '04062', id: 'pathways04062' + this.id},
+//            { boxLabel: 'CHEMOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: '04062', id: 'pathways04062' + this.id},
             { boxLabel: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION', name: 'pathways', inputValue: '04080' },
             { boxLabel: 'p53 SIGNALING PATHWAY', name: 'pathways', inputValue: '04115', id: 'pathways04115' + this.id},
             { boxLabel: 'mTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04150', id: 'pathways04150' + this.id},

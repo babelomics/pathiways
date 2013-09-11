@@ -330,7 +330,8 @@ Pathiways.prototype.showPathiwaysForm = function () {
             var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
             _this.panel.add(panel);
         }
-        _this.panel.setActiveTab(Ext.getCmp(pathiwaysForm.panelId));
+        _this.panel.setActiveTab(panel);
+    console.log(pathiwaysForm.panelId)
     };
     this._checkLogin(showForm);
 };
@@ -344,7 +345,8 @@ Pathiways.prototype.showPathipredForm = function () {
             var panel = pathipredForm.draw({title: "PATHiPRED"});
             _this.panel.add(panel);
         }
-        _this.panel.setActiveTab(Ext.getCmp(pathipredForm.panelId));
+        _this.panel.setActiveTab(panel);
+        console.log(pathipredForm.panelId)
     };
     this._checkLogin(showForm);
 };
