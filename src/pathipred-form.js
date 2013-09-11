@@ -166,7 +166,7 @@ PathipredForm.prototype._getSpeciesPanel = function () {
                     Ext.getCmp('pathways04115' + _this.id).enable();
                     Ext.getCmp('pathways04530' + _this.id).enable();
                     Ext.getCmp('pathways04660' + _this.id).enable();
-                    Ext.getCmp('pathways04062' + _this.id).disable();
+//                    Ext.getCmp('pathways04062' + _this.id).disable();
                 }}}
             },
             {
@@ -187,7 +187,7 @@ PathipredForm.prototype._getSpeciesPanel = function () {
                     Ext.getCmp('pathways04115' + _this.id).setValue(false).disable();
                     Ext.getCmp('pathways04530' + _this.id).setValue(false).disable();
                     Ext.getCmp('pathways04660' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04062' + _this.id).setValue(false).disable();
+//                    Ext.getCmp('pathways04062' + _this.id).setValue(false).disable();
                 }}}
             }
         ]
@@ -437,7 +437,7 @@ PathipredForm.prototype._getPathwaysPanel = function () {
             { boxLabel: 'ERBB SIGNALING PATHWAY', name: 'pathways', inputValue: '04012' },
             { boxLabel: 'CALCIUM SIGNALING PATHWAY', name: 'pathways', inputValue: '04020' },
             { boxLabel: 'CYTOKINE-CYTOKINE RECEPTOR', name: 'pathways', inputValue: '04060', id: 'pathways04060' + this.id},
-            { boxLabel: 'CHEMOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: '04062', id: 'pathways04062' + this.id},
+//            { boxLabel: 'CHEMOKINE SIGNALING PATHWAY', name: 'pathways', inputValue: '04062', id: 'pathways04062' + this.id},
             { boxLabel: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION', name: 'pathways', inputValue: '04080' },
             { boxLabel: 'p53 SIGNALING PATHWAY', name: 'pathways', inputValue: '04115', id: 'pathways04115' + this.id},
             { boxLabel: 'mTOR SIGNALING PATHWAY', name: 'pathways', inputValue: '04150', id: 'pathways04150' + this.id},
@@ -484,8 +484,8 @@ PathipredForm.prototype.loadExample1 = function () {
     Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example breast cancer</span>', false);
     Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE27562.txt');
 
-    Ext.getCmp(this.id + 'control').setValue("CONTROL");
-    Ext.getCmp(this.id + 'disease').setValue("CRC");
+    Ext.getCmp(this.id + 'control').setValue("normal");
+    Ext.getCmp(this.id + 'disease').setValue("malignant");
     Ext.getCmp(this.id + 'allPathways').setValue(true);
 
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
