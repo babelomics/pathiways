@@ -166,7 +166,7 @@ PathipredForm.prototype._getSpeciesPanel = function () {
                     Ext.getCmp('pathways04115' + _this.id).enable();
                     Ext.getCmp('pathways04530' + _this.id).enable();
                     Ext.getCmp('pathways04660' + _this.id).enable();
-                    Ext.getCmp('pathways04062' + _this.id).disabled();
+                    Ext.getCmp('pathways04062' + _this.id).disable();
                 }}}
             },
             {

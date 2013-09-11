@@ -27,7 +27,7 @@ module.exports = function (grunt) {
                 stripBanners: true
             },
             build: {
-                src: ['src/pw-config.js','src/pathiways.js', 'src/pathiways-form.js'],
+                src: ['src/pw-config.js','src/pathiways.js', 'src/pathiways-form.js', 'src/pathipred-form.js'],
                 dest: 'build/<%= meta.version %>/pathiways-<%= meta.version %>.js'
             }
         },
