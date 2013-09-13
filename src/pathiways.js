@@ -57,7 +57,6 @@ Pathiways.prototype = {
         this.contentDiv = $('<div id="content" style="height: 100%;"></div>')[0];
         $(this.wrapDiv).append(this.contentDiv);
 
-
         this.width = ($(this.div).width());
         this.height = ($(this.div).height());
 
