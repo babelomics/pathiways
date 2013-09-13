@@ -40,23 +40,22 @@ Pathiways.prototype = {
 
         console.log("Initializing Pathiways");
         this.targetDiv = $('#' + this.targetId)[0];
-        this.div = $('<div id="pathiways" style="height:100%;"></div>')[0];
+        this.div = $('<div id="pathiways" style="height:100%;position:relative;"></div>')[0];
         $(this.targetDiv).append(this.div);
 
-        $(this.div).append('<div id="pw-header-widget"></div>');
-        $(this.div).append('<div id="pw-menu"></div>');
-        this.wrapDiv = $('<div id="pw-wrap" style="height:100%;position:relative;"></div>')[0];
+        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
+        $(this.div).append(this.headerWidgetDiv);
+        this.menuDiv = $('<div id="menu"></div>')[0];
+        $(this.div).append(this.menuDiv);
+        this.wrapDiv = $('<div id="wrap" style="height:100%;position:relative;"></div>')[0];
         $(this.div).append(this.wrapDiv);
 
 
-        this.sidePanelDiv = $('<div id="pw-sidePanel" style="position:absolute; z-index:50;right:0px;"></div>')[0];
+        this.sidePanelDiv = $('<div id="right-side-panel" style="position:absolute; z-index:50;right:0px;"></div>')[0];
         $(this.wrapDiv).append(this.sidePanelDiv);
 
-        this.panelDiv = $('<div id="pw-panel"></div>')[0];
-        $(this.panelDiv).css({
-            width: '100%'
-        });
-        $(this.wrapDiv).append(this.panelDiv);
+        this.contentDiv = $('<div id="content" style="height: 100%;"></div>')[0];
+        $(this.wrapDiv).append(this.contentDiv);
 
 
         this.width = ($(this.div).width());
@@ -89,21 +88,20 @@ Pathiways.prototype = {
         }
 
         /* Header Widget */
-        this.headerWidget = this._createHeaderWidget('pw-header-widget');
+        this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
 
         /* Header Widget */
-        this.menu = this._createMenu('pw-menu');
+        this.menu = this._createMenu($(this.menuDiv).attr('id'));
 
         /* check height */
-        var topOffset = $('#pw-header-widget').height() + $('#pw-menu').height();
-        $(this.panelDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
-        $(this.sidePanelDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
+        var topOffset = $(this.headerWidgetDiv).height() + $(this.menuDiv).height();
+        $(this.wrapDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
 
         /* Wrap Panel */
-        this.panel = this._createPanel('pw-panel');
+        this.panel = this._createPanel($(this.contentDiv).attr('id'));
 
         /* Job List Widget */
-        this.jobListWidget = this._createJobListWidget('pw-sidePanel');
+        this.jobListWidget = this._createJobListWidget($(this.sidePanelDiv).attr('id'));
 
 
        /*check login*/
@@ -306,7 +304,7 @@ Pathiways.prototype.setSize = function (width, height) {
 
     this.headerWidget.setWidth(width);
     this.menu.setWidth($(this.menuDiv).width());
-    this.panel.setWidth($(this.panelDiv).width());
+    this.panel.setWidth($(this.contentDiv).width());
 };
 
 Pathiways.prototype.jobItemClick = function (record) {

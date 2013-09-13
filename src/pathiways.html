@@ -85,16 +85,19 @@
             height: 100%;
         }
         body {
-            background-color: #f5f5f5;
             padding: 4px;
-            height: 100%;
+            position:relative;
+            background-color: #f5f5f5;
+            margin:0px;
+            height: calc(100% - 8px);
+            /*overflow: hidden;*/
         }
         #application {
             height: 100%;
         }
     </STYLE>
 </head>
-<body style="overflow: hidden">
+<body>
 <div id="checkBrowser"></div>
 <div id="application"></div>
 </body>

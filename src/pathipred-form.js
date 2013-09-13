@@ -140,6 +140,7 @@ PathipredForm.prototype._getSpeciesPanel = function () {
 //	combo1.on({select: changeCombo, scope: this});
 
     var species = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'speciesRadioGroup',
         layout: 'vbox',
         fieldLabel: 'Species',
         margin: "0 0 10 0",
@@ -151,44 +152,48 @@ PathipredForm.prototype._getSpeciesPanel = function () {
                 inputValue: 'hsapiens',
                 boxLabel: 'Human (Homo sapiens)',
                 checked: true,
-                listeners: {click: { element: 'el', fn: function () {
-                    platform.removeAll();
-                    platform.add(humanItems);
+                listeners: {change: function (cmp, value) {
+                    if (value) {
+                        platform.removeAll();
+                        platform.add(humanItems);
 
-                    Ext.getCmp(_this.id + 'allPathways').setValue(false);
+                        Ext.getCmp(_this.id + 'allPathways').setValue(false);
 
-                    Ext.getCmp('pathways04620' + _this.id).enable();
+                        Ext.getCmp('pathways04620' + _this.id).enable();
 
-                    Ext.getCmp('pathways04340' + _this.id).enable();
-                    Ext.getCmp('pathways04150' + _this.id).enable();
-                    Ext.getCmp('pathways04060' + _this.id).enable();
-                    Ext.getCmp('pathways04512' + _this.id).enable();
-                    Ext.getCmp('pathways04115' + _this.id).enable();
-                    Ext.getCmp('pathways04530' + _this.id).enable();
-                    Ext.getCmp('pathways04660' + _this.id).enable();
-//                    Ext.getCmp('pathways04062' + _this.id).disable();
-                }}}
+                        Ext.getCmp('pathways04340' + _this.id).enable();
+                        Ext.getCmp('pathways04150' + _this.id).enable();
+                        Ext.getCmp('pathways04060' + _this.id).enable();
+                        Ext.getCmp('pathways04512' + _this.id).enable();
+                        Ext.getCmp('pathways04115' + _this.id).enable();
+                        Ext.getCmp('pathways04530' + _this.id).enable();
+                        Ext.getCmp('pathways04660' + _this.id).enable();
+//                        Ext.getCmp('pathways04062' + _this.id).disable();
+                    }
+                }}
             },
             {
                 inputValue: 'mmusculus',
                 boxLabel: 'Mouse (Mus musculus)',
-                listeners: {click: { element: 'el', fn: function () {
-                    platform.removeAll();
-                    platform.add(mouseItems);
+                listeners: {change: function (cmp, value) {
+                    if (value) {
+                        platform.removeAll();
+                        platform.add(mouseItems);
 
-                    Ext.getCmp(_this.id + 'allPathways').setValue(false);
+                        Ext.getCmp(_this.id + 'allPathways').setValue(false);
 
-                    Ext.getCmp('pathways04620' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04620' + _this.id).setValue(false).disable();
 
-                    Ext.getCmp('pathways04340' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04150' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04060' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04512' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04115' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04530' + _this.id).setValue(false).disable();
-                    Ext.getCmp('pathways04660' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04340' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04150' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04060' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04512' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04115' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04530' + _this.id).setValue(false).disable();
+                        Ext.getCmp('pathways04660' + _this.id).setValue(false).disable();
 //                    Ext.getCmp('pathways04062' + _this.id).setValue(false).disable();
-                }}}
+                    }
+                }}
             }
         ]
     });
@@ -271,6 +276,7 @@ PathipredForm.prototype._getSelectDataPanel = function () {
 
     var items = [
         {
+            id: this.id + 'compressedRadio',
             inputValue: true,
             boxLabel: 'CEL compressed file',
             checked: false
@@ -483,6 +489,9 @@ PathipredForm.prototype.loadExample1 = function () {
 
     Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example breast cancer</span>', false);
     Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE27562.txt');
+
+    Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
+    Ext.getCmp(this.id + 'normRadio').setValue(true);
 
     Ext.getCmp(this.id + 'control').setValue("normal");
     Ext.getCmp(this.id + 'disease').setValue("malignant");
