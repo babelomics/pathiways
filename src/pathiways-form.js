@@ -42,6 +42,7 @@ PathiwaysForm.prototype.beforeRun = function () {
     if (pathways.length > 0) this.paramsWS["pathways"] = pathways.toString();
     else this.paramsWS["pathways"] = "";
     this.paramsWS["exp-name"] = this.paramsWS["jobname"];
+    //    this.testing = true;
 };
 
 PathiwaysForm.prototype.getPanels = function () {
@@ -96,47 +97,6 @@ PathiwaysForm.prototype._getExamplesPanel = function () {
 
 PathiwaysForm.prototype._getSpeciesPanel = function () {
     var _this = this;
-
-//	var speciesValues = Ext.create('Ext.data.Store', {
-//		fields: ['value', 'name'],
-//		data : [
-//		        {"value":"hsapiens", "name":"Human (Homo sapiens)"},
-//		        {"value":"mmusculus", "name":"Mouse (Mus musculus)"}
-//		       ]
-//	});
-//	
-//	var hsapiensValues = Ext.create('Ext.data.Store', {
-//		fields: ['value', 'name'],
-//		data : [
-//		        {"value":"HGU133Plus2", "name":"Affymetrix Human Genome U133 Plus 2.0 Array"},
-//		        {"value":"HGU133A", "name":"Affymetrix Human Genome U133A Array"}
-//		       ]
-//	});
-//	
-//	var mouseValues = Ext.create('Ext.data.Store', {
-//		fields: ['value', 'name'],
-//		data : [
-//		        {"value":"MoGene", "name":"Affymetrix Mouse Gene 1.0 ST Array"}
-//		       ]
-//	});
-//	
-//	var combo1 = this.createCombobox("species", "Species", speciesValues, 0);
-//	var combo2 = this.createCombobox("species2", "Platform", hsapiensValues, 0, null, '0 0 0 20');
-//	function changeCombo() {
-//		switch (combo1.getValue()) {
-//		case "hsapiens":
-//			combo2.clearValue();
-//			combo2.bindStore(hsapiensValues);
-//			combo2.setValue("HG-U133");
-//			break;
-//		case "mmusculus":
-//			combo2.clearValue();
-//			combo2.bindStore(mouseValues);
-//			combo2.setValue("MoGene");
-//			break;
-//		}
-//	};
-//	combo1.on({select: changeCombo, scope: this});
 
     var species = Ext.create('Ext.form.RadioGroup', {
         id: this.id + 'speciesRadioGroup',
@@ -314,22 +274,6 @@ PathiwaysForm.prototype._getSelectDataPanel = function () {
 };
 
 PathiwaysForm.prototype._getExpDesignPanel = function () {
-//	var btnBrowse = Ext.create('Ext.button.Button', {
-//		text: 'Browse data',
-//		margin: '0 0 0 10',
-//		handler: function (){
-//		}
-//	});
-//	
-//	var expDesign = Ext.create('Ext.container.Container', {
-////		bodyPadding:10,
-////		defaults:{margin:'5 0 0 5'},
-////		margin: '10 0 5 0',
-//		items: [
-//		        {xtype: 'label', text: 'Experimental design data:', margin:'5 0 0 5'},
-//		        btnBrowse
-//		       ]
-//	});
 
     var control = Ext.create('Ext.form.field.Text', {
         id: this.id + "control",
@@ -556,23 +500,36 @@ PathiwaysForm.prototype._getPathwaysPanel = function () {
 
 PathiwaysForm.prototype.loadForm = function (config) {
     if (config) {
+
+        var pathToRemove = '/httpd/bioinfo/opencga/accounts/'+$.cookie("bioinfo_account")+'/buckets/';
+        config['norm-matrix'] = config['norm-matrix'].replace(pathToRemove, '');
+        config['exp-design'] = config['exp-design'].replace(pathToRemove, '');
+
+        if(config['norm-matrix'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
+            var arr = config['norm-matrix'].split(/\//g);
+            config['norm-matrix'] = 'example_'+arr[arr.length-1];
+        }
+        if(config['exp-design'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
+            var arr = config['exp-design'].split(/\//g);
+            config['exp-design'] = 'example_'+arr[arr.length-1];
+        }
+
         Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + config['norm-matrix'] + '</span>', false);
-        Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(config['norm-matrix']);
+        Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(config['norm-matrix'].replace(/\//g, ":"));
 
         Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + config['exp-design'] + '</span>', false);
-        Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(config['exp-design']);
+        Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(config['exp-design'].replace(/\//g, ":"));
 
-        Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: config['species']});
+
+
+
         Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: config['platform']});
 
-        if (config['cel-compressed-file']) {
+        if (config['cel-compressed-file'] == 'true') {
             Ext.getCmp(this.id + 'compressedRadio').setValue(true);
         } else {
             Ext.getCmp(this.id + 'normRadio').setValue(true);
         }
-
-        Ext.getCmp(this.id + 'tests').setValue({test: config['test']});
-        Ext.getCmp(this.id + 'paired').setValue({'paired': config['paired']});
 
 
         Ext.getCmp(this.id + 'control').setValue(config['control']);
@@ -589,6 +546,15 @@ PathiwaysForm.prototype.loadForm = function (config) {
             var pathway_code = pathways_array[i].substring(3);
             Ext.getCmp(this.id + 'pathways').child('checkboxfield[inputValue=' + pathway_code + ']').setValue(true);
         }
+
+        var species;
+        if (pathways_array[0].substring(0, 3) == 'hsa') {
+            species = 'hsapiens'
+        }
+        if (pathways_array[0].substring(0, 3) == 'mmu') {
+            species = 'mmusculus'
+        }
+        Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: species});
         /* */
 
 

@@ -104,9 +104,9 @@ Pathiways.prototype = {
 
 
         this.pathiwaysForm = new PathiwaysForm(this);
-        this.pathiwaysForm.draw({title: "PATHiWAYS",tabpanel:this.panel});
+        this.pathiwaysForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
         this.pathipredForm = new PathipredForm(this);
-        this.pathipredForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
+        this.pathipredForm.draw({title: "PATHiPRED", tabpanel: this.panel});
 
         /*check login*/
         if ($.cookie('bioinfo_sid') != null) {
@@ -124,21 +124,22 @@ Pathiways.prototype = {
             description: this.description,
             version: this.version,
             suiteId: this.suiteId,
-            accountData: this.accountData
-        });
-        /**Atach events i listen**/
-        headerWidget.onLogin.addEventListener(function (sender) {
-            Ext.example.msg('Welcome', 'You logged in');
-            _this.sessionInitiated();
-        });
+            accountData: this.accountData,
+            handlers: {
+                'login': function (event) {
+                    Ext.example.msg('Welcome', 'You logged in');
+                    _this.sessionInitiated();
+                },
+                'logout': function (event) {
+                    Ext.example.msg('Good bye', 'You logged out');
+                    _this.sessionFinished();
 
-        headerWidget.onLogout.addEventListener(function (sender) {
-            Ext.example.msg('Good bye', 'You logged out');
-            _this.sessionFinished();
-        });
+                },
+                'account:change': function (event) {
+                    _this.setAccountData(event.response);
 
-        headerWidget.onGetAccountInfo.addEventListener(function (evt, response) {
-            _this.setAccountData(response);
+                }
+            }
         });
         headerWidget.draw();
 
@@ -316,71 +317,10 @@ Pathiways.prototype.jobItemClick = function (record) {
     this.jobId = record.data.id;
     if (record.data.visites >= 0) {
 
-        console.log(this.jobId)
         Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
-        var button;
+        var button = Ext.create('Ext.button.Button');
 
-        /*TODO remove ÑAPA*/
-        if (record.raw.commandLine.indexOf('--execution pathipred') != -1) {
-            button = {
-                xtype: 'button',
-                text: '<span style="color:blue;">Run PATHiWAYS</span>',
-                handler: function () {
-
-//                    norm-matrix	GSE27562.txt
-//                    exp-design	ED_GSE27562.txt
-//calcularlas de hsaXXXXX
-//                    platform	HGU133Plus2
-//                    cel-compressed-file	false
-//no test
-//no 
-//                    control	normal
-//                    disease	malignant
-//                    exp-name	Example1pred
-
-
-
-//                    summ	per90
-//                    pathways	hsa03320, hsa04012
-
-//                    execution	pathipred
-//                    outdir	fsalavert/projects/default/k2xwY1EGVkdm53e
-//                    k	10
-                    var config = {
-                        'norm-matrix': "example_GSE4107.txt",
-                        'exp-design': "example_ED_GSE4107.txt",
-                        species: "hsapiens",
-                        platform: "HGU133Plus2",
-                        'cel-compressed-file': false,
-                        test: "wilcoxon",
-                        paired: "FALSE",
-                        control: "CONTROL",
-                        disease: "CRC",
-                        jobname: "Example 1",
-                        'exp-name': "Example 1",
-                        jobdescription: "fsdafdsafdsa",
-                        summ: "max",
-                        pathways: "hsa03320",
-                        sessionid: "sBrIYTwce6Ui3YHNZHig",
-                        accountid: "fsalavert"
-                    };
-                    _this.showPathiwaysForm();
-                    _this.pathiwaysForm.loadForm(config);
-                }
-            };
-        } else {
-            button = {
-                xtype: 'button',
-                text: '<span style="color:blue;">Run PATHiPRED</span>',
-                handler: function () {
-                    _this.showPathipredForm();
-                }
-            };
-        }
-        /**/
-
-        console.log(record);
         var resultWidget = new ResultWidget({
             targetId: this.panel.getId(),
             application: 'pathiway',
@@ -388,6 +328,46 @@ Pathiways.prototype.jobItemClick = function (record) {
             extItems: [button]
         });
         resultWidget.draw($.cookie('bioinfo_sid'), record);
+
+
+        console.log(this.jobId)
+        console.log(record.raw);
+
+        /* result widget parses the commandLine on record and adds the command key */
+        var command = resultWidget.job.command.data;
+
+        if (command.execution == 'pathipred') {
+            button.setText('<span style="color:blue;">Run PATHiWAYS</span>');
+            button.on('click', function () {
+                _this.showPathiwaysForm();
+                _this.pathiwaysForm.loadForm(command);
+            });
+        } else {
+            button.setText('<span style="color:blue;">Run PATHiPRED</span>');
+            button.on('click', function () {
+                _this.showPathipredForm();
+                _this.pathipredForm.loadForm(command);
+            });
+        }
+//                    var config = {
+//                        'norm-matrix': "example_GSE4107.txt",
+//                        'exp-design': "example_ED_GSE4107.txt",
+//                        species: "hsapiens",
+//                        platform: "HGU133Plus2",
+//                        'cel-compressed-file': false,
+//                        test: "wilcoxon",
+//                        paired: "FALSE",
+//                        control: "CONTROL",
+//                        disease: "CRC",
+//                        jobname: "Example 1",
+//                        'exp-name': "Example 1",
+//                        jobdescription: "fsdafdsafdsa",
+//                        summ: "max",
+//                        pathways: "hsa03320",
+//                        sessionid: "sBrIYTwce6Ui3YHNZHig",
+//                        accountid: "fsalavert"
+//                    };
+
     }
 };
 
@@ -417,7 +397,7 @@ Pathiways.prototype.showPathipredForm = function (config) {
 
 Pathiways.prototype._checkLogin = function (showForm) {
     if (!$.cookie('bioinfo_sid')) {
-        this.headerWidget.onLogin.addEventListener(function (sender, data) {
+        this.headerWidget.on('login', function (event) {
             showForm();
         });
         this.headerWidget.loginWidget.anonymousSign();
