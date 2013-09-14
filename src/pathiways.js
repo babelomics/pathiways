@@ -9,7 +9,7 @@ function Pathiways(args) {
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
     this.version = '1.0.11';
-    this.tools = ['pathiways','pathiways.pathiways','pathiways.pathipred'];
+    this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred'];
     this.border = true;
     this.targetId;
     this.width;
@@ -103,7 +103,12 @@ Pathiways.prototype = {
         this.jobListWidget = this._createJobListWidget($(this.sidePanelDiv).attr('id'));
 
 
-       /*check login*/
+        this.pathiwaysForm = new PathiwaysForm(this);
+        this.pathiwaysForm.draw({title: "PATHiWAYS",tabpanel:this.panel});
+        this.pathipredForm = new PathipredForm(this);
+        this.pathipredForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
+
+        /*check login*/
         if ($.cookie('bioinfo_sid') != null) {
             this.sessionInitiated();
         } else {
@@ -168,16 +173,16 @@ Pathiways.prototype = {
                 '->'
                 ,
                 {
-                    id:this.id+'jobsButton',
+                    id: this.id + 'jobsButton',
                     tooltip: 'Show Jobs',
                     text: '<span class="emph"> Hide jobs </span>',
                     enableToggle: true,
                     pressed: true,
                     toggleHandler: function () {
-                        if(this.pressed){
+                        if (this.pressed) {
                             this.setText('<span class="emph"> Hide jobs </span>');
                             _this.jobListWidget.show();
-                        }else{
+                        } else {
                             this.setText('<span class="emph"> Show jobs </span>');
                             _this.jobListWidget.hide();
                         }
@@ -233,10 +238,10 @@ Pathiways.prototype = {
         });
         var panel = Ext.create('Ext.tab.Panel', {
             renderTo: targetId,
-            width:'100%',
-            height:'100%',
+            width: '100%',
+            height: '100%',
             border: 0,
-            cls:'ocb-border-top-lightgrey',
+            cls: 'ocb-border-top-lightgrey',
             activeTab: 0,
             items: [homePanel]
         });
@@ -256,7 +261,7 @@ Pathiways.prototype = {
                 'order': 0,
                 'width': 280,
                 'height': 625,
-                border:true,
+                border: true,
                 'mode': 'view'
             }
         });
@@ -272,21 +277,21 @@ Pathiways.prototype = {
 }
 
 Pathiways.prototype.sessionInitiated = function () {
-    Ext.getCmp(this.id+'jobsButton').enable();
-    Ext.getCmp(this.id+'jobsButton').toggle(true);
+    Ext.getCmp(this.id + 'jobsButton').enable();
+    Ext.getCmp(this.id + 'jobsButton').toggle(true);
     //this.jobListWidget.draw();
     //this.dataListWidget.draw();
 };
 
 Pathiways.prototype.sessionFinished = function () {
-    Ext.getCmp(this.id+'jobsButton').disable();
-    Ext.getCmp(this.id+'jobsButton').toggle(false);
+    Ext.getCmp(this.id + 'jobsButton').disable();
+    Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
     this.jobListWidget.clean();
     this.accountData = null;
 
-    this.panel.items.each(function(child){
-        if(child.title != 'Home'){
+    this.panel.items.each(function (child) {
+        if (child.title != 'Home') {
             child.destroy();
         }
     })
@@ -311,9 +316,77 @@ Pathiways.prototype.jobItemClick = function (record) {
     this.jobId = record.data.id;
     if (record.data.visites >= 0) {
 
-        Ext.getCmp(this.id+'jobsButton').toggle(false);
+        console.log(this.jobId)
+        Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
-        var resultWidget = new ResultWidget({targetId: this.panel.getId(), application: 'pathiway', app: this});
+        var button;
+
+        /*TODO remove ÑAPA*/
+        if (record.raw.commandLine.indexOf('--execution pathipred') != -1) {
+            button = {
+                xtype: 'button',
+                text: '<span style="color:blue;">Run PATHiWAYS</span>',
+                handler: function () {
+
+//                    norm-matrix	GSE27562.txt
+//                    exp-design	ED_GSE27562.txt
+//calcularlas de hsaXXXXX
+//                    platform	HGU133Plus2
+//                    cel-compressed-file	false
+//no test
+//no 
+//                    control	normal
+//                    disease	malignant
+//                    exp-name	Example1pred
+
+
+
+//                    summ	per90
+//                    pathways	hsa03320, hsa04012
+
+//                    execution	pathipred
+//                    outdir	fsalavert/projects/default/k2xwY1EGVkdm53e
+//                    k	10
+                    var config = {
+                        'norm-matrix': "example_GSE4107.txt",
+                        'exp-design': "example_ED_GSE4107.txt",
+                        species: "hsapiens",
+                        platform: "HGU133Plus2",
+                        'cel-compressed-file': false,
+                        test: "wilcoxon",
+                        paired: "FALSE",
+                        control: "CONTROL",
+                        disease: "CRC",
+                        jobname: "Example 1",
+                        'exp-name': "Example 1",
+                        jobdescription: "fsdafdsafdsa",
+                        summ: "max",
+                        pathways: "hsa03320",
+                        sessionid: "sBrIYTwce6Ui3YHNZHig",
+                        accountid: "fsalavert"
+                    };
+                    _this.showPathiwaysForm();
+                    _this.pathiwaysForm.loadForm(config);
+                }
+            };
+        } else {
+            button = {
+                xtype: 'button',
+                text: '<span style="color:blue;">Run PATHiPRED</span>',
+                handler: function () {
+                    _this.showPathipredForm();
+                }
+            };
+        }
+        /**/
+
+        console.log(record);
+        var resultWidget = new ResultWidget({
+            targetId: this.panel.getId(),
+            application: 'pathiway',
+            app: this,
+            extItems: [button]
+        });
         resultWidget.draw($.cookie('bioinfo_sid'), record);
     }
 };
@@ -322,28 +395,22 @@ Pathiways.prototype.jobItemClick = function (record) {
 Pathiways.prototype.showPathiwaysForm = function () {
     var _this = this;
     var showForm = function () {
-        var pathiwaysForm = new PathiwaysForm(_this);
-        if (Ext.getCmp(pathiwaysForm.panelId) == null) {
-            var panel = pathiwaysForm.draw({title: "PATHiWAYS"});
-            _this.panel.add(panel);
+        if (!_this.panel.contains(_this.pathiwaysForm.panel)) {
+            _this.panel.add(_this.pathiwaysForm.panel);
         }
-        _this.panel.setActiveTab(panel);
-    console.log(pathiwaysForm.panelId)
+        _this.panel.setActiveTab(_this.pathiwaysForm.panel);
     };
     this._checkLogin(showForm);
 };
 
 
-Pathiways.prototype.showPathipredForm = function () {
+Pathiways.prototype.showPathipredForm = function (config) {
     var _this = this;
     var showForm = function () {
-        var pathipredForm = new PathipredForm(_this);
-        if (Ext.getCmp(pathipredForm.panelId) == null) {
-            var panel = pathipredForm.draw({title: "PATHiPRED"});
-            _this.panel.add(panel);
+        if (!_this.panel.contains(_this.pathipredForm.panel)) {
+            _this.panel.add(_this.pathipredForm.panel);
         }
-        _this.panel.setActiveTab(panel);
-        console.log(pathipredForm.panelId)
+        _this.panel.setActiveTab(_this.pathipredForm.panel);
     };
     this._checkLogin(showForm);
 };

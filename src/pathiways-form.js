@@ -31,7 +31,7 @@ function PathiwaysForm(webapp) {
 PathiwaysForm.prototype.beforeRun = function () {
     var pathways = [];
     var speciesPrefix = this.paramsWS["species"].substring(0, 3);
-    Ext.getCmp('pathways' + this.id).items.each(function (item) {
+    Ext.getCmp(this.id + 'pathways').items.each(function (item) {
         if (item.getSubmitValue() != null) {
             var value = speciesPrefix + item.getSubmitValue();
             pathways.push(value);
@@ -229,6 +229,7 @@ PathiwaysForm.prototype._getSpeciesPanel = function () {
     ];
 
     var platform = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'platformRadioGroup',
         layout: 'vbox',
         fieldLabel: 'Platform',
         margin: "0 0 0 0",
@@ -262,11 +263,11 @@ PathiwaysForm.prototype._getSelectDataPanel = function () {
         dataParamName: 'norm-matrix',
         id: this.id + 'norm-matrix',
         mode: 'fileSelection',
-        beforeClick: function () {
+        beforeClick: function (args) {
             if (Ext.getCmp(_this.id + 'normRadio').getValue()) {
-                _this.opencgaBrowserWidget.allowedTypes = ['txt'];
+                args.allowedTypes = ['txt'];
             } else {
-                _this.opencgaBrowserWidget.allowedTypes = ['cel'];
+                args.allowedTypes = ['cel'];
             }
         },
         allowedTypes: ['txt'],
@@ -371,6 +372,7 @@ PathiwaysForm.prototype._getExpDesignPanel = function () {
 
 PathiwaysForm.prototype._getOtherParamsPanel = function () {
     var summValues = Ext.create('Ext.data.Store', {
+        id: this.id + 'summStore',
         fields: ['value', 'name'],
         data: [
             {"value": "mean", "name": "mean"},
@@ -412,6 +414,7 @@ PathiwaysForm.prototype._getOtherParamsPanel = function () {
 
 PathiwaysForm.prototype._getComparisonTestsPanel = function () {
     var tests = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'tests',
         layout: 'vbox',
         fieldLabel: 'Test',
         margin: "0 0 10 0",
@@ -423,18 +426,22 @@ PathiwaysForm.prototype._getComparisonTestsPanel = function () {
                 inputValue: 'multilevel',
                 boxLabel: 'Multilevel test',
                 checked: true,
-                listeners: {click: { element: 'el', fn: function () {
-                    paired.hide();
-                    paired.setValue({'paired': 'null'});
-                }}}
+                listeners: {change: function (cmp, value) {
+                    if (value) {
+                        paired.hide();
+                        paired.setValue({'paired': 'NULL'});
+                    }
+                }}
             },
             {
                 inputValue: 'wilcoxon',
                 boxLabel: 'Wilcoxon test',
-                listeners: {click: { element: 'el', fn: function () {
-                    paired.show();
-                    paired.setValue({'paired': 'true'});
-                }}}
+                listeners: {change: function (cmp, value) {
+                    if (value) {
+                        paired.show();
+                        paired.setValue({'paired': 'TRUE'});
+                    }
+                }}
             }
         ]
     });
@@ -459,6 +466,7 @@ PathiwaysForm.prototype._getComparisonTestsPanel = function () {
     ];
 
     var paired = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'paired',
         layout: 'vbox',
         hidden: true,
         fieldLabel: ' ',
@@ -496,7 +504,7 @@ PathiwaysForm.prototype._getPathwaysPanel = function () {
 
     var pathways = Ext.create('Ext.form.CheckboxGroup', {
         // Arrange checkboxes into two columns, distributed vertically
-        id: 'pathways' + this.id,
+        id: this.id + 'pathways',
         columns: 2,
         vertical: true,
         defaults: {margin: '0 15 0 0'},
@@ -544,6 +552,52 @@ PathiwaysForm.prototype._getPathwaysPanel = function () {
         ]
     });
 };
+
+
+PathiwaysForm.prototype.loadForm = function (config) {
+    if (config) {
+        Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + config['norm-matrix'] + '</span>', false);
+        Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(config['norm-matrix']);
+
+        Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + config['exp-design'] + '</span>', false);
+        Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(config['exp-design']);
+
+        Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: config['species']});
+        Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: config['platform']});
+
+        if (config['cel-compressed-file']) {
+            Ext.getCmp(this.id + 'compressedRadio').setValue(true);
+        } else {
+            Ext.getCmp(this.id + 'normRadio').setValue(true);
+        }
+
+        Ext.getCmp(this.id + 'tests').setValue({test: config['test']});
+        Ext.getCmp(this.id + 'paired').setValue({'paired': config['paired']});
+
+
+        Ext.getCmp(this.id + 'control').setValue(config['control']);
+        Ext.getCmp(this.id + 'disease').setValue(config['disease']);
+
+
+        Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', config['summ']));
+
+
+        Ext.getCmp(this.id + 'allPathways').setValue(false);
+        /* process pathways */
+        var pathways_array = config['pathways'].replace('/ /g', '').split(/,{1}/g);
+        for (var i = 0; i < pathways_array.length; i++) {
+            var pathway_code = pathways_array[i].substring(3);
+            Ext.getCmp(this.id + 'pathways').child('checkboxfield[inputValue=' + pathway_code + ']').setValue(true);
+        }
+        /* */
+
+
+        Ext.getCmp(this.id + 'jobname').setValue(config['exp-name']);
+        Ext.getCmp(this.id + 'jobdescription').setValue(config['jobdescription']);
+    }
+
+};
+
 
 PathiwaysForm.prototype.loadExample1 = function () {
     Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);

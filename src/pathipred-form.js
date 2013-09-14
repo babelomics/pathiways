@@ -230,6 +230,7 @@ PathipredForm.prototype._getSpeciesPanel = function () {
     ];
 
     var platform = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'platformRadioGroup',
         layout: 'vbox',
         fieldLabel: 'Platform',
         margin: "0 0 0 0",
