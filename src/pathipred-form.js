@@ -291,6 +291,47 @@ PathipredForm.prototype._getExpDesignPanel = function () {
         allowBlank: false
     });
 
+    var items = [
+        {
+            id: this.id + 'categoricalRadio',
+            inputValue: 'categorical',
+            boxLabel: 'Categorical',
+            checked: true,
+            listeners: {change: function (cmp, value) {
+                if (value) {
+                    control.show();
+                    control.setValue('');
+                    disease.show();
+                    disease.setValue('');
+                }
+            }}
+        },
+        {
+            id: this.id + 'numericalRadio',
+            inputValue: 'numerical',
+            boxLabel: 'Numerical',
+            checked: false,
+            listeners: {change: function (cmp, value) {
+                if (value) {
+                    control.hide();
+                    control.setValue('na');
+                    disease.hide();
+                    disease.setValue('na');
+                }
+            }}
+        }
+    ];
+    var expdesigntypeGroup = Ext.create('Ext.form.RadioGroup', {
+        id: this.id + 'expdesigntype',
+        layout: 'vbox',
+        fieldLabel: 'Exp. design type',
+        margin: "0 0 0 0",
+        defaults: {
+            name: 'expdesigntype'
+        },
+        items: items
+    });
+
     return Ext.create('Ext.panel.Panel', {
         title: 'Experimental design',
         border: true,
@@ -308,6 +349,7 @@ PathipredForm.prototype._getExpDesignPanel = function () {
                 allowedTypes: ['txt'],
                 allowBlank: false
             }),
+            expdesigntypeGroup,
             control,
             disease
         ]
