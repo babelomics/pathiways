@@ -24,7 +24,7 @@
 
     <!-- Workers directory -->
     <script type="text/javascript">
-        WORKERS_PATH = "vendor/";
+        WORKERS_PATH = "./";
     </script>
 
     <!-- JS from vendors -->
@@ -36,19 +36,41 @@
     <script type="text/javascript" src="../vendor/jquery.sha1.js"></script>
     <script type="text/javascript" src="../vendor/jquery.cookie.js"></script>
     <script type="text/javascript" src="../vendor/purl.min.js"></script>
+    <!-- /build -->
 
 
-    <script type="text/javascript" src="../vendor/utils-1.0.0.js"></script>
-    <script type="text/javascript" src="../vendor/opencga-1.0.0.js"></script>
+    <script type="text/javascript" src="./pw-config.js"></script>
+
+    <!-- build:script opencga -->
+    <!-- utils -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/utils/svg.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/utils/utils.js"></script>
+
+    <!-- ui-widgets -->
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/ui-widgets/ux-window.js"></script>
+
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/opencga-manager.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/generic-form-panel.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/user-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/check-browser.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/header-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/job-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/login-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/opencga-browser-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/paged-view-list-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/profile-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result2-widget.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result-table.js"></script>
+    <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/upload-widget.js"></script>
+
     <script type="text/javascript">
-        WORKERS_PATH = "../vendor/";
+        WORKERS_PATH = "../lib/jsorolla/src/lib/opencga/";
     </script>
     <!-- /build -->
 
 
     <!-- JS from Pathiways -->
     <!-- build:script js -->
-    <script type="text/javascript" src="./pw-config.js"></script>
     <script type="text/javascript" src="./pathiways.js"></script>
     <script type="text/javascript" src="./pathiways-form.js"></script>
     <script type="text/javascript" src="./pathipred-form.js"></script>

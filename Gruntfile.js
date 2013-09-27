@@ -3,15 +3,17 @@ module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
-        // Metadata.
         meta: {
             version: '1.0.11',
-            commons: {
-                dir: '../js-common-libs/',
-                //genome viewer contains cellbse and utils
+            jsorolla: {
+                dir: '/lib/jsorolla/',
+                utils: {
+                    version: '1.0.0',
+                    dir: '<%= meta.jsorolla.dir %>build/utils/<%= meta.jsorolla.utils.version %>/'
+                },
                 opencga: {
                     version: '1.0.0',
-                    dir: '<%= meta.commons.dir %>build/opencga/<%= meta.commons.opencga.version %>/'
+                    dir: '<%= meta.jsorolla.dir %>build/opencga/<%= meta.jsorolla.opencga.version %>/'
                 }
             }
         },
@@ -27,7 +29,12 @@ module.exports = function (grunt) {
                 stripBanners: true
             },
             build: {
-                src: ['src/pw-config.js','src/pathiways.js', 'src/pathiways-form.js', 'src/pathipred-form.js'],
+                src: [
+//                    'src/pw-config.js',
+                    'src/pathiways.js',
+                    'src/pathiways-form.js',
+                    'src/pathipred-form.js'
+                ],
                 dest: 'build/<%= meta.version %>/pathiways-<%= meta.version %>.js'
             }
         },
@@ -40,56 +47,14 @@ module.exports = function (grunt) {
                 dest: 'build/<%= meta.version %>/pathiways-<%= meta.version %>.min.js'
             }
         },
-        jshint: {
-            options: {
-                curly: true,
-                eqeqeq: true,
-                immed: true,
-                latedef: true,
-                newcap: true,
-                noarg: true,
-                sub: true,
-                undef: true,
-                unused: true,
-                boss: true,
-                eqnull: true,
-                browser: true,
-                globals: {
-                    jQuery: true
-                }
-            },
-            gruntfile: {
-                src: 'Gruntfile.js'
-            },
-            lib_test: {
-                src: ['lib/**/*.js', 'test/**/*.js']
-            }
-        },
-        qunit: {
-            files: ['test/**/*.html']
-        },
-
         copy: {
             build: {
                 files: [
-                    {   expand: true, cwd: './', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './', src: ['styles/**'], dest: 'build/<%= meta.version %>/' } // includes files in path and its subdirs
-                ]
-            },
-            opencga: {
-                files: [
-                    {   expand: true, cwd: '<%= meta.commons.opencga.dir %>', src: ['opencga*.js','worker*'], dest: 'vendor' }
-                ]
-            },
-            styles: {
-                files: [
-                    {   expand: true, cwd: '<%= meta.commons.dir %>styles/', src: ['**'], dest: 'styles' }
-                ]
-            },
-            map: {
-                files: [
-                    {   expand: true, cwd: '<%= meta.commons.dir %>vendor/', src: ['jquery.min.map'], dest: 'vendor' },
-                    {   expand: true, cwd: '<%= meta.commons.dir %>vendor/', src: ['backbone-min.map'], dest: 'vendor' }
+                    {   expand: true, cwd: './src', src: ['pw-config.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
+                    {   expand: true, cwd: './<%= meta.jsorolla.utils.dir %>', src: ['utils*.js'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './<%= meta.jsorolla.opencga.dir %>', src: ['opencga*.js', 'worker*'], dest: 'build/<%= meta.version %>/' }
                 ]
             }
         },
@@ -117,6 +82,10 @@ module.exports = function (grunt) {
                             'build/<%= meta.version %>/vendor/purl*.js',
                             'build/<%= meta.version %>/vendor/utils*.min.js',
                             'build/<%= meta.version %>/vendor/opencga*.min.js'
+                        ],
+                        opencga: [
+                            'build/<%= meta.version %>/utils*.min.js',
+                            'build/<%= meta.version %>/opencga*.min.js'
                         ]
                     },
                     styles: {
@@ -152,13 +121,10 @@ module.exports = function (grunt) {
             }
         },
 
-        watch: {
-            commons: {
-                files: ['<%= meta.commons.opencga.dir %>**'],
-                tasks: ['commons'],
-                options: {
-                    spawn: false
-                }
+        hub: {
+            all: {
+                src: ['lib/jsorolla/Gruntfile.js'],
+                tasks: ['utils','opencga']
             }
         }
 
@@ -167,21 +133,21 @@ module.exports = function (grunt) {
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-//    grunt.loadNpmTasks('grunt-contrib-qunit');
 //    grunt.loadNpmTasks('grunt-contrib-jshint');
+//    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-rename');
     grunt.loadNpmTasks('grunt-html-build');
     grunt.loadNpmTasks('grunt-curl');
+    grunt.loadNpmTasks('grunt-hub');
+
+    grunt.registerTask('log-deploy', 'Deploy path info', function (version) {
+        grunt.log.writeln("DEPLOY COMMAND: scp -r build/{version} cafetero@mem16:/httpd/bioinfo/www-apps/pathiways/");
+    });
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'copy:build', 'htmlbuild', 'rename:html']);
-    grunt.registerTask('vendor', ['curl-dir']);
-
-    // dependencies from js-common-libs
-    grunt.registerTask('commons', ['copy:opencga', 'copy:styles']);
-    grunt.registerTask('deploy', ['scp']);
+    grunt.registerTask('default', ['clean', 'concat', 'uglify', 'hub:all', 'copy', 'htmlbuild', 'rename:html', 'log-deploy']);
 
 };
