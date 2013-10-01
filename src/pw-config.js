@@ -1,5 +1,6 @@
 //OPENCGA_HOST = "http://ws.bioinfo.cipf.es/opencga/rest";
-OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
+//OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
+OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-server-0.2.0/rest";
 
 if(window.location.host.indexOf("fsalavert")!=-1 ||
    window.location.host.indexOf("rsanchez")!=-1 ||

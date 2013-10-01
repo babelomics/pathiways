@@ -325,7 +325,8 @@ Pathiways.prototype.jobItemClick = function (record) {
             targetId: this.panel.getId(),
             application: 'pathiway',
             app: this,
-            extItems: [button]
+            extItems: [button],
+            layoutName : record.raw.toolName.split('.')[0]
         });
         resultWidget.draw($.cookie('bioinfo_sid'), record);
 
