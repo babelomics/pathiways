@@ -33,7 +33,8 @@ module.exports = function (grunt) {
 //                    'src/pw-config.js',
                     'src/pathiways.js',
                     'src/pathiways-form.js',
-                    'src/pathipred-form.js'
+                    'src/pathipred-form.js',
+                    'src/pathipred-prediction-form.js'
                 ],
                 dest: 'build/<%= meta.version %>/pathiways-<%= meta.version %>.js'
             }

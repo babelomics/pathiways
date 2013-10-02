@@ -9,7 +9,7 @@ function Pathiways(args) {
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
     this.version = '1.0.11';
-    this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred'];
+    this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred', 'pathiways.pathipred-prediction'];
     this.border = true;
     this.targetId;
     this.width;
@@ -105,8 +105,13 @@ Pathiways.prototype = {
 
         this.pathiwaysForm = new PathiwaysForm(this);
         this.pathiwaysForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
+
         this.pathipredForm = new PathipredForm(this);
         this.pathipredForm.draw({title: "PATHiPRED", tabpanel: this.panel});
+
+        this.pathipredPredictionForm = new PathipredPredictionForm(this);
+        this.pathipredPredictionForm.draw({title: "PATHiPRED-Prediction", tabpanel: this.panel});
+
 
         /*check login*/
         if ($.cookie('bioinfo_sid') != null) {
@@ -114,6 +119,14 @@ Pathiways.prototype = {
         } else {
             this.sessionFinished();
         }
+
+        /**/
+        /*Prediction test*/
+        if (!this.panel.contains(this.pathipredPredictionForm.panel)) {
+            this.panel.add(this.pathipredPredictionForm.panel);
+        }
+        this.panel.setActiveTab(this.pathipredPredictionForm.panel);
+        /**/
     },
     _createHeaderWidget: function (targetId) {
         var _this = this;
@@ -268,7 +281,7 @@ Pathiways.prototype = {
         });
 
         /**Atach events i listen**/
-        jobListWidget.pagedListViewWidget.on('item:click',function (data) {
+        jobListWidget.pagedListViewWidget.on('item:click', function (data) {
             _this.jobItemClick(data.item);
         });
         jobListWidget.draw();
@@ -319,37 +332,59 @@ Pathiways.prototype.jobItemClick = function (record) {
 
         Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
-        var button = Ext.create('Ext.button.Button');
+        var extItems = [];
+
+        var layoutName = record.raw.toolName.split('.')[0];
+
+        if (record.raw.toolName == 'pathiways.pathipred') {
+            var buttonPrediction = Ext.create('Ext.button.Button');
+            var button = Ext.create('Ext.button.Button');
+            extItems.push(button);
+            extItems.push(buttonPrediction);
+        }
+
+        if (record.raw.toolName == 'pathiways.pathiways') {
+            var button = Ext.create('Ext.button.Button');
+            extItems.push(button);
+        }
+        if (record.raw.toolName == 'pathiways.pathipred-prediction') {
+            layoutName = record.raw.toolName.split('.')[1];
+        }
 
         var resultWidget = new ResultWidget({
             targetId: this.panel.getId(),
             application: 'pathiway',
             app: this,
-            extItems: [button],
-            layoutName : record.raw.toolName.split('.')[0]
+            extItems: extItems,
+            layoutName: layoutName
         });
         resultWidget.draw($.cookie('bioinfo_sid'), record);
+
+        if (record.raw.toolName == 'pathiways.pathipred') {
+            button.setText('<span style="color:blue;">Run PATHiWAYS</span>');
+            button.on('click', function () {
+                _this.showPathiwaysForm();
+                _this.pathiwaysForm.loadForm(resultWidget.job);
+            });
+            buttonPrediction.setText('<span style="color:blue;">Apply to a new dataset</span>');
+            buttonPrediction.on('click', function () {
+                _this.showPathipredPredictionForm();
+                _this.pathipredPredictionForm.loadForm(resultWidget.job);
+            });
+        } else if (record.raw.toolName == 'pathiways.pathiways') {
+            button.setText('<span style="color:blue;">Run PATHiPRED</span>');
+            button.on('click', function () {
+                _this.showPathipredForm();
+                _this.pathipredForm.loadForm(resultWidget.job);
+            });
+        }
 
 
         console.log(this.jobId)
         console.log(record.raw);
 
         /* result widget parses the commandLine on record and adds the command key */
-        var command = resultWidget.job.command.data;
 
-        if (command.execution == 'pathipred') {
-            button.setText('<span style="color:blue;">Run PATHiWAYS</span>');
-            button.on('click', function () {
-                _this.showPathiwaysForm();
-                _this.pathiwaysForm.loadForm(command);
-            });
-        } else {
-            button.setText('<span style="color:blue;">Run PATHiPRED</span>');
-            button.on('click', function () {
-                _this.showPathipredForm();
-                _this.pathipredForm.loadForm(command);
-            });
-        }
 //                    var config = {
 //                        'norm-matrix': "example_GSE4107.txt",
 //                        'exp-design': "example_ED_GSE4107.txt",
@@ -394,6 +429,13 @@ Pathiways.prototype.showPathipredForm = function (config) {
         _this.panel.setActiveTab(_this.pathipredForm.panel);
     };
     this._checkLogin(showForm);
+};
+
+Pathiways.prototype.showPathipredPredictionForm = function (config) {
+    if (!this.panel.contains(this.pathipredPredictionForm.panel)) {
+        this.panel.add(this.pathipredPredictionForm.panel);
+    }
+    this.panel.setActiveTab(this.pathipredPredictionForm.panel);
 };
 
 Pathiways.prototype._checkLogin = function (showForm) {

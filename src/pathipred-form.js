@@ -31,7 +31,7 @@ function PathipredForm(webapp) {
 PathipredForm.prototype.beforeRun = function () {
     var pathways = [];
     var speciesPrefix = this.paramsWS["species"].substring(0, 3);
-    Ext.getCmp('pathways' + this.id).items.each(function (item) {
+    Ext.getCmp(this.id + 'pathways').items.each(function (item) {
         if (item.getSubmitValue() != null) {
             var value = speciesPrefix + item.getSubmitValue();
             pathways.push(value);
@@ -421,7 +421,7 @@ PathipredForm.prototype._getPathwaysPanel = function () {
 
     var pathways = Ext.create('Ext.form.CheckboxGroup', {
         // Arrange checkboxes into two columns, distributed vertically
-        id: 'pathways' + this.id,
+        id: this.id + 'pathways',
         columns: 2,
         vertical: true,
         defaults: {margin: '0 15 0 0'},
@@ -470,47 +470,48 @@ PathipredForm.prototype._getPathwaysPanel = function () {
     });
 };
 
-PathipredForm.prototype.loadForm = function (config) {
-    if (config) {
+PathipredForm.prototype.loadForm = function (job) {
+    var command = job.command.data;
+    if (command) {
 
-        var pathToRemove = '/httpd/bioinfo/opencga/accounts/'+$.cookie("bioinfo_account")+'/buckets/';
-        config['norm-matrix'] = config['norm-matrix'].replace(pathToRemove, '');
-        config['exp-design'] = config['exp-design'].replace(pathToRemove, '');
+        var pathToRemove = '/httpd/bioinfo/opencga/accounts/'+$.cookie("bioinfo_account")+'/';
+        command['norm-matrix'] = command['norm-matrix'].replace(pathToRemove, '');
+        command['exp-design'] = command['exp-design'].replace(pathToRemove, '');
 
-        if(config['norm-matrix'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
-            var arr = config['norm-matrix'].split(/\//g);
-            config['norm-matrix'] = 'example_'+arr[arr.length-1];
+        if (command['norm-matrix'].indexOf('/opencga/analysis/pathiways/examples/') != -1) {
+            var arr = command['norm-matrix'].split(/\//g);
+            command['norm-matrix'] = 'example_' + arr[arr.length - 1];
         }
-        if(config['exp-design'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
-            var arr = config['exp-design'].split(/\//g);
-            config['exp-design'] = 'example_'+arr[arr.length-1];
+        if (command['exp-design'].indexOf('/opencga/analysis/pathiways/examples/') != -1) {
+            var arr = command['exp-design'].split(/\//g);
+            command['exp-design'] = 'example_' + arr[arr.length - 1];
         }
 
-        Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + config['norm-matrix'] + '</span>', false);
-        Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(config['norm-matrix'].replace(/\//g, ":"));
+        Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + command['norm-matrix'] + '</span>', false);
+        Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(command['norm-matrix'].replace(/\//g, ":"));
 
-        Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + config['exp-design'] + '</span>', false);
-        Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(config['exp-design'].replace(/\//g, ":"));
+        Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + command['exp-design'] + '</span>', false);
+        Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(command['exp-design'].replace(/\//g, ":"));
 
-        Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: config['platform']});
+        Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: command['platform']});
 
-        if (config['cel-compressed-file'] == 'true') {
+        if (command['cel-compressed-file'] == 'true') {
             Ext.getCmp(this.id + 'compressedRadio').setValue(true);
         } else {
             Ext.getCmp(this.id + 'normRadio').setValue(true);
         }
 
 
-        Ext.getCmp(this.id + 'control').setValue(config['control']);
-        Ext.getCmp(this.id + 'disease').setValue(config['disease']);
+        Ext.getCmp(this.id + 'control').setValue(command['control']);
+        Ext.getCmp(this.id + 'disease').setValue(command['disease']);
 
 
-        Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', config['summ']));
+        Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', command['summ']));
 
 
         Ext.getCmp(this.id + 'allPathways').setValue(false);
         /* process pathways */
-        var pathways_array = config['pathways'].replace('/ /g', '').split(/,{1}/g);
+        var pathways_array = command['pathways'].replace('/ /g', '').split(/,{1}/g);
         for (var i = 0; i < pathways_array.length; i++) {
             var pathway_code = pathways_array[i].substring(3);
             Ext.getCmp(this.id + 'pathways').child('checkboxfield[inputValue=' + pathway_code + ']').setValue(true);
@@ -527,8 +528,8 @@ PathipredForm.prototype.loadForm = function (config) {
         /* */
 
 
-        Ext.getCmp(this.id + 'jobname').setValue(config['exp-name']);
-        Ext.getCmp(this.id + 'jobdescription').setValue(config['jobdescription']);
+        Ext.getCmp(this.id + 'jobname').setValue(command['exp-name']);
+        Ext.getCmp(this.id + 'jobdescription').setValue(command['jobdescription']);
     }
 
 };
