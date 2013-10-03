@@ -120,13 +120,6 @@ Pathiways.prototype = {
             this.sessionFinished();
         }
 
-        /**/
-        /*Prediction test*/
-        if (!this.panel.contains(this.pathipredPredictionForm.panel)) {
-            this.panel.add(this.pathipredPredictionForm.panel);
-        }
-        this.panel.setActiveTab(this.pathipredPredictionForm.panel);
-        /**/
     },
     _createHeaderWidget: function (targetId) {
         var _this = this;
