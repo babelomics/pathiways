@@ -8,7 +8,7 @@ function Pathiways(args) {
     this.suiteId = 22;
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
-    this.version = '1.0.11';
+    this.version = '1.0.12';
     this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred', 'pathiways.pathipred-prediction'];
     this.border = true;
     this.targetId;
@@ -291,6 +291,7 @@ Pathiways.prototype.sessionInitiated = function () {
 };
 
 Pathiways.prototype.sessionFinished = function () {
+    var _this = this;
     Ext.getCmp(this.id + 'jobsButton').disable();
     Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
@@ -299,7 +300,10 @@ Pathiways.prototype.sessionFinished = function () {
 
     this.panel.items.each(function (child) {
         if (child.title != 'Home') {
-            child.destroy();
+            if(child.title === 'PATHiPRED' ){
+                _this.pathipredForm.loadExample1();
+            }
+            child.close();
         }
     })
 };

@@ -72,18 +72,6 @@ PathipredForm.prototype._getExamplesPanel = function () {
             }
         }
     });
-    var example2 = Ext.create('Ext.Component', {
-        html: '<span class="u"><span class="emph u">Load example 2.</span> <span class="info s110">VCF file with ~5000 variants</span></span>',
-        cls: 'dedo',
-        listeners: {
-            afterrender: function () {
-                this.getEl().on("click", function () {
-                    _this.loadExample2();
-                    Ext.example.msg("Example loaded", "");
-                });
-            }
-        }
-    });
 
     var exampleForm = Ext.create('Ext.container.Container', {
         bodyPadding: 10,
@@ -535,19 +523,36 @@ PathipredForm.prototype.loadForm = function (job) {
 };
 
 PathipredForm.prototype.loadExample1 = function () {
+    Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
+    Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform:'HGU133Plus2'});
+
+    Ext.getCmp(this.id + 'normRadio').setValue(true);
+
     Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example breast cancer</span>', false);
     Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE27562.txt');
 
     Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example breast cancer</span>', false);
     Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE27562.txt');
 
-    Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
-    Ext.getCmp(this.id + 'normRadio').setValue(true);
+
+    Ext.getCmp(this.id + 'expdesigntype').setValue({expdesigntype: 'categorical'});
+
 
     Ext.getCmp(this.id + 'control').setValue("normal");
     Ext.getCmp(this.id + 'disease').setValue("malignant");
     Ext.getCmp(this.id + 'allPathways').setValue(true);
 
+    Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', 'per90'));
+    Ext.getCmp(this.id + 'kfold').setValue(10);
+
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
     Ext.getCmp(this.id + 'jobdescription').setValue("Breast cancer");
+
+
+//    - experimental design type = categorical
+//        - condition 1 = normal
+//        - condition 2 = malignant
+//        - summ = 90th percentile
+//        - k-fold = 10
+
 };
