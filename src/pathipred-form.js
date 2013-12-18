@@ -296,8 +296,8 @@ PathipredForm.prototype._getExpDesignPanel = function () {
         },
         {
             id: this.id + 'numericalRadio',
-            inputValue: 'numerical',
-            boxLabel: 'Numerical',
+            inputValue: 'continuous',
+            boxLabel: 'Continuous',
             checked: false,
             listeners: {change: function (cmp, value) {
                 if (value) {
@@ -548,11 +548,33 @@ PathipredForm.prototype.loadExample1 = function () {
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
     Ext.getCmp(this.id + 'jobdescription').setValue("Breast cancer");
 
-
-//    - experimental design type = categorical
-//        - condition 1 = normal
-//        - condition 2 = malignant
-//        - summ = 90th percentile
-//        - k-fold = 10
-
 };
+
+PathipredForm.prototype.clean = function () {
+    Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
+    Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform:'HGU133Plus2'});
+
+    Ext.getCmp(this.id + 'normRadio').setValue(true);
+
+    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('');
+
+    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('');
+
+    Ext.getCmp(this.id + 'expdesigntype').setValue({expdesigntype: 'categorical'});
+
+    Ext.getCmp(this.id + 'control').setValue('');
+    Ext.getCmp(this.id + 'disease').setValue('');
+
+    Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', 'per90'));
+    Ext.getCmp(this.id + 'kfold').setValue(10);
+
+    Ext.getCmp(this.id + 'allPathways').setValue(true);
+    Ext.getCmp(this.id + 'allPathways').setValue(false);
+
+
+    Ext.getCmp(this.id + 'jobname').setValue("");
+    Ext.getCmp(this.id + 'jobdescription').setValue("");
+
+}

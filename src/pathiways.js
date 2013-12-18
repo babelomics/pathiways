@@ -301,7 +301,8 @@ Pathiways.prototype.sessionFinished = function () {
     this.panel.items.each(function (child) {
         if (child.title != 'Home') {
             if(child.title === 'PATHiPRED' ){
-                _this.pathipredForm.loadExample1();
+                _this.pathipredForm.clean();
+                _this.pathiwaysForm.clean();
             }
             child.close();
         }
@@ -327,6 +328,7 @@ Pathiways.prototype.jobItemClick = function (record) {
     this.jobId = record.data.id;
     if (record.data.visites >= 0) {
 
+
         Ext.getCmp(this.id + 'jobsButton').toggle(false);
 
         var extItems = [];
@@ -338,6 +340,7 @@ Pathiways.prototype.jobItemClick = function (record) {
             var button = Ext.create('Ext.button.Button');
             extItems.push(button);
             extItems.push(buttonPrediction);
+            layoutName = record.raw.toolName.split('.')[1];
         }
 
         if (record.raw.toolName == 'pathiways.pathiways') {
@@ -409,6 +412,7 @@ Pathiways.prototype.showPathiwaysForm = function () {
     var _this = this;
     var showForm = function () {
         if (!_this.panel.contains(_this.pathiwaysForm.panel)) {
+            _this.pathiwaysForm.clean();
             _this.panel.add(_this.pathiwaysForm.panel);
         }
         _this.panel.setActiveTab(_this.pathiwaysForm.panel);
@@ -421,6 +425,7 @@ Pathiways.prototype.showPathipredForm = function (config) {
     var _this = this;
     var showForm = function () {
         if (!_this.panel.contains(_this.pathipredForm.panel)) {
+            _this.pathipredForm.clean();
             _this.panel.add(_this.pathipredForm.panel);
         }
         _this.panel.setActiveTab(_this.pathipredForm.panel);

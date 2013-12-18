@@ -502,17 +502,17 @@ PathiwaysForm.prototype.loadForm = function (job) {
     var command = job.command.data;
     if (command) {
 
-        var pathToRemove = '/httpd/bioinfo/opencga/accounts/'+$.cookie("bioinfo_account")+'/';
+        var pathToRemove = '/httpd/bioinfo/opencga/accounts/' + $.cookie("bioinfo_account") + '/';
         command['norm-matrix'] = command['norm-matrix'].replace(pathToRemove, '');
         command['exp-design'] = command['exp-design'].replace(pathToRemove, '');
 
-        if(command['norm-matrix'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
+        if (command['norm-matrix'].indexOf('/opencga/analysis/pathiways/examples/') != -1) {
             var arr = command['norm-matrix'].split(/\//g);
-            command['norm-matrix'] = 'example_'+arr[arr.length-1];
+            command['norm-matrix'] = 'example_' + arr[arr.length - 1];
         }
-        if(command['exp-design'].indexOf('/opencga/analysis/pathiways/examples/')!=-1){
+        if (command['exp-design'].indexOf('/opencga/analysis/pathiways/examples/') != -1) {
             var arr = command['exp-design'].split(/\//g);
-            command['exp-design'] = 'example_'+arr[arr.length-1];
+            command['exp-design'] = 'example_' + arr[arr.length - 1];
         }
 
         Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + command['norm-matrix'] + '</span>', false);
@@ -520,8 +520,6 @@ PathiwaysForm.prototype.loadForm = function (job) {
 
         Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + command['exp-design'] + '</span>', false);
         Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(command['exp-design'].replace(/\//g, ":"));
-
-
 
 
         Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: command['platform']});
@@ -583,3 +581,30 @@ PathiwaysForm.prototype.loadExample1 = function () {
     Ext.getCmp(this.id + 'jobname').setValue("Example 1");
     Ext.getCmp(this.id + 'jobdescription').setValue("Colorectal cancer");
 };
+
+
+PathiwaysForm.prototype.clean = function () {
+    Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
+    Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform:'HGU133Plus2'});
+
+    Ext.getCmp(this.id + 'normRadio').setValue(true);
+
+    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('');
+
+    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('');
+
+    Ext.getCmp(this.id + 'control').setValue('');
+    Ext.getCmp(this.id + 'disease').setValue('');
+
+    Ext.getCmp(this.id + 'summ').select(Ext.getStore(this.id + 'summStore').findRecord('value', 'per90'));
+
+    Ext.getCmp(this.id + 'tests').setValue({test: 'multilevel'});
+
+    Ext.getCmp(this.id + 'allPathways').setValue(true);
+    Ext.getCmp(this.id + 'allPathways').setValue(false);
+
+    Ext.getCmp(this.id + 'jobname').setValue("");
+    Ext.getCmp(this.id + 'jobdescription').setValue("");
+}
