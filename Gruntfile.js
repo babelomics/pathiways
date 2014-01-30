@@ -82,7 +82,8 @@ module.exports = function (grunt) {
                             'build/<%= meta.version %>/vendor/jquery.cookie*.js',
                             'build/<%= meta.version %>/vendor/purl*.js',
                             'build/<%= meta.version %>/vendor/utils*.min.js',
-                            'build/<%= meta.version %>/vendor/opencga*.min.js'
+                            'build/<%= meta.version %>/vendor/opencga*.min.js',
+                            'build/<%= meta.version %>/vendor/bootstrap-scoped-dist/js/bootstrap.min.js'
                         ],
                         opencga: [
                             'build/<%= meta.version %>/utils*.min.js',
@@ -92,7 +93,8 @@ module.exports = function (grunt) {
                     styles: {
                         'css': ['<%= stylesPath %>/css/style.css'],
                         'vendor': [
-                            'build/<%= meta.version %>/vendor/jquery.qtip*.css'
+                            'build/<%= meta.version %>/vendor/jquery.qtip*.css',
+                            'build/<%= meta.version %>/vendor/bootstrap-scoped-dist/css/bootstrap.min.css'
                         ]
                     }
                 }

@@ -300,7 +300,7 @@ Pathiways.prototype.sessionFinished = function () {
 
     this.panel.items.each(function (child) {
         if (child.title != 'Home') {
-            if(child.title === 'PATHiPRED' ){
+            if (child.title === 'PATHiPRED') {
                 _this.pathipredForm.clean();
                 _this.pathiwaysForm.clean();
             }
