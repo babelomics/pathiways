@@ -8,7 +8,7 @@ function Pathiways(args) {
     this.suiteId = 22;
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
-    this.version = '1.0.12';
+    this.version = '1.0.13';
     this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred', 'pathiways.pathipred-prediction'];
     this.border = true;
     this.targetId;
@@ -103,14 +103,46 @@ Pathiways.prototype = {
         this.jobListWidget = this._createJobListWidget($(this.sidePanelDiv).attr('id'));
 
 
-        this.pathiwaysForm = new PathiwaysForm(this);
-        this.pathiwaysForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
+        this.pathiwaysForm = new PathiwaysForm({
+            webapp: this,
+            title: "PATHiWAYS",
+            testing: false,
+            closable: true,
+            minimizable: false,
+            width: '50%',
+            bodyPadding:'15 0 0 40'
+        });
+        this.pathiwaysForm.draw();
+//        this.pathiwaysForm = new PathiwaysForm(this);
+//        this.pathiwaysForm.draw({title: "PATHiWAYS", tabpanel: this.panel});
 
-        this.pathipredForm = new PathipredForm(this);
-        this.pathipredForm.draw({title: "PATHiPRED", tabpanel: this.panel});
 
-        this.pathipredPredictionForm = new PathipredPredictionForm(this);
-        this.pathipredPredictionForm.draw({title: "PATHiPRED-Prediction", tabpanel: this.panel});
+        this.pathipredForm = new PathipredForm({
+            webapp: this,
+            title: "PATHiPRED",
+            testing: false,
+            closable: true,
+            minimizable: false,
+            width: '50%',
+            bodyPadding:'15 0 0 40'
+        });
+        this.pathipredForm.draw();
+//        this.pathipredForm = new PathipredForm(this);
+//        this.pathipredForm.draw({title: "PATHiPRED", tabpanel: this.panel});
+
+
+        this.pathipredPredictionForm = new PathipredPredictionForm({
+            webapp: this,
+            title: "PATHiPRED-Prediction",
+            testing: false,
+            closable: true,
+            minimizable: false,
+            width: '50%',
+            bodyPadding:'15 0 0 40'
+        });
+        this.pathipredPredictionForm.draw();
+//        this.pathipredPredictionForm = new PathipredPredictionForm(this);
+//        this.pathipredPredictionForm.draw({title: "PATHiPRED-Prediction", tabpanel: this.panel});
 
 
         /*check login*/

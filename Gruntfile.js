@@ -4,7 +4,7 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         meta: {
-            version: '1.0.12',
+            version: '1.0.13',
             jsorolla: {
                 dir: '/lib/jsorolla/',
                 utils: {

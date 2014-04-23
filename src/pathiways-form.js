@@ -19,13 +19,15 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-PathiwaysForm.prototype = new GenericFormPanel("pathiways.pathiways");
+PathiwaysForm.prototype = new GenericFormPanel();
 
-function PathiwaysForm(webapp) {
+function PathiwaysForm(args) {
+    args.analysis = 'pathiways.pathiways';
+    GenericFormPanel.prototype.constructor.call(this, args);
+
     this.id = Utils.genId("PathiwaysForm");
-    this.headerWidget = webapp.headerWidget;
-    this.opencgaBrowserWidget = webapp.headerWidget.opencgaBrowserWidget;
-    this.onSelectNodes = new Event(this);
+    this.headerWidget =  this.webapp.headerWidget;
+    this.opencgaBrowserWidget = this.webapp.headerWidget.opencgaBrowserWidget;
 }
 
 PathiwaysForm.prototype.beforeRun = function () {
@@ -216,7 +218,6 @@ PathiwaysForm.prototype._getSpeciesPanel = function () {
 
 PathiwaysForm.prototype._getSelectDataPanel = function () {
     var _this = this;
-
 
     var createBrowser = this.createOpencgaBrowserCmp({
         fieldLabel: 'Input file:',
@@ -515,10 +516,10 @@ PathiwaysForm.prototype.loadForm = function (job) {
             command['exp-design'] = 'example_' + arr[arr.length - 1];
         }
 
-        Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + command['norm-matrix'] + '</span>', false);
+        Ext.getCmp(this.id + 'norm-matrix').update('<span class="emph">' + command['norm-matrix'] + '</span>');
         Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(command['norm-matrix'].replace(/\//g, ":"));
 
-        Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + command['exp-design'] + '</span>', false);
+        Ext.getCmp(this.id + 'exp-design').update('<span class="emph">' + command['exp-design'] + '</span>');
         Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(command['exp-design'].replace(/\//g, ":"));
 
 
@@ -565,10 +566,10 @@ PathiwaysForm.prototype.loadForm = function (job) {
 
 
 PathiwaysForm.prototype.loadExample1 = function () {
-    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">Example colorectal cancer</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix').update('<span class="emph">Example colorectal cancer</span>');
     Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('example_GSE4107.txt');
 
-    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">Example colorectal cancer</span>', false);
+    Ext.getCmp(this.id + 'exp-design').update('<span class="emph">Example colorectal cancer</span>');
     Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('example_ED_GSE4107.txt');
 
     Ext.getCmp(this.id + 'speciesRadioGroup').setValue({species: 'hsapiens'});
@@ -589,10 +590,10 @@ PathiwaysForm.prototype.clean = function () {
 
     Ext.getCmp(this.id + 'normRadio').setValue(true);
 
-    Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'norm-matrix').update('<span class="emph">No file selected</span>');
     Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue('');
 
-    Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">No file selected</span>', false);
+    Ext.getCmp(this.id + 'exp-design').update('<span class="emph">No file selected</span>');
     Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue('');
 
     Ext.getCmp(this.id + 'control').setValue('');

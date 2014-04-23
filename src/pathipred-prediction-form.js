@@ -19,13 +19,15 @@
  * along with Cell Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-PathipredPredictionForm.prototype = new GenericFormPanel("pathiways.pathipred-prediction");
+PathipredPredictionForm.prototype = new GenericFormPanel();
 
-function PathipredPredictionForm(webapp) {
+function PathipredPredictionForm(args) {
+    args.analysis = 'pathiways.pathiways.pathipred-prediction';
+    GenericFormPanel.prototype.constructor.call(this, args);
+
     this.id = Utils.genId("PathipredPredictionForm");
-    this.headerWidget = webapp.headerWidget;
-    this.opencgaBrowserWidget = webapp.headerWidget.opencgaBrowserWidget;
-    this.onSelectNodes = new Event(this);
+    this.headerWidget =  this.webapp.headerWidget;
+    this.opencgaBrowserWidget = this.webapp.headerWidget.opencgaBrowserWidget;
 }
 
 PathipredPredictionForm.prototype.beforeRun = function () {
@@ -438,10 +440,10 @@ PathipredPredictionForm.prototype.loadForm = function (job) {
             command['exp-design'] = 'example_' + arr[arr.length - 1];
         }
 
-        Ext.getCmp(this.id + 'norm-matrix').setText('<span class="emph">' + command['norm-matrix'] + '</span>', false);
+        Ext.getCmp(this.id + 'norm-matrix').update('<span class="emph">' + command['norm-matrix'] + '</span>');
         Ext.getCmp(this.id + 'norm-matrix' + 'hidden').setValue(command['norm-matrix'].replace(/\//g, ":"));
 
-        Ext.getCmp(this.id + 'exp-design').setText('<span class="emph">' + command['exp-design'] + '</span>', false);
+        Ext.getCmp(this.id + 'exp-design').update('<span class="emph">' + command['exp-design'] + '</span>');
         Ext.getCmp(this.id + 'exp-design' + 'hidden').setValue(command['exp-design'].replace(/\//g, ":"));
 
         Ext.getCmp(this.id + 'platformRadioGroup').setValue({platform: command['platform']});
