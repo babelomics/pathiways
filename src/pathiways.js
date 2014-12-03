@@ -8,7 +8,7 @@ function Pathiways(args) {
     this.suiteId = 22;
     this.title = 'PATH<span class="emph">i</span>WAYS';
     this.description = '';
-    this.version = '1.0.13';
+    this.version = '1.0.14';
     this.tools = ['pathiways', 'pathiways.pathiways', 'pathiways.pathipred', 'pathiways.pathipred-prediction'];
     this.border = true;
     this.targetId;

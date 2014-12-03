@@ -1,6 +1,6 @@
 {
   "name": "PATHiWAYS",
-  "version": "1.0.11",
+  "version": "1.0.14",
   "description": "PATHiWAYS is a microarray data analysis web tool for the interpretation of changes in expression levels in a pathway-based context.",
   "devDependencies": {
     "grunt": "~0.4.1",
