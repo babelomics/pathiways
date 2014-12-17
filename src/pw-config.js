@@ -1,17 +1,27 @@
-//OPENCGA_HOST = "http://ws.bioinfo.cipf.es/opencga/rest";
-//OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
-OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-server-0.2.0/rest";
-//OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-staging/rest";
+//CELLBASE_HOST = "http://ws.bioinfo.cipf.es/cellbase/rest";
+CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
+CELLBASE_VERSION = "v3";
+OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-staging/rest";
+BIERAPP_HOST = "http://ws-beta.bioinfo.cipf.es/bierapp-staging/rest";
+BIERAPP_VERSION = "1.4.1"
 
-if(window.location.host.indexOf("fsalavert")!=-1 ||
-   window.location.host.indexOf("rsanchez")!=-1 ||
-   window.location.host.indexOf("imedina")!=-1 ||
-   window.location.href.indexOf("http://bioinfo.cipf.es/apps-beta")!=-1
-){
-//	OPENCGA_HOST = "http://mem15:8080/opencga/rest";
-//	OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga/rest";
-//	OPENCGA_HOST = "http://ws-beta.bioinfo.cipf.es/opencga-server-beta/rest";
+if (
+    window.location.host.indexOf("localhost") != -1 ||
+    window.location.host.indexOf("fsalavert") != -1 ||
+    window.location.host.indexOf("rsanchez") != -1 ||
+    window.location.host.indexOf("imedina") != -1 ||
+    window.location.host.indexOf("aaleman") != -1 ||
+    window.location.protocol === "file:"
+) {
+
+    //CELLBASE_HOST = "http://ws.bioinfo.cipf.es/cellbase/rest";
+    CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest";
+//    OPENCGA_HOST = "http://localhost:8080/opencga/rest";
+    OPENCGA_HOST = "http://test.babelomics.org/opencga/rest";
 }
+OPENCGA_HOST = "http://test.babelomics.org/opencga/rest";
+
+CELLBASE_HOST_OLD = "http://ws-beta.bioinfo.cipf.es/cellbase-staging/rest";
 
 SUITE_INFO = '<div style=" width: 800px;">'
     + '<h4>Overview</h4><br>'
