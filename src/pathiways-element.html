@@ -4,8 +4,10 @@
 <link rel="import" href="../bower_components/core-list/core-list.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-list.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-launched.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/forms/jso-pathivar-form.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-pathivar-result.html">
@@ -20,69 +22,89 @@
             :host {
                 display: block;
                 position: relative;
-
                 cursor: default;
                 font-size: 13px;
             }
 
+            .content {
+                position: relative;
+                min-height: calc(100vh - 160px);
+            }
+
             jso-project-browser {
-                height: calc(100vh - 60px);
+                height: calc(100vh - 160px);
             }
 
             jso-job-list {
                 height: calc(100vh - 60px);
                 width: 250px;
-                top: 60px;
+                top: 0px;
                 right: 0px;
             }
 
             pathivar-result {
                 /*height: calc(100vh - 60px);*/
             }
-
-            jso-network-viewer {
-                height: calc(100vh - 90px);
-            }
         </style>
-        <jso-header selectedOption="{{selectedOption}}" userData="{{userData}}" showJobs="{{showJobs}}"
-                    options="{{options}}">
-            <span class="title">PATHiWAYS</span>
-            <span class="description">Pathway analysis tool</span>
-        </jso-header>
-        <template if="{{selectedOption == 'projects' }}">
-            <jso-project-browser
-                    userData="{{userData}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    selectedProject="{{selectedProject}}">
-            </jso-project-browser>
-        </template>
-
-        <template if="{{ selectedOption == 'home' }}">
-            <pathiways-home></pathiways-home>
-        </template>
-        <template if="{{ selectedOption == 'pathivar' }}">
-            <jso-pathivar-form
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    ></jso-pathivar-form>
-        </template>
-        <template if="{{ selectedOption == 'jobView' }}">
-            <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result>
-        </template>
-
-        <template if="{{ showJobs }}">
-            <jso-job-list
-                    on-job-item-click="{{handleJobItemClick}}"
-                    userData="{{userData}}"
+        <jso-header id="jsoHeader"
+                    on-session-change="{{handleSessionChange}}"
                     selectedOption="{{selectedOption}}"
-                    selectedStudy="{{selectedStudy}}"
-                    allowedTools="{{allowedTools}}"
-                    showJobs="{{showJobs}}"></jso-job-list>
-        </template>
+                    userData="{{userData}}"
+                    showJobs="{{showJobs}}"
+                    options="{{options}}">
+            <span class="title">PATHiVAR</span>
+            <!--<span class="description">Pathway analysis tool</span>-->
+        </jso-header>
+        <div class="content">
+            <template if="{{selectedOption == 'projects' }}">
+                <jso-project-browser
+                        userData="{{userData}}"
+                        studies="{{studies}}"
+                        selectedStudy="{{selectedStudy}}"
+                        selectedProject="{{selectedProject}}">
+                </jso-project-browser>
+            </template>
+
+            <template if="{{ selectedOption == 'home' }}">
+                <pathiways-home></pathiways-home>
+            </template>
+            <template if="{{ selectedOption == 'pathivar' }}">
+                <jso-pathivar-form
+                        selectedOption="{{selectedOption}}"
+                        studies="{{studies}}"
+                        selectedStudy="{{selectedStudy}}"
+                        ></jso-pathivar-form>
+            </template>
+            <template if="{{ selectedOption == 'jobReady' }}">
+                <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result>
+            </template>
+
+            <template if="{{ showJobs || selectedOption == 'jobLaunched' }}">
+                <jso-job-list
+                        jobItem="{{jobItem}}"
+                        on-job-item-click="{{handleJobItemClick}}"
+                        userData="{{userData}}"
+                        selectedOption="{{selectedOption}}"
+                        selectedStudy="{{selectedStudy}}"
+                        allowedTools="{{allowedTools}}"
+                        showJobs="{{showJobs}}"></jso-job-list>
+            </template>
+
+            <template if="{{ selectedOption == 'jobLaunched' }}">
+                <jso-job-launched></jso-job-launched>
+            </template>
+
+            <!--<jso-network-viewer id="networkViewer"></jso-network-viewer>-->
+        </div>
 
 
-        <!--<jso-network-viewer id="networkViewer"></jso-network-viewer>-->
+        <jso-footer>
+            PATHiWAYS · Created by Systems Genomics Laboratory
+            <br>
+            Principe Felipe Research Center
+            <br>
+            2014
+        </jso-footer>
 
     </template>
     <script>
@@ -112,18 +134,26 @@
 //                },
                     {
                         option: 'pathivar',
-                        text: 'PATHiVAR'
+                        text: 'Run'
                     }
                 ]
             },
             ready: function () {
                 var me = this;
-                this.selectedOption = 'pathivar';
+//                this.selectedOption = 'pathivar';
 //                this.selectedOption = 'projects';
             },
-//            handleJobItemClick: function (e) {
-//                this.jobItem = e.detail.jobItem;
-//            },
+            handleJobItemClick: function (e) {
+                this.showJobs = false;
+            },
+            selectedOptionChanged: function (oldValue, newValue) {
+                if (this.selectedOption == "pathivar" && this.$.jsoHeader.isLogged == false) {
+                    this.$.jsoHeader.demoLogin();
+                }
+            },
+            handleSessionChange: function () {
+                this.selectedOption = "pathivar";
+            },
 
             userDataChanged: function (oldValue, newValue) {
                 var me = this;
