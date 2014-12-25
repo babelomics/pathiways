@@ -7,7 +7,7 @@
     "url": "https://github.com/babelomics/pathiways.git"
   },
   "scripts": {
-    "build": "build.sh"
+    "build": "./build.sh"
   },
   "devDependencies": {
     "vulcanize": "^0.7.1"
