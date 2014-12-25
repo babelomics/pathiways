@@ -51,7 +51,10 @@
                     selectedOption="{{selectedOption}}"
                     userData="{{userData}}"
                     showJobs="{{showJobs}}"
-                    options="{{options}}">
+                    options="{{options}}"
+                    helpLink="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation"
+                    tutorialLink="https://github.com/babelomics/pathiways/wiki/Pathivar-tutorial"
+                    hideHomeLink="true">
             <span class="title">PATHiVAR</span>
             <!--<span class="description">Pathway analysis tool</span>-->
         </jso-header>
@@ -150,7 +153,7 @@
             },
             selectedOptionChanged: function (oldValue, newValue) {
                 if (this.selectedOption == "pathivar" && this.$.jsoHeader.isLogged == false) {
-                    this.$.jsoHeader.demoLogin();
+                    this.$.jsoHeader.demoLogin("pathivarDemo");
                 }
             },
             handleSessionChange: function () {
