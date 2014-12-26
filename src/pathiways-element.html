@@ -6,8 +6,6 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-list.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-launched.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/forms/jso-pathivar-form.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-pathivar-result.html">
@@ -27,7 +25,12 @@
             }
 
             .content {
+                background-color: #435f7a;
                 position: relative;
+                /*min-height: calc(100vh - 160px);*/
+            }
+
+            .content > * {
                 min-height: calc(100vh - 160px);
             }
 
@@ -35,12 +38,6 @@
                 height: calc(100vh - 160px);
             }
 
-            jso-job-list {
-                height: calc(100vh - 60px);
-                width: 250px;
-                top: 0px;
-                right: 0px;
-            }
 
             pathivar-result {
                 /*height: calc(100vh - 60px);*/
@@ -52,6 +49,10 @@
                     userData="{{userData}}"
                     showJobs="{{showJobs}}"
                     options="{{options}}"
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    allowedTools="{{allowedTools}}"
+                    jobItem="{{jobItem}}"
                     helpLink="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation"
                     tutorialLink="https://github.com/babelomics/pathiways/wiki/Pathivar-tutorial"
                     hideHomeLink="true">
@@ -82,25 +83,8 @@
                 <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result>
             </template>
 
-            <template if="{{ showJobs || selectedOption == 'jobLaunched' }}">
-                <jso-job-list
-                        jobItem="{{jobItem}}"
-                        on-job-item-click="{{handleJobItemClick}}"
-                        userData="{{userData}}"
-                        selectedOption="{{selectedOption}}"
-                        selectedStudy="{{selectedStudy}}"
-                        allowedTools="{{allowedTools}}"
-                        showJobs="{{showJobs}}"></jso-job-list>
-            </template>
-
-            <template if="{{ selectedOption == 'jobLaunched' }}">
-                <jso-job-launched></jso-job-launched>
-            </template>
-
             <!--<jso-network-viewer id="networkViewer"></jso-network-viewer>-->
         </div>
-
-
         <jso-footer>
             PATHiVAR
             <br>
@@ -147,9 +131,6 @@
                 var me = this;
 //                this.selectedOption = 'pathivar';
 //                this.selectedOption = 'projects';
-            },
-            handleJobItemClick: function (e) {
-                this.showJobs = false;
             },
             selectedOptionChanged: function (oldValue, newValue) {
                 if (this.selectedOption == "pathivar" && this.$.jsoHeader.isLogged == false) {
