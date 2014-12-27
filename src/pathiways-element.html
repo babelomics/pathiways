@@ -134,7 +134,7 @@
             },
             selectedOptionChanged: function (oldValue, newValue) {
                 if (this.selectedOption == "pathivar" && this.$.jsoHeader.isLogged == false) {
-                    this.$.jsoHeader.demoLogin("pathivarDemo");
+                    this.$.jsoHeader.anonymousSign();
                 }
             },
             handleSessionChange: function () {
