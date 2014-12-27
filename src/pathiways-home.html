@@ -21,6 +21,10 @@
                 text-align: justify;
                 padding: 10px 0;
             }
+            .paragraph2 {
+                font-size: 16px;
+                padding: 0 0 10px 0;
+            }
 
             .title {
                 font-size: 40px;
@@ -33,6 +37,15 @@
                 color: white;
                 padding-top: 20px;
                 padding-bottom: 10px;
+            }
+
+            .b {
+                font-weight: 400;
+            }
+
+            a, a:visited {
+                text-decoration: none;
+                color: #ffad76;
             }
         </style>
         <!--SUITE_INFO = '<div style=" width: 800px;">'-->
@@ -73,8 +86,28 @@
 
         <!--<p class="title2">PATHiVAR</p>-->
 
-        <div class="paragraph">Welcome to PATHiVAR</div>
+        <div class="paragraph">
+            PATHiVAR allows the estimation of the functional impact of mutations over the human signalling network.
+            It directly analyses <span class="b">VCF</span> files, extract the damaging mutations, locate them over the
+            <span class="b">signalling pathways</span>
+            in the selected <span class="b">tissue</span> (with the appropriate expression pattern) and provides a comprehensive, graphic and
+            interactive view of the predicted changes in the <span class="b">signal transduction probabilities</span> across the different signalling pathways.
+            PATHiVar uses a probabilistic model (<a href="http://nar.oxfordjournals.org/content/early/2013/06/08/nar.gkt451.short" target="_blank">Sebastian-Leon
+            et al, 2013; 2014</a>) that estimates the probabilities of signal
+            transduction across signalling pathways from the corresponding values of gene expression.
+        </div>
+        <div class="paragraph">
+            Signalling pathways are taken from <a href="http://www.genome.jp/kegg/pathway.html" target="_blank">KEGG</a>. Gene or protein expression values in
+            different tissues are
+            taken from the <a href="http://www.ebi.ac.uk/gxa/home" target="_blank">Expression atlas</a> and the
+            <a href="http://www.proteinatlas.org/" target="_blank">Human Protein Atlas</a>, respectively.
+        </div>
 
+        <div class="title2">Note</div>
+        <div class="paragraph2">
+            This web application makes an intensive use of new web technologies and standards like HTML5,
+            so only the browser Chrome 39 is fully supported. we are working hard to make it compatible with other browsers.
+        </div>
         <!--<p style="text-align:justify;font-size: 16px">This web application makes an intensive use of new web technologies and standards-->
         <!--like HTML5, so browsers that are fully supported for this site are: Chrome 14, Firefox 7, Safari 5 and Opera 11. Older-->
         <!--browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported-->
