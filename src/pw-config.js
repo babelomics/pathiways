@@ -6,6 +6,8 @@ CELLBASE_VERSION = "v3";
 //OPENCGA_HOST = "http://test.babelomics.org/opencga-nar/rest";
 OPENCGA_HOST = "http://ws.babelomics.org/opencga/rest";
 
+STUDY_NAME="WorkSpace"
+
 SUITE_INFO = '<div style=" width: 800px;">'
 + '<h4>Overview</h4><br>'
 + '<h3>PATHiWAYS</h3>'

@@ -1,4 +1,4 @@
-<polymer-element name="pathiways-home" noscript>
+<polymer-element name="pathiways-home" attributes="isLogged">
     <template>
         <style>
             :host {
@@ -6,7 +6,9 @@
                 position: relative;
                 box-sizing: border-box;
                 z-index: 50000;
+
                 margin: 0px auto 0px auto;
+
                 width: 70%;
                 max-width: 780px;
                 color: #FFF;
@@ -14,32 +16,39 @@
                 line-height: 25px;
                 font-weight: 300;
             }
+
             .paragraph {
                 text-align: justify;
                 padding: 10px 0;
             }
+
             .paragraph2 {
                 font-size: 14px;
                 padding: 0 0 10px 0;
             }
+
             .title {
                 font-size: 40px;
                 padding-top: 30px;
                 padding-bottom: 10px;
                 color: white;
             }
+
             .title2 {
                 color: white;
                 padding-top: 20px;
                 padding-bottom: 10px;
             }
+
             .b {
                 font-weight: 400;
             }
+
             a, a:visited {
                 text-decoration: none;
                 color: #ffad76;
             }
+
             .megabutton {
                 font-weight: 400;
                 margin: 20px;
@@ -50,11 +59,13 @@
                 width: 200px;
                 text-align: center;
             }
+
             .megabutton:hover {
                 background-color: white;
                 color: #435f7a;
                 cursor: pointer;
             }
+
             .megatitle {
                 font-size: 80px;
                 padding-top: 30px;
@@ -62,6 +73,7 @@
                 color: white;
                 text-shadow: 3px 3px 5px #314559;
             }
+
             .megadescription {
                 font-size: 30px;
                 line-height: 40px;
@@ -73,7 +85,6 @@
             }
         </style>
 
-        <br>
         <br>
         <br>
         <br>
@@ -164,4 +175,13 @@
         <!--browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported-->
         <!--at all.</p>-->
     </template>
+    <script>
+        Polymer({
+            created: function () {
+            },
+            annonymousLogin: function () {
+                this.fire('annonymous');
+            }
+        })
+    </script>
 </polymer-element>

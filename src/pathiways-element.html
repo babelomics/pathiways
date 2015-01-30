@@ -60,7 +60,9 @@
             }
         </style>
         <jso-header id="jsoHeader"
+                    isLogged="{{isLogged}}"
                     on-session-change="{{handleSessionChange}}"
+
                     selectedOption="{{selectedOption}}"
                     userData="{{userData}}"
                     showJobs="{{showJobs}}"
@@ -108,7 +110,12 @@
             </template>
 
             <template if="{{ selectedOption == 'home' || selectedOption == '' }}">
-                <pathiways-home></pathiways-home>
+                <pathiways-home
+                        id="pathiwaysHome"
+                        on-annonymous="{{annonymousLogin}}"
+                        isLogged="{{isLogged}}">
+
+                </pathiways-home>
             </template>
             <template if="{{ selectedOption == 'pathivar' }}">
                 <jso-pathivar-form
@@ -141,6 +148,9 @@
 
                 this.showJobs = false;
                 this.userData;
+
+
+                this.isLogged
 
                 this.selectedProject;
                 this.selectedStudy;
@@ -204,7 +214,10 @@
                         }
                     }
                 })
-            }
+            },
+            annonymousLogin: function () {
+                this.$.jsoHeader.anonymousSign();
+            },
         });
     </script>
 </polymer-element>
