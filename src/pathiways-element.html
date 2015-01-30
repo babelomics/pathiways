@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/core-list/core-list.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 
@@ -13,6 +14,7 @@
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
 <link rel="import" href="pathiways-home.html">
+<link rel="import" href="pathiways-menu.html">
 
 <polymer-element name="pathiways-element">
     <template>
@@ -34,10 +36,24 @@
                 min-height: calc(100vh - 160px);
             }
 
+            .a {
+                text-decoration: none;
+                color: #CCCCCC;
+                cursor: pointer;
+            }
+
+            .a:visited {
+                color: #CCCCCC;
+            }
+
+            .a:hover {
+                color: white;
+                /*text-decoration: underline;*/
+            }
+
             jso-project-browser {
                 height: calc(100vh - 160px);
             }
-
 
             pathivar-result {
                 /*height: calc(100vh - 60px);*/
@@ -52,13 +68,35 @@
                     studies="{{studies}}"
                     selectedStudy="{{selectedStudy}}"
                     allowedTools="{{allowedTools}}"
-                    jobItem="{{jobItem}}"
-                    helpLink="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation"
-                    tutorialLink="https://github.com/babelomics/pathiways/wiki/Pathivar-tutorial"
-                    hideHomeLink="true">
+                    jobItem="{{jobItem}}">
+             <span class="icon">
+                    <img src="pathiways-logo.svg" style="height: 54px;margin: 1px 5px 0 0;">
+            </span>
             <span class="title">PATHiVAR</span>
+                        <span class="description">
+            </span>
             <!--<span class="description">Pathway analysis tool</span>-->
+
+            <pathiways-menu class="menu" selectedOption="{{selectedOption}}">
+            </pathiways-menu>
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <div class="link">
+                    <font-awesome icon="book"></font-awesome>
+                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation" target="_blank">
+                        &nbsp; Documentation
+                    </a>
+                </div>
+                <div class="link">
+                    <font-awesome icon="compass"></font-awesome>
+                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-tutorial" target="_blank">
+                        &nbsp; Tutorial
+                    </a>
+                </div>
+            </jso-help-menu>
         </jso-header>
+
+
+
         <div class="content">
             <template if="{{selectedOption == 'projects' }}">
                 <jso-project-browser
@@ -69,7 +107,7 @@
                 </jso-project-browser>
             </template>
 
-            <template if="{{ selectedOption == 'home' }}">
+            <template if="{{ selectedOption == 'home' || selectedOption == '' }}">
                 <pathiways-home></pathiways-home>
             </template>
             <template if="{{ selectedOption == 'pathivar' }}">
@@ -92,7 +130,7 @@
             <br>
             Principe Felipe Research Center, Valencia, Spain
             <br>
-            2014
+            2015
         </jso-footer>
 
     </template>
