@@ -40,9 +40,9 @@
             }
 
             /*div.dropdown > div:first-of-type:after {*/
-                /*font-family: 'FontAwesome';*/
-                /*margin-left: 2px;*/
-                /*content: '\f0d7';*/
+            /*font-family: 'FontAwesome';*/
+            /*margin-left: 2px;*/
+            /*content: '\f0d7';*/
             /*}*/
 
             div.dropdown > div:first-of-type + div {
@@ -86,8 +86,18 @@
         </style>
         <div horizontal layout id="main">
             <div class="dropdown">
-                <div tabindex="-1" option="" on-click="{{handleMenu}}">
+                <div tabindex="-1" option="pathivar" on-click="{{handleMenu}}">
                     Run
+                </div>
+            </div>
+            <div class="dropdown">
+                <div tabindex="-1" option="pathiways" on-click="{{handleMenu}}">
+                    Run PATHiWAYS
+                </div>
+            </div>
+            <div class="dropdown">
+                <div tabindex="-1" option="pathipred" on-click="{{handleMenu}}">
+                    Run PATHiPRED
                 </div>
             </div>
         </div>

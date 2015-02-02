@@ -4,12 +4,14 @@
 <link rel="import" href="../bower_components/core-list/core-list.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-no-ready.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/forms/jso-pathivar-form.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-pathivar-result.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/forms/pathways/jso-pathivar-form.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/forms/pathways/jso-pathiways-form.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/forms/pathways/jso-pathipred-form.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/pathways/jso-pathivar-result.html">
 
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
@@ -84,7 +86,8 @@
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                 <div class="link">
                     <font-awesome icon="book"></font-awesome>
-                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation" target="_blank">
+                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation"
+                       target="_blank">
                         &nbsp; Documentation
                     </a>
                 </div>
@@ -96,7 +99,6 @@
                 </div>
             </jso-help-menu>
         </jso-header>
-
 
 
         <div class="content">
@@ -117,6 +119,20 @@
 
                 </pathiways-home>
             </template>
+            <template if="{{ selectedOption == 'pathiways' }}">
+                <jso-pathiways-form
+                        selectedOption="{{selectedOption}}"
+                        studies="{{studies}}"
+                        selectedStudy="{{selectedStudy}}"
+                        ></jso-pathiways-form>
+            </template>
+            <template if="{{ selectedOption == 'pathipred' }}">
+                <jso-pathipred-form
+                        selectedOption="{{selectedOption}}"
+                        studies="{{studies}}"
+                        selectedStudy="{{selectedStudy}}"
+                        ></jso-pathipred-form>
+            </template>
             <template if="{{ selectedOption == 'pathivar' }}">
                 <jso-pathivar-form
                         selectedOption="{{selectedOption}}"
@@ -127,8 +143,9 @@
             <template if="{{ selectedOption == 'jobReady' }}">
                 <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result>
             </template>
-
-            <!--<jso-network-viewer id="networkViewer"></jso-network-viewer>-->
+            <template if="{{ selectedOption == 'jobNoReady' }}">
+                <jso-job-no-ready jobItem="{{jobItem}}"></jso-job-no-ready>
+            </template>
         </div>
         <jso-footer>
             PATHiVAR
@@ -217,7 +234,7 @@
             },
             annonymousLogin: function () {
                 this.$.jsoHeader.anonymousSign();
-            },
+            }
         });
     </script>
 </polymer-element>
