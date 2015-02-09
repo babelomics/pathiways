@@ -1,6 +1,6 @@
 #!/bin/sh
 mkdir -p build
-rm -rf build/index.html build/index.js build/workers build/fonts
+rm -rf build/index.html build/index.js build/workers build/fonts build/image
 
 vulcanize pathiways-index.html -o build/index.html --inline --strip --csp
 
