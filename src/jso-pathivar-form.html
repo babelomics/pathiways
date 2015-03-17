@@ -42,8 +42,7 @@
                 box-sizing: border-box;
                 overflow-y: auto;
                 height: 300px;
-                /*padding-left: 5px;*/
-                /*padding: 5px;*/
+                padding:8px 10px;
             }
 
             .check-name {
@@ -132,6 +131,7 @@
                             on-ok="{{handleFileSelect}}"
                             bioformat="VARIANT"
                             ></jso-project-browser-window>
+                    <br>
                     <span class="errmsg">{{vcfFileMessage}}</span>
 
                     <!--<div class="button action" style="width:150px;" on-click="{{handleSelectFile}}">Select VCF file...-->
@@ -215,7 +215,7 @@
                     <div style="font-size:13px;" class="button" on-click="{{handleDeselectAllCt}}">Deselect all
                     </div>
                 </div>
-                <div class="formcontent">
+                <div class="formcontent fit">
                     <div class="check-list">
                         <template repeat="{{item in consequenceTypes}}">
                             <div horizontal layout>
@@ -300,7 +300,7 @@
                         <div style="font-size:13px;" class="button" on-click="{{handleDeselectAllPw}}">Deselect all
                         </div>
                     </div>
-                    <div class="formcontent">
+                    <div class="formcontent fit">
                         <div class="check-list">
                             <template repeat="{{item in pathwaysSet}}">
                                 <div horizontal layout>
@@ -330,7 +330,7 @@
                              on-click="{{handleCustomTissues}}">Custom
                         </div>
                     </div>
-                    <div class="formcontent">
+                    <div class="formcontent {{selectedTissueSet != 'cus' ? 'fit' : '' }}">
                         <div class="check-list" hidden?="{{selectedTissueSet == 'cus'}}">
                             <template repeat="{{item in tissues}}">
                                 <div horizontal layout>
