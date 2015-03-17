@@ -796,9 +796,10 @@
                             //method: 'POST',
                             success: function (response) {
                                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                    var jobId = response.response[0].result[0].id;
+                                    var job = response.response[0].result[0];
 //                                    me.message = jobId + ' created';
-                                    me.selectedOption = "jobLaunched"
+//                                    me.selectedOption = "jobLaunched"
+				      me.message = job.commandLine;
                                 } else {
                                     me.message = response.response[0].errorMsg;
                                 }
