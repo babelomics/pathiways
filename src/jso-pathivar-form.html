@@ -736,7 +736,7 @@
                 switch (this.selectedTissueSet) {
                     case 'cus':
                         tissue = 'none';
-                        var sgenes = this.$.customSgenesTextArea.value.trim();
+                        var sgenes = this.$.customSgenesTextArea.value.trim().replace(/\n/g, '%0A');
                         if (sgenes != '') {
                             this.tissueMessage = '';
                             query['sgenes-text'] = sgenes;
@@ -753,7 +753,7 @@
                             }
                         }
                         tissue = tissues[0];
-                        var sgenes = this.$.additionalSgenesTextArea.value.trim();
+                        var sgenes = this.$.additionalSgenesTextArea.value.trim().replace(/\n/g, '%0A');
                         if (sgenes != '') {
                             query['sgenes-text'] = sgenes;
                         }
@@ -766,7 +766,7 @@
                                 tissues.push(t.name.replace(/ /gi, "_"));
                             }
                         }
-                        var sgenes = this.$.additionalSgenesTextArea.value.trim();
+                        var sgenes = this.$.additionalSgenesTextArea.value.trim().replace(/\n/g, '%0A');
                         if (sgenes != '') {
                             query['sgenes-text'] = sgenes;
                         }
