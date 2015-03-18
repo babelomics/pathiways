@@ -122,8 +122,10 @@
 
         <div id="genesWarning" class="infobox" hidden?="{{genesWarningText == ''}}">
             <div><strong>{{genesWarningText}}</strong></div>
-            <template repeat="{{g in genesWarningList}}">
-                {{g}},&nbsp;
+            <template repeat="{{g, i in genesWarningList}}">
+                {{g}}<template if="{{i != (genesWarningList.length - 1)}}">
+                    ,&nbsp;
+                </template>
             </template>
         </div>
 
