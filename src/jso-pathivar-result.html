@@ -123,7 +123,8 @@
         <div id="genesWarning" class="infobox" hidden?="{{genesWarningText == ''}}">
             <div><strong>{{genesWarningText}}</strong></div>
             <template repeat="{{g, i in genesWarningList}}">
-                {{g}}<template if="{{i != (genesWarningList.length - 1)}}">
+                {{g}}
+                <template if="{{i != (genesWarningList.length - 1)}}">
                     ,&nbsp;
                 </template>
             </template>
@@ -138,6 +139,24 @@
                             hideEditionBar="false">
         </jso-network-viewer>
         <img class="legend" src="images/pathiways-result-legend.png">
+        <br>
+        <br>
+
+        <div style="margin:20px 0;" hidden?="{{textFile == null}}">
+            <div style="font-size: 15px; color:#666;" horizontal layout>
+                <div class="text" style="border-bottom:1px solid #d3d3d3; margin-right: 10px;">
+                    {{pathwaysMap[selectedPathway].text}} - {{selectedPathway}}
+                </div>
+                <div class="button action" on-click="{{handleDownload}}">
+                    <font-awesome icon="download"></font-awesome>
+                </div>
+            </div>
+            <br>
+            <jso-table data="{{pathwayData}}" columns="{{pathwayColumns}}">
+
+            </jso-table>
+        </div>
+
     </template>
 
     <script>
@@ -150,6 +169,8 @@
                 this.warningMessage = '';
                 this.genesWarningText = '';
                 this.genesWarningList = [];
+
+                this.seletedPathway = '';
             },
             computeDate: function () {
                 return Utils.parseDate(this.jobItem.date);
@@ -192,23 +213,27 @@
             },
             selectPathway: function (pathway) {
                 var me = this;
+                this.selectedPathway = pathway;
                 for (var key in this.pathwaysMap) {
                     this.pathwaysMap[key].selected = false;
                 }
                 this.pathwaysMap[pathway].selected = true;
 
-                var sifContent, nodeAttrContent, edgeAttrContent;
+                var sifContent, nodeAttrContent, edgeAttrContent, textContent = '';
                 for (var i = 0; i < this.outputFiles.length; i++) {
                     var file = this.outputFiles[i];
                     if (file.name.indexOf(pathway) != -1) {
                         if (file.name.indexOf('sif') != -1) {
                             sifContent = this.getFileContent(file.id);
-                        }
-                        if (file.name.indexOf('nodes') != -1) {
+                        } else if (file.name.indexOf('nodes') != -1) {
                             nodeAttrContent = this.getFileContent(file.id);
-                        }
-                        if (file.name.indexOf('edges') != -1) {
+                        } else if (file.name.indexOf('edges') != -1) {
                             edgeAttrContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('edges') != -1) {
+                            edgeAttrContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('.txt') != -1) {
+                            textContent = this.getFileContent(file.id);
+                            this.textFile = file;
                         }
                     }
                 }
@@ -263,10 +288,42 @@
                     }
                 });
 
-                /**  Node Attr **/
 
-                /**  Edge Attr **/
+                /*text content*/
+                var lines = textContent.split('\n');
+                if (lines.length > 0) {
+                    var line, fields, field, data = [], columns = [], obj;
+                    var firstLine = lines[0].replace('#', '');
+                    fields = firstLine.split('\t');
+                    for (var i = 0; i < fields.length; i++) {
+                        field = fields[i];
+                        field = field.trim();
+                        columns.push({
+                            name: field.replace(/ /gi, '_'),
+                            text: field.charAt(0).toUpperCase() + field.slice(1),
+                            width: 200
+                        });
+                    }
 
+                    if (columns.length) {
+                        for (var i = 1; i < lines.length; i++) {
+                            line = lines[i];
+                            if (line != '') {
+                                fields = line.split('\t');
+                                obj = {};
+                                for (var j = 0; j < fields.length; j++) {
+                                    field = fields[j].trim();
+                                    column = columns[j];
+                                    obj[column.name] = field;
+                                }
+                                data.push(obj);
+                            }
+                        }
+                    }
+                }
+
+                this.pathwayData = data;
+                this.pathwayColumns = columns;
             },
             getFileInfo: function (fileIds) {
                 var me = this;
@@ -455,7 +512,27 @@
                 hsa04912: {text: "GnRH SIGNALING PATHWAY", selected: false},
                 hsa04916: {text: "MELANOGENESIS", selected: false},
                 hsa04920: {text: "ADIPOCYTOKINE SIGNALING PATHWAY", selected: false},
-            }
+            },
+            handleDownload: function (e) {
+                var url = OpencgaManager.files.download({
+                    id: this.textFile.id,
+                    query: {
+                        sid: Cookies("bioinfo_sid")
+                    },
+                    request: {
+                        url: true
+                    }
+                });
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = this.textFile.name;
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
         });
     </script>
 </polymer-element>
