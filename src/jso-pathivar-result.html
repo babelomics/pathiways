@@ -101,6 +101,7 @@
 
         <div class="title">
             <b>PATHiVAR</b> - {{jobItem.name}} <span class="date">{{computeDate()}}</span>
+            <font-awesome icon="download" on-click="{{handleDownloadPathwaysFile}}" style="cursor:pointer; margin-left:20px"></font-awesome>
         </div>
         <label>Tissue</label> {{tissueSelected}}
         <br>
@@ -131,7 +132,6 @@
         </div>
 
         <br>
-
         <jso-network-viewer id="networkViewer"
                             lite="true"
                             hideBar="false"
@@ -222,6 +222,11 @@
                 var sifContent, nodeAttrContent, edgeAttrContent, textContent = '';
                 for (var i = 0; i < this.outputFiles.length; i++) {
                     var file = this.outputFiles[i];
+
+                    if (file.name == 'all.txt') {
+                        this.pathwaysTextFile = file;
+                    }
+
                     if (file.name.indexOf(pathway) != -1) {
                         if (file.name.indexOf('sif') != -1) {
                             sifContent = this.getFileContent(file.id);
@@ -514,8 +519,14 @@
                 hsa04920: {text: "ADIPOCYTOKINE SIGNALING PATHWAY", selected: false},
             },
             handleDownload: function (e) {
+                this._downloadFile(this.textFile.id);
+            },
+            handleDownloadPathwaysFile: function (e) {
+                this._downloadFile(this.pathwaysTextFile.id);
+            },
+            _downloadFile: function (fileId) {
                 var url = OpencgaManager.files.download({
-                    id: this.textFile.id,
+                    id: fileId,
                     query: {
                         sid: Cookies("bioinfo_sid")
                     },

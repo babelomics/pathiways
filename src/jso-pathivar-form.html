@@ -341,7 +341,7 @@
                             </template>
                         </div>
                         <div hidden?="{{selectedTissueSet != 'cus'}}">
-                            <div class="text">Write one gene per line:</div>
+                            <div class="text">Write one gene name per line:</div>
                             <textarea id="customSgenesTextArea" class="sgenesTextArea"
                                     ></textarea>
                         </div>
@@ -352,7 +352,7 @@
                         <div flex>Additional gene list (optional)</div>
                     </div>
                     <div class="formcontent">
-                        <div class="text">Write one gene per line:</div>
+                        <div class="text">Write one gene name per line:</div>
                             <textarea id="additionalSgenesTextArea" class="sgenesTextArea"
                                     ></textarea>
                     </div>
@@ -869,6 +869,25 @@
                     {name: 'ADIPOCYTOKINE SIGNALING PATHWAY', selected: false, value: '04920'}
                 ];
 
+//                var str = "";
+//                for (var i = 0; i < this.pathwaysSet.length; i++) {
+//                    var pw = this.pathwaysSet[i];
+//                    str += pw.value + "\t" + pw.name;
+//                    if (i != this.pathwaysSet.length - 1) {
+//                        str += "\n";
+//                    }
+//                }
+//                var blob = new Blob([str], {type: "text/plain"});
+//                var url = URL.createObjectURL(blob);
+//                var link = document.createElement('a');
+//                link.href = url;
+//                link.download = "pathways.txt";
+//                var event = new MouseEvent('click', {
+//                    'view': window,
+//                    'bubbles': true,
+//                    'cancelable': true
+//                });
+//                link.dispatchEvent(event);
 
                 this.consequenceTypes = [
                     {name: "splice_acceptor_variant", text: "splice acceptor variant", selected: true},
