@@ -1,5 +1,10 @@
 build/
+build_old/
 node_modules/
+bower_components/
+lib/
+
+
 
 ## IntelliJ
 *.iml

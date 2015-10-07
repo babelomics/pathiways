@@ -1,0 +1,549 @@
+<polymer-element name="jso-pathivar-result" attributes="jobItem">
+    <template>
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                box-sizing: border-box;
+                padding: 15px 20px;
+
+                z-index: 50000;
+                margin: 0px auto 0px auto;
+
+                min-width: 1000px;
+                border: 1px solid #c6d0da;
+                transition: all 0.2s;
+                box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
+                background-color: #FFFFFF;
+            }
+
+            .title {
+                font-size: 22px;
+                color: #435f7a;
+                border-bottom: thin solid #edebe3;
+                padding: 0px 0px 5px 0px;
+                margin-top: 0;
+                margin-bottom: 15px;
+            }
+
+            .icon {
+                color: #445D76;
+                font-size: 50px;
+            }
+
+            #resultpathways > * {
+                margin: 1px;
+            }
+
+            label {
+                display: inline-block;
+                color: #666;
+                margin-top: 10px;
+            }
+
+            label::after {
+                content: ':'
+            }
+
+            .message {
+                margin-top: 20px;
+            }
+
+            jso-network-viewer {
+                border: 1px solid #d3d3d3;
+                height: 900px;
+            }
+
+            .legend {
+                width: 350px;
+                margin: 10px;
+            }
+
+            .date {
+                font-size: 16px;
+                color: #666;
+                margin-left: 15px;
+            }
+
+            .infobox {
+                position: relative;
+                padding: 10px 10px 10px 40px;
+                margin-bottom: 10px;
+                margin-top: 10px;
+                border-left: 5px solid #e9d295;
+                background-color: #faf3d7;
+                color: #585858;
+            }
+
+            .infobox:after {
+                position: absolute;
+                left: 10px;
+                top: 10px;
+                box-sizing: border-box;
+                font-family: FontAwesome;
+                content: '\f071';
+                color: #bf9947;
+                font-size: 16px;
+            }
+        </style>
+        <template if="{{loading}}">
+            <div class="loading">
+                <font-awesome icon="spinner" animation="spin" style="margin-right: 5px;"></font-awesome>
+                Loading result...
+            </div>
+        </template>
+        <!--<div class="title">-->
+        <!--PATHiVAR Result-->
+        <!--</div>-->
+
+
+        <br>
+
+        <div class="title">
+            <b>PATHiVAR</b> - {{jobItem.name}} <span class="date">{{computeDate()}}</span>
+            <font-awesome icon="download" on-click="{{handleDownloadPathwaysFile}}" style="cursor:pointer; margin-left:20px"></font-awesome>
+        </div>
+        <label>Tissue</label> {{tissueSelected}}
+        <br>
+        <label>Consequence types</label> {{ctypesSelected}}
+        <br>
+        <br>
+
+        <div id="resultpathways" horizontal layout wrap>
+            <template repeat="{{pathway in pathwayNames}}">
+                <div class="button action" on-click="{{handlePathwayClick}}"
+                     data-checked="{{pathwaysMap[pathway].selected}}">
+                    {{pathwaysMap[pathway].text}}
+                </div>
+            </template>
+        </div>
+        <div class="infobox" hidden?="{{warningMessage == ''}}">
+            {{warningMessage}}
+        </div>
+
+        <div id="genesWarning" class="infobox" hidden?="{{genesWarningText == ''}}">
+            <div><strong>{{genesWarningText}}</strong></div>
+            <template repeat="{{g, i in genesWarningList}}">
+                {{g}}
+                <template if="{{i != (genesWarningList.length - 1)}}">
+                    ,&nbsp;
+                </template>
+            </template>
+        </div>
+
+        <br>
+        <jso-network-viewer id="networkViewer"
+                            lite="true"
+                            hideBar="false"
+                            hideToolBar="false"
+                            hideEditionBar="false">
+        </jso-network-viewer>
+        <img class="legend" src="images/pathiways-result-legend.png">
+        <br>
+        <br>
+
+        <div style="margin:20px 0;" hidden?="{{textFile == null}}">
+            <div style="font-size: 15px; color:#666;" horizontal layout>
+                <div class="text" style="border-bottom:1px solid #d3d3d3; margin-right: 10px;">
+                    {{pathwaysMap[selectedPathway].text}} - {{selectedPathway}}
+                </div>
+                <div class="button action" on-click="{{handleDownload}}">
+                    <font-awesome icon="download"></font-awesome>
+                </div>
+            </div>
+            <br>
+            <jso-table data="{{pathwayData}}" columns="{{pathwayColumns}}">
+
+            </jso-table>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            created: function () {
+                this.jobItem;
+                this.outputFiles = [];
+                this.pathwayNames = [];
+
+                this.warningMessage = '';
+                this.genesWarningText = '';
+                this.genesWarningList = [];
+
+                this.seletedPathway = '';
+            },
+            computeDate: function () {
+                return Utils.parseDate(this.jobItem.date);
+            },
+            ready: function () {
+                this.networkViewer = this.$.networkViewer;
+                this.networkViewer.$.nodeRender.setAttribute('hidden', '');
+                this.networkViewer.$.edgeRender.setAttribute('hidden', '');
+            },
+            jobItemChanged: function () {
+                this.loading = true;
+                this.networkViewer.startOver();
+                this.getPathwaysNames();
+                this.getTissue();
+                this.getCtypes();
+                this.getFileInfo(this.jobItem.output.toString(','));
+                this.warningMessage = "";
+                this.genesWarningText = "";
+                this.genesWarningList = [];
+                this.loading = false;
+            },
+            getPathwaysNames: function () {
+                var split1 = this.jobItem.commandLine.split('--pathways');
+                var split2 = split1[1].split(" ");
+                this.pathwayNames = split2[1].split(',');
+            },
+            getTissue: function () {
+                var split1 = this.jobItem.commandLine.split('--tissue ');
+                var split2 = split1[1].split(" ");
+                this.tissueSelected = split2[0];
+            },
+            getCtypes: function () {
+                var split1 = this.jobItem.commandLine.split('--ctypes ');
+                var split2 = split1[1].split(" ");
+                this.ctypesSelected = split2[0].replace(/,/gi, ", ").replace(/_/gi, " ");
+            },
+            handlePathwayClick: function (e) {
+                var pathway = e.target.templateInstance.model.pathway;
+                this.selectPathway(pathway);
+            },
+            selectPathway: function (pathway) {
+                var me = this;
+                this.selectedPathway = pathway;
+                for (var key in this.pathwaysMap) {
+                    this.pathwaysMap[key].selected = false;
+                }
+                this.pathwaysMap[pathway].selected = true;
+
+                var sifContent, nodeAttrContent, edgeAttrContent, textContent = '';
+                for (var i = 0; i < this.outputFiles.length; i++) {
+                    var file = this.outputFiles[i];
+
+                    if (file.name == 'all.txt') {
+                        this.pathwaysTextFile = file;
+                    }
+
+                    if (file.name.indexOf(pathway) != -1) {
+                        if (file.name.indexOf('sif') != -1) {
+                            sifContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('nodes') != -1) {
+                            nodeAttrContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('edges') != -1) {
+                            edgeAttrContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('edges') != -1) {
+                            edgeAttrContent = this.getFileContent(file.id);
+                        } else if (file.name.indexOf('.txt') != -1) {
+                            textContent = this.getFileContent(file.id);
+                            this.textFile = file;
+                        }
+                    }
+                }
+                /**  SIF **/
+                var graph, vAttr, eAttr;
+                var adapter = new SIFNetworkDataAdapter({
+                    dataSource: new StringDataSource(sifContent),
+                    handlers: {
+                        'data:load': function (event) {
+                            graph = event.graph;
+                            new AttributeNetworkDataAdapter({
+                                dataSource: new StringDataSource(nodeAttrContent),
+                                handlers: {
+                                    'data:load': function (event) {
+                                        vAttr = event.attributeManager;
+                                        new AttributeNetworkDataAdapter({
+                                            dataSource: new StringDataSource(edgeAttrContent),
+                                            handlers: {
+                                                'data:load': function (event) {
+                                                    eAttr = event.attributeManager;
+
+                                                    me.networkViewer.startOver();
+                                                    me.networkViewer.setGraph(graph);
+                                                    me.networkViewer.importVertexAttributeManager(vAttr);
+                                                    me.networkViewer.importEdgeAttributeManager(eAttr);
+
+                                                    me._applyVertexAttributes();
+                                                    me._applyEdgeAttributes();
+
+                                                    me.networkViewer.zoom = me.networkViewer.zoom - 2;
+                                                    me.networkViewer.zoom = me.networkViewer.zoom + 2;
+
+                                                },
+                                                'error:parse': function (event) {
+                                                    console.log("Error loading Edge Attributes");
+                                                    console.log(event.errorMsg);
+                                                }
+                                            }
+                                        });
+                                    },
+                                    'error:parse': function (event) {
+                                        console.log("Error loading Node Attributes");
+                                        console.log(event.errorMsg);
+                                    }
+                                }
+                            });
+                        },
+                        'error:parse': function (event) {
+                            console.log("Error loading SIF");
+                            console.log(event.errorMsg);
+                        }
+                    }
+                });
+
+
+                /*text content*/
+                var lines = textContent.split('\n');
+                if (lines.length > 0) {
+                    var line, fields, field, data = [], columns = [], obj;
+                    var firstLine = lines[0].replace('#', '');
+                    fields = firstLine.split('\t');
+                    for (var i = 0; i < fields.length; i++) {
+                        field = fields[i];
+                        field = field.trim();
+                        columns.push({
+                            name: field.replace(/ /gi, '_'),
+                            text: field.charAt(0).toUpperCase() + field.slice(1),
+                            width: 200
+                        });
+                    }
+
+                    if (columns.length) {
+                        for (var i = 1; i < lines.length; i++) {
+                            line = lines[i];
+                            if (line != '') {
+                                fields = line.split('\t');
+                                obj = {};
+                                for (var j = 0; j < fields.length; j++) {
+                                    field = fields[j].trim();
+                                    column = columns[j];
+                                    obj[column.name] = field;
+                                }
+                                data.push(obj);
+                            }
+                        }
+                    }
+                }
+
+                this.pathwayData = data;
+                this.pathwayColumns = columns;
+            },
+            getFileInfo: function (fileIds) {
+                var me = this;
+                OpencgaManager.files.info({
+                    id: fileIds,
+                    query: {
+                        sid: Cookies('bioinfo_sid')
+                    },
+                    request: {
+                        success: function (response) {
+                            console.log(response);
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                me.outputFiles = [];
+                                for (var i = 0; i < response.response.length; i++) {
+                                    var res = response.response[i];
+                                    var file = res.result[0];
+                                    me.outputFiles.push(file);
+                                    if (file.name == 'warning.txt') {
+                                        me.getWarningFileContent(file.id);
+                                    }
+                                    if (file.name == 'genesnotpaired.txt') {
+                                        me.getWarningGenesFileContent(file.id);
+                                    }
+                                }
+                                me.selectPathway(me.pathwayNames[0]);
+                            } else {
+                                console.log(response.response[0].errorMsg);
+                            }
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                });
+            },
+            getFileContent: function (fileId) {
+                var content;
+                OpencgaManager.files.content({
+                    id: fileId,
+                    query: {
+                        sid: Cookies('bioinfo_sid')
+                    },
+                    request: {
+                        async: false,
+                        success: function (response) {
+                            content = response;
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                });
+                return content;
+            },
+            getWarningFileContent: function (fileId) {
+                var me = this;
+                OpencgaManager.files.content({
+                    id: fileId,
+                    query: {
+                        sid: Cookies('bioinfo_sid')
+                    },
+                    request: {
+                        success: function (response) {
+                            me.warningMessage = response;
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                });
+            },
+            getWarningGenesFileContent: function (fileId) {
+                var me = this;
+                OpencgaManager.files.content({
+                    id: fileId,
+                    query: {
+                        sid: Cookies('bioinfo_sid')
+                    },
+                    request: {
+                        success: function (response) {
+                            var split = response.split(':');
+                            me.genesWarningList = split[1].trim().split('\n');
+                            me.genesWarningText = split[0].split('\n')[1].trim() + ':';
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                });
+            },
+            _applyVertexAttributes: function () {
+                this.networkViewer.vertexDefaults.labelAttribute = "name";
+                this.networkViewer.handleVertexDefaultLabelAttribute();
+
+                this.networkViewer.hideNodeSimpleRendering = false;
+                var nodeRender = this.networkViewer.shadowRoot.querySelector('jso-attribute-node-render');
+
+                nodeRender.displayProperty = 'shape';
+                nodeRender.$.shape.attributeName = "shape";
+                nodeRender.$.shape._updateUniqueValues();
+                nodeRender.$.shape.handleApplyDirect();
+                nodeRender.$.shape.handleOk();
+
+                nodeRender.displayProperty = 'color';
+                nodeRender.$.color.attributeName = "color";
+                nodeRender.$.color._updateUniqueValues();
+                nodeRender.$.color.handleApplyDirect();
+                nodeRender.$.color.handleOk();
+
+                nodeRender.displayProperty = 'strokeColor';
+                nodeRender.$.strokeColor.attributeName = "stroke color";
+                nodeRender.$.strokeColor._updateUniqueValues();
+                nodeRender.$.strokeColor.handleApplyDirect();
+                nodeRender.$.strokeColor.handleOk();
+
+                nodeRender.displayProperty = 'size';
+                nodeRender.$.size.attributeName = "size";
+                nodeRender.$.size._updateUniqueValues();
+                nodeRender.$.size.handleApplyDirect();
+                nodeRender.$.size.handleOk();
+
+                nodeRender.displayProperty = 'strokeSize';
+                nodeRender.$.strokeSize.attributeName = "stroke size";
+                nodeRender.$.strokeSize._updateUniqueValues();
+                nodeRender.$.strokeSize.handleApplyDirect();
+                nodeRender.$.strokeSize.handleOk();
+
+                nodeRender.displayProperty = null;
+                this.networkViewer.hideNodeSimpleRendering = true;
+            },
+            _applyEdgeAttributes: function () {
+                this.networkViewer.hideEdgeSimpleRendering = false;
+                var edgeRender = this.networkViewer.shadowRoot.querySelector('jso-attribute-edge-render');
+
+                edgeRender.displayProperty = 'shape';
+                edgeRender.$.shape.attributeName = "head";
+                edgeRender.$.shape._updateUniqueValues();
+                edgeRender.$.shape.handleApplyDirect();
+                edgeRender.$.shape.handleOk();
+
+                edgeRender.displayProperty = 'color';
+                edgeRender.$.color.attributeName = "color";
+                edgeRender.$.color._updateUniqueValues();
+                edgeRender.$.color.handleApplyDirect();
+                edgeRender.$.color.handleOk();
+
+                edgeRender.displayProperty = 'opacity';
+                edgeRender.$.opacity.attributeName = "opacity";
+                edgeRender.$.opacity._updateUniqueValues();
+                edgeRender.$.opacity.handleApplyDirect();
+                edgeRender.$.opacity.handleOk();
+
+                edgeRender.displayProperty = 'shaft';
+                edgeRender.$.shaft.attributeName = "shaft";
+                edgeRender.$.shaft._updateUniqueValues();
+                edgeRender.$.shaft.handleApplyDirect();
+                edgeRender.$.shaft.handleOk();
+
+                edgeRender.displayProperty = null;
+                this.networkViewer.hideEdgeSimpleRendering = true;
+            },
+            pathwaysMap: {
+                hsa03320: {text: "PPAR SIGNALING PATHWAY", selected: false},
+                hsa04012: {text: "ERBB SIGNALING PATHWAY", selected: false},
+                hsa04020: {text: "CALCIUM SIGNALING PATHWAY", selected: false},
+                hsa04060: {text: "CYTOKINE-CYTOKINE RECEPTOR", selected: false},
+                hsa04080: {text: "NEUROACTIVE LIGAND-RECEPTOR INTERACTION", selected: false},
+                hsa04115: {text: "p53 SIGNALING PATHWAY", selected: false},
+                hsa04150: {text: "mTOR SIGNALING PATHWAY", selected: false},
+                hsa04210: {text: "APOPTOSIS", selected: false},
+                hsa04310: {text: "WNT SIGNALING PATHWAY", selected: false},
+                hsa04330: {text: "NOTCH SIGNALING PATHWAY", selected: false},
+                hsa04340: {text: "HEDGEHOG SIGNALING PATHWAY", selected: false},
+                hsa04370: {text: "VEGF SIGNALING PATHWAY", selected: false},
+                hsa04512: {text: "ECM-RECEPTOR INTERACTION", selected: false},
+                hsa04514: {text: "CELL ADHESION MOLECULES", selected: false},
+                hsa04530: {text: "TIGH JUNCTION", selected: false},
+                hsa04540: {text: "GAP JUNCTION", selected: false},
+                hsa04612: {text: "ANTIGEN PROCESING AND PRESENTATION", selected: false},
+                hsa04620: {text: "TOLL-LIKE RECEPTOR SIGNALING PATHWAY", selected: false},
+                hsa04630: {text: "JAK-STAT SIGNALING PATHWAY", selected: false},
+                hsa04660: {text: "T CELL RECPTOR SIGNALING PATHWAY", selected: false},
+                hsa04662: {text: "B CELL RECEPTOR SIGNALING PATHWAY", selected: false},
+                hsa04664: {text: "Fc EPSILON RI SIGNALING PATHWAY", selected: false},
+                hsa04910: {text: "INSULIN SIGNALING PATHWAY", selected: false},
+                hsa04912: {text: "GnRH SIGNALING PATHWAY", selected: false},
+                hsa04916: {text: "MELANOGENESIS", selected: false},
+                hsa04920: {text: "ADIPOCYTOKINE SIGNALING PATHWAY", selected: false},
+            },
+            handleDownload: function (e) {
+                this._downloadFile(this.textFile.id);
+            },
+            handleDownloadPathwaysFile: function (e) {
+                this._downloadFile(this.pathwaysTextFile.id);
+            },
+            _downloadFile: function (fileId) {
+                var url = OpencgaManager.files.download({
+                    id: fileId,
+                    query: {
+                        sid: Cookies("bioinfo_sid")
+                    },
+                    request: {
+                        url: true
+                    }
+                });
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = this.textFile.name;
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+        });
+    </script>
+</polymer-element>
