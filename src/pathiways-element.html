@@ -1,247 +1,404 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
-<link rel="import" href="../bower_components/sortable-table/sortable-table.html">
-<link rel="import" href="../bower_components/core-list/core-list.html">
-
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-table.html">
-
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-no-ready.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
-
-<link rel="import" href="jso-pathivar-form.html">
-<link rel="import" href="jso-pathiways-form.html">
-<link rel="import" href="jso-pathipred-form.html">
-<link rel="import" href="jso-pathivar-result.html">
-
+<script src="../bower_components/file-saver.js/FileSaver.js"></script>
 <link rel="import" href="../lib/jsorolla/src/network-viewer/jso-network-viewer.html">
 
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
+
+<!-- <link rel="import" href="jso-pathivar-form.html">
+<link rel="import" href="jso-pathiways-form.html">
+<link rel="import" href="jso-pathipred-form.html">
+<link rel="import" href="jso-pathivar-result.html"> -->
+
 <link rel="import" href="pathiways-home.html">
-<link rel="import" href="pathiways-menu.html">
+<!-- <link rel="import" href="pathiways-menu.html"> -->
 
-<polymer-element name="pathiways-element">
+<dom-module id="pathiways-element">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+            background-color: var(--default-primary-color);
+            height: 100%;
+            width: 100%;
+        }
+
+        #menu div.option {
+            box-sizing: border-box;
+            margin-right: 1vw;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 30px;
+            padding: 0 5px;
+        }
+
+        #menu div.option:hover {
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        #menu div.option[active] {
+            font-weight: normal;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        jso-opencga-header {
+            position: absolute;
+            top: 0;
+        }
+        jso-opencga-footer {
+            position: fixed;
+            bottom: 0;
+        }
+
+        .content {
+            position: absolute;
+            width: 100%;
+            top: 60px;
+            height: calc(100vh - 60px);
+            background-color: transparent;
+        }
+
+        jso-job-result {
+            min-height: 100%;
+        }
+
+        jso-opencga-upload-file {
+            box-sizing: border-box;
+            padding: 20px 30px;
+        }
+
+        #browserPanel {
+            position: absolute;
+            top: 0px;
+            left: 0;
+            width: 600px;
+        }
+
+        #jobsPanel {
+            position: absolute;
+            top: 0px;
+            right: 0;
+            width: 600px;
+        }
+
+        #settings {
+            width: 400px;
+            padding: 20px;
+        }
+
+        #browser {
+            /*width: 600px;*/
+            height: 400px;
+        }
+
+        @media (max-width: 1100px) {
+            .option-text {
+                display: none;
+            }
+        }
+
+        .userid {
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        #description {
+            color: var(--accent-color);
+            font-weight: normal;
+        }
+    </style>
     <template>
-        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-style.css">
-        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-panel.css">
-        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-form.css">
-        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-dropdown.css">
-        <style>
-            :host {
-                display: block;
-                position: relative;
-                cursor: default;
-                font-size: 13px;
-            }
-
-            .content {
-                background-color: #435f7a;
-                position: relative;
-                /*min-height: calc(100vh - 160px);*/
-            }
-
-            .content > * {
-                min-height: calc(100vh - 160px);
-            }
-
-            .a {
-                text-decoration: none;
-                color: #CCCCCC;
-                cursor: pointer;
-            }
-
-            .a:visited {
-                color: #CCCCCC;
-            }
-
-            .a:hover {
-                color: white;
-                /*text-decoration: underline;*/
-            }
-
-            jso-project-browser {
-                height: calc(100vh - 160px);
-            }
-
-            pathivar-result {
-                /*height: calc(100vh - 60px);*/
-            }
-        </style>
-        <jso-header id="jsoHeader"
-                    isLogged="{{isLogged}}"
-                    on-session-change="{{handleSessionChange}}"
-
-                    selectedOption="{{selectedOption}}"
-                    userData="{{userData}}"
-                    showJobs="{{showJobs}}"
-                    options="{{options}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    allowedTools="{{allowedTools}}"
-                    jobItem="{{jobItem}}">
-             <span class="icon">
-                    <img src="images/pathiways-logo.svg" style="height: 54px;margin: 1px 5px 0 0;">
-            </span>
-            <span class="title">PATHiVAR</span>
-                        <span class="description">
-            </span>
-            <!--<span class="description">Pathway analysis tool</span>-->
-
-            <pathiways-menu class="menu" selectedOption="{{selectedOption}}">
-            </pathiways-menu>
-            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <div class="link">
-                    <font-awesome icon="book"></font-awesome>
-                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation"
-                       target="_blank">
-                        &nbsp; Documentation
-                    </a>
+        <div class="content" menu-option="home,pathiways,pathipred,pathivar,job">
+            <jso-panel id="jobsPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
-                <div class="link">
-                    <font-awesome icon="compass"></font-awesome>
-                    <a class="a" href="https://github.com/babelomics/pathiways/wiki/Pathivar-tutorial" target="_blank">
-                        &nbsp; Tutorial
-                    </a>
+                <div class="container flex">
+                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
                 </div>
-            </jso-help-menu>
-        </jso-header>
-
-
-        <div class="content">
-            <template if="{{selectedOption == 'projects' }}">
-                <jso-project-browser
-                        userData="{{userData}}"
-                        studies="{{studies}}"
-                        selectedStudy="{{selectedStudy}}"
-                        selectedProject="{{selectedProject}}"
-                        bioformat="VARIANT">
-                </jso-project-browser>
-            </template>
-
-            <template if="{{ selectedOption == 'home' || selectedOption == '' }}">
-                <pathiways-home
-                        id="pathiwaysHome"
-                        on-annonymous="{{annonymousLogin}}"
-                        isLogged="{{isLogged}}">
-
-                </pathiways-home>
-            </template>
-            <template if="{{ selectedOption == 'pathiways' }}">
-                <jso-pathiways-form
-                        selectedOption="{{selectedOption}}"
-                        studies="{{studies}}"
-                        selectedStudy="{{selectedStudy}}"
-                        ></jso-pathiways-form>
-            </template>
-            <template if="{{ selectedOption == 'pathipred' }}">
-                <jso-pathipred-form
-                        selectedOption="{{selectedOption}}"
-                        studies="{{studies}}"
-                        selectedStudy="{{selectedStudy}}"
-                        ></jso-pathipred-form>
-            </template>
-            <template if="{{ selectedOption == 'pathivar' }}">
-                <jso-pathivar-form
-                        selectedOption="{{selectedOption}}"
-                        studies="{{studies}}"
-                        selectedStudy="{{selectedStudy}}"
-                        ></jso-pathivar-form>
-            </template>
-            <template if="{{ selectedOption == 'jobReady' }}">
-                <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result>
-            </template>
-            <template if="{{ selectedOption == 'jobNoReady' }}">
-                <jso-job-no-ready jobItem="{{jobItem}}"></jso-job-no-ready>
-            </template>
+            </jso-panel>
         </div>
-        <jso-footer>
+
+        <div class="content" menu-option="pathiways">
+            <jso-pathiways-form id="pathiwaysForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathiways-form>
+        </div>
+
+        <div class="content" menu-option="pathipred">
+            <jso-pathipred-form id="pathipredForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathipred-form>
+        </div>
+
+        <div class="content" menu-option="pathivar">
+            <jso-pathivar-form id="pathivarForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathivar-form>
+        </div>
+
+
+        <div class="content" menu-option="job">
+            <!-- <jso-pathivar-result jobItem="{{jobItem}}"></jso-pathivar-result> -->
+            <!-- <jso-job-result id="jobResult" jobItem="{{jobItem}}" hidden?="{{selectedOption != 'jobReady' }}" on-job-close="handleCloseJobResult" network-viewer="{{networkViewer}}">
+            </jso-job-result> -->
+            <!-- <jso-job-no-ready jobItem="{{jobItem}}"></jso-job-no-ready> -->
+        </div>
+
+
+        <div class="content" menu-option="home">
+            <pathiways-home id="pathiwaysHome" on-annonymous="annonymousLogin" isLogged="{{isLogged}}">
+
+            </pathiways-home>
+
+            <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-cloud"></i>&nbsp; Browse my data
+                </div>
+                <jso-opencga-browser id="browser" class="container flex" on-fileselect="handleFileSelect" bioformats="{{bioformats}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
+            </jso-panel>
+        </div>
+
+        <jso-opencga-header id="jsoHeader" hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
+            <div class="icon">
+                <img src="../images/pathiways-logo.svg" style="height: 54px;margin: 3px 5px 0 0;">
+            </div>
+            <span class="title">PATHiWAYS</span>
+            <span id="description" class="description">
+                Pathways analysis suite
+            </span>
+
+            <div id="menu" class="menu horizontal layout flex">
+                <div style="margin-left:4vw;"></div>
+                <div title="Open Pathiways form" class="option" on-click="handleMenuOption" data-option="pathiways">
+                    <i class="fa fa-magic"></i>
+                    <span class="option-text">Pathiways</span>
+                </div>
+                <div title="Open Pathipred form" class="option" on-click="handleMenuOption" data-option="pathipred">
+                    <i class="fa fa-magic"></i>
+                    <span class="option-text">Pathipred</span>
+                </div>
+                <div title="Open Pathivar form" class="option" on-click="handleMenuOption" data-option="pathivar">
+                    <i class="fa fa-magic"></i>
+                    <span class="option-text">Pathivar</span>
+                </div>
+
+                <div style="margin-left:2vw;"></div>
+
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
+                    <i class="fa fa-cloud"></i>
+                    <span class="option-text">My data</span>
+                </div>
+                <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="jobsPanel">
+                    <i class="fa fa-rocket"></i>
+                    <span class="option-text">My jobs</span>
+                </div>
+
+                <!--<div class="flex" style="margin-left:2vw;"></div>-->
+                <!--<div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">-->
+                <!--<i class="fa fa-wrench"></i>-->
+                <!--<span class="option-text">Settings</span>-->
+                <!--</div>-->
+            </div>
+
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <a href="https://github.com/babelomics/pathiways" target="_blank">
+                    <i class="fa fa-list-alt"></i> &nbsp; About
+                </a>
+                <a href="https://github.com/babelomics/pathiways/wiki/Pathiways-documentation" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Pathiways
+                </a>
+                <a href="https://github.com/babelomics/pathiways/wiki/Pathipred-documentation" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Pathipred
+                </a>
+                <a href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Pathivar
+                </a>
+            </jso-help-menu>
+        </jso-opencga-header>
+
+        <jso-opencga-footer menu-option="home,login,signup,profile,remember">
             PATHiVAR
             <br>
             <span style="font-weight:bold;">Computational Genomics Department</span>
-            <br>
-            Principe Felipe Research Center, Valencia, Spain
-            <br>
-            2015
-        </jso-footer>
+            <br> Principe Felipe Research Center, Valencia, Spain
+            <br> 2015
+        </jso-opencga-footer>
 
     </template>
     <script>
         Polymer({
-            created: function () {
-                this.selectedOption = 'home';
-
-                this.showJobs = false;
-                this.userData;
-
-
-                this.isLogged
-
-                this.selectedProject;
-                this.selectedStudy;
-                this.studies;
-
-                this.jobItem;
-
-                this.allowedTools = ['pathiways'];
-
-                this.options = [
-//                    {
-//                    option: 'pathivar',
-//                    text: 'PATHiWAYS'
-//                }
-//                    ,{
-//                    option: 'pathivar',
-//                    text: 'PATHiPRED'
-//                },
-                    {
-                        option: 'pathivar',
-                        text: 'Run'
-                    }
-                ]
-            },
-            ready: function () {
-                var me = this;
-//                this.selectedOption = 'pathivar';
-//                this.selectedOption = 'projects';
-            },
-            selectedOptionChanged: function (oldValue, newValue) {
-                if (this.selectedOption == "pathivar" && this.$.jsoHeader.isLogged == false) {
-                    this.$.jsoHeader.anonymousSign();
+            is: "pathiways-element",
+            properties: {
+                version: {
+                    type: String,
+                    reflectToAttribute: true
+                },
+                selectedOption: {
+                    type: String,
+                    value: "home",
+                    notify: true,
+                    reflectToAttribute: true,
+                    observer: 'selectedOptionChanged'
+                },
+                userData: {
+                    type: Object,
+                    notify: true,
+                    observer: 'userDataChanged'
+                },
+                projects: {
+                    type: Array,
+                    notify: true
+                },
+                bioformats: {
+                    type: Array,
+                    notify: true,
+                    value: [{
+                        value: 'IDLIST',
+                        text: 'ID list'
+                    }, {
+                        value: 'IDLIST_RANKED',
+                        text: 'ID list ranked'
+                    }]
+                },
+                allowedTools: {
+                    type: Array,
+                    value: ['snow', 'network-miner', 'fatigo', /* 'reactome-fi' */ ]
+                },
+                cellBaseHost: {
+                    type: String,
+                    value: CellBaseManager.host
+                },
+                opencgaHost: {
+                    type: String,
+                    value: OpencgaManager.host
+                },
+                networkViewer: {
+                    type: Object
                 }
             },
-            handleSessionChange: function () {
-                this.selectedOption = "pathivar";
-            },
-
-            userDataChanged: function (oldValue, newValue) {
-                var me = this;
-                this.selectedProject = this.userData.projects[0];
-
-                OpencgaManager.projects.studies({
-                    id: this.selectedProject.id,
-                    query: {
-                        sid: Cookies("bioinfo_sid")
-                    },
-                    request: {
-                        //method: 'POST',
-                        success: function (response) {
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                me.studies = response.response[0].result;
-                                me.selectedStudy = me.studies[0];
-                            } else {
-                                console.log(response.error);
-                                console.log(response.response[0].errorMsg);
-                            }
-                        },
-                        error: function () {
-                            console.log('Server error, try again later.');
-                        }
+            selectedOptionChanged: function(neo, old) {
+                var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
+                for (var i = 0; i < menuItems.length; i++) {
+                    var item = menuItems[i];
+                    var currentItemValues = item.getAttribute("menu-option").split(',');
+                    if (currentItemValues.indexOf(neo) != -1) {
+                        item.removeAttribute("hidden");
+                    } else {
+                        item.setAttribute('hidden', '');
                     }
-                })
+                }
             },
-            annonymousLogin: function () {
+            handleMenuOption: function(e) {
+                var option = e.currentTarget.dataset['option'];
+                this.setMenu(option);
+            },
+            setMenu: function(option) {
+                if (option) {
+                    this.selectedOption = option;
+                }
+            },
+            handleMenuPanel: function(e) {
+                var panel = this.$[e.currentTarget.dataset.panel];
+                panel.hidden = !panel.hidden;
+            },
+            handleLoggedOnlyMenuPanel: function(e) {
+                var panel = this.$[e.currentTarget.dataset.panel];
+                if (this.$.jsoHeader.isLogged) {
+                    panel.hidden = !panel.hidden;
+                } else {
+                    this.selectedOption = 'login';
+                    this._lastLogedRequest = panel;
+                }
+            },
+            handlePanelHidden: function(e) {
+                var id = e.currentTarget.getAttribute('id');
+                var sel = '[data-panel=' + id + ']';
+                var el = Polymer.dom(this.$.menu).querySelector(sel);
+                if (e.currentTarget.hidden) {
+                    el.removeAttribute('active')
+                } else {
+                    el.setAttribute('active', '');
+                }
+            },
+            handleFileSelect: function(e) {
+                console.log("file");
+                console.log(e.detail);
+                var file = e.detail;
+                if (file.index && file.index.status == 'READY') {}
+            },
+            handleJobSelect: function(e) {
+                var job = e.detail;
+                if (job && job.status === 'READY') {
+                    this.set('selectedOption', 'job');
+                    this.$.jobResult.set('jobItem', e.detail);
+                }
+            },
+            handleCloseJobResult: function(e) {
+                this.set('selectedOption', 'home');
+            },
+
+            handleLogin: function() {
+                this.selectedOption = "home";
+                if (this._lastLogedRequest) {
+                    this._lastLogedRequest.hidden = false;
+                    this._lastLogedRequest = null;
+                }
+            },
+            handleLogout: function() {
+                this.$.browserPanel.hidden = true;
+            },
+            handleUserNeedRefresh: function() {
+                this.$.jsoHeader.getUserInfo(true);
+            },
+            userDataChanged: function(neo, old) {
+                var me = this;
+                if (this.userData) {
+                    var projectIds = [];
+                    for (var i = 0; i < this.userData.projects.length; i++) {
+                        var p = this.userData.projects[i];
+                        projectIds.push(p.id);
+                    }
+                    var projects = [];
+                    OpencgaManager.projects.studies({
+                        id: projectIds.join(','),
+                        query: {
+                            sid: Cookies("bioinfo_sid")
+                        },
+                        request: {
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    for (var i = 0; i < response.response.length; i++) {
+                                        var r = response.response[i];
+                                        me.userData.projects[i].studies = r.result;
+                                        projects.push(me.userData.projects[i]);
+                                    }
+                                    /* update projects property*/
+                                    me.projects = projects;
+                                } else {
+                                    console.log(response.error);
+                                    console.log(response.response[0].errorMsg);
+                                }
+                                me.loading = false;
+                            },
+                            error: function() {
+                                console.log('Server error, try again later.');
+                                me.loading = false;
+                            }
+                        }
+                    });
+                } else {
+                    console.log("no user data")
+                }
+            },
+            annonymousLogin: function() {
                 this.$.jsoHeader.anonymousSign();
             }
         });
     </script>
-</polymer-element>
+</dom-module>

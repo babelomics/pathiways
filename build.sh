@@ -1,13 +1,58 @@
 #!/bin/sh
-mkdir -p build
-rm -rf build/index.html build/index.js build/fonts build/image
+NAME="pathiways"
+BP=build
 
-vulcanize pathiways-index.html -o build/index.html --inline --strip --csp
+rm -rf $BP
+mkdir -p $BP
+mkdir -p $BP/tmp
+mkdir -p $BP/fonts
+mkdir -p $BP/fontawesome
+mkdir -p $BP/images
+mkdir -p $BP/css
 
-cp -r bower_components/fontawesome/fonts build/
-cp -r src/fonts/*.woff* build/fonts/
-cp -r src/images build/
+vulcanize \
+    --inline-scripts \
+    --inline-css \
+    --strip-comments \
+    src/$NAME-element.html > $BP/tmp/build.html
 
-sed -i s@../bower_components/fontawesome/fonts/fontawesome-webfont.@fonts/fontawesome-webfont.@g build/index.html
-sed -i s@../src/fonts/@fonts/@g build/index.html
-sed -i s@../src/images/@images/@g build/index.html
+crisper \
+    --source $BP/tmp/build.html \
+    --html $BP/tmp/$NAME-element.html \
+    --js $BP/tmp/$NAME.js
+
+uglifyjs $BP/tmp/$NAME.js > $BP/tmp/$NAME.min.js
+sed -i s@$NAME.js@$NAME.min.js@g $BP/tmp/$NAME-element.html
+rm -rf $BP/tmp/build.html
+
+cp COPYING $BP/
+cp README.md $BP/
+
+mv $BP/tmp/$NAME-element.html $BP/
+mv $BP/tmp/$NAME.js $BP/
+mv $BP/tmp/$NAME.min.js $BP/
+cp -r conf $BP/
+cp -r $NAME-index.html $BP/index.html
+cp -r images $BP/
+
+#
+# fix index.html paths
+#
+sed -i s@lib/jsorolla/styles/@@g $BP/index.html
+cp -r lib/jsorolla/styles/fonts/* $BP/fonts/
+
+sed -i s@bower_components/@@g $BP/index.html
+cp -r bower_components/fontawesome/css $BP/fontawesome/
+cp -r bower_components/fontawesome/fonts $BP/fontawesome/
+cp -r bower_components/webcomponentsjs $BP/
+
+sed -i s@lib/jsorolla/src/lib/components/@css/@g $BP/index.html
+cp -r lib/jsorolla/src/lib/components/jso-global.css $BP/css/
+cp -r lib/jsorolla/src/lib/components/jso-form.css $BP/css/
+cp -r lib/jsorolla/src/lib/components/jso-dropdown.css $BP/css/
+
+sed -i s@src/@@g $BP/index.html
+## end fix paths
+
+
+rm -rf $BP/tmp
