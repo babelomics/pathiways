@@ -33,7 +33,7 @@ mv $BP/tmp/$NAME.js $BP/
 mv $BP/tmp/$NAME.min.js $BP/
 cp -r conf $BP/
 cp -r $NAME-index.html $BP/index.html
-cp -r images $BP/
+cp -r src/images $BP/
 
 #
 # fix index.html paths

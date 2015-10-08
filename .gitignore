@@ -2,8 +2,6 @@ build/
 build_old/
 node_modules/
 bower_components/
-lib/
-
 
 
 ## IntelliJ
@@ -41,4 +39,3 @@ local.properties
 
 # PDT-specific
 .buildpath
-

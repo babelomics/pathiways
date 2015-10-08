@@ -1,0 +1,46 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs',
+1 verbose cli   '/usr/bin/npm',
+1 verbose cli   'completion',
+1 verbose cli   '--',
+1 verbose cli   'npm',
+1 verbose cli   'install',
+1 verbose cli   'vul' ]
+2 info using npm@1.4.21
+3 info using node@v0.10.25
+4 verbose request where is /-/short
+5 verbose request registry https://registry.npmjs.org/
+6 verbose request id 812192a28f21b7a5
+7 verbose url raw /-/short
+8 verbose url resolving [ 'https://registry.npmjs.org/', './-/short' ]
+9 verbose url resolved https://registry.npmjs.org/-/short
+10 verbose request where is https://registry.npmjs.org/-/short
+11 info trying registry request attempt 1 at 15:01:45
+12 http GET https://registry.npmjs.org/-/short
+13 http 404 https://registry.npmjs.org/-/short
+14 silly registry.get cb [ 404,
+14 silly registry.get   { 'content-type': 'application/json',
+14 silly registry.get     'cache-control': 'max-age=0',
+14 silly registry.get     'content-length': '2',
+14 silly registry.get     'accept-ranges': 'bytes',
+14 silly registry.get     date: 'Thu, 08 Oct 2015 13:01:45 GMT',
+14 silly registry.get     via: '1.1 varnish',
+14 silly registry.get     connection: 'keep-alive',
+14 silly registry.get     'x-served-by': 'cache-lcy1135-LCY',
+14 silly registry.get     'x-cache': 'MISS',
+14 silly registry.get     'x-cache-hits': '0',
+14 silly registry.get     'x-timer': 'S1444309305.568715,VS0,VE163' } ]
+15 error TypeError: Object #<Object> has no method 'filter'
+15 error     at /usr/share/npm/lib/install.js:43:17
+15 error     at saved (/usr/share/npm/node_modules/npm-registry-client/lib/get.js:167:7)
+15 error     at Object.oncomplete (fs.js:107:15)
+16 error If you need help, you may report this *entire* log,
+16 error including the npm and node versions, at:
+16 error     <http://github.com/npm/npm/issues>
+17 error System Linux 3.19.0-10-generic
+18 error command "/usr/bin/nodejs" "/usr/bin/npm" "completion" "--" "npm" "install" "vul"
+19 error cwd /home/fsalavert/appl/pathiways
+20 error node -v v0.10.25
+21 error npm -v 1.4.21
+22 error type undefined_method
+23 verbose exit [ 1, true ]

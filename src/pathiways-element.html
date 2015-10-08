@@ -12,10 +12,10 @@
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
 
-<!-- <link rel="import" href="jso-pathivar-form.html">
-<link rel="import" href="jso-pathiways-form.html">
-<link rel="import" href="jso-pathipred-form.html">
-<link rel="import" href="jso-pathivar-result.html"> -->
+<link rel="import" href="jso-pathivar-form.html">
+<!-- <link rel="import" href="jso-pathiways-form.html"> -->
+<!-- <link rel="import" href="jso-pathipred-form.html"> -->
+<!-- <link rel="import" href="jso-pathivar-result.html"> -->
 
 <link rel="import" href="pathiways-home.html">
 <!-- <link rel="import" href="pathiways-menu.html"> -->
@@ -117,6 +117,9 @@
             color: var(--accent-color);
             font-weight: normal;
         }
+
+
+
     </style>
     <template>
         <div class="content" menu-option="home,pathiways,pathipred,pathivar,job">
@@ -166,7 +169,7 @@
 
         <jso-opencga-header id="jsoHeader" hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
             <div class="icon">
-                <img src="../images/pathiways-logo.svg" style="height: 54px;margin: 3px 5px 0 0;">
+                <img src="./images/pathiways-logo.svg" style="height: 54px;margin: 3px 5px 0 0;">
             </div>
             <span class="title">PATHiWAYS</span>
             <span id="description" class="description">
@@ -223,9 +226,9 @@
         </jso-opencga-header>
 
         <jso-opencga-footer menu-option="home,login,signup,profile,remember">
-            PATHiVAR
+            PATHiWAYS
             <br>
-            <span style="font-weight:bold;">Computational Genomics Department</span>
+            Created by <span style="font-weight:bold;">Computational Genomics Department</span>
             <br> Principe Felipe Research Center, Valencia, Spain
             <br> 2015
         </jso-opencga-footer>
