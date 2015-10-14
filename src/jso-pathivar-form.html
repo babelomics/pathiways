@@ -5,36 +5,825 @@
             position: relative;
             box-sizing: border-box;
             padding: 15px 40px;
-
             background-color: var(--light-primary-color);
-
             margin: 0px 10%;
         }
-    </style>
 
+        #title {
+            text-align: center;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .coment {
+            color: #666;
+        }
+
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 150px;
+        }
+
+        .dam {
+            text-align: right;
+            color: #666;
+        }
+    </style>
     <template>
-        Pathivar form, work in progress...
+        <p id="title">
+            <strong>PATHiVAR input parameters</strong>
+        </p>
+
         <form id="form">
+            <div class="flex"></div>
+            <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    VCF file
+                </div>
+                <div class="jso-formcontent">
+                    <jso-opencga-file-origin
+                            id="inputFile"
+                            selection-mode="file"
+                            bioformats="{{bioformats}}"
+                            projects="{{projects}}"
+                            columns="{{columns}}"
+                            items="{{items}}"
+                            selected="{{selected}}">
+                    </jso-opencga-file-origin>
+                </div>
+            </div>
 
             <div class="jso-formbox">
                 <div class="jso-formtitle">
-                    title
+                    Sample name from VCF
                 </div>
                 <div class="jso-formcontent">
-                    content
+                    <select>
+                        <option value=""> </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Inheritance pattern
+                </div>
+                <div class="jso-formcontent">
+                    <select>
+                        <option value="Recessive">Recessive</option>
+                        <option value="Dominant">Dominant</option>
+                    </select>
+                    <div class="coment">Should compound heterozygotes be included?</div>
+                    <select>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout">
+                    <div class="flex">Consequence types</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectAllCt">Select all</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectNoneCt">Deselect all</div>
+                </div>
+
+
+
+                <div id="typesContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
+                    <template is="dom-repeat" items="{{typesSet}}">
+                        <label class="jso-control">
+                            <input type="checkbox" checked$="{{item.selected}}">
+                            <span>{{item.text}}</span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Deleteriousness indexes
+                </div>
+                <div class="jso-formcontent">
+                    <div class="horizontal layout" style="line-height: 25px;">
+                        <label class="jso-control">
+                            <input type="checkbox" checked="true" on-click="selectSift" >
+                            <span style="margin-right: 100px">SIFT</span>
+                        </label>
+                        <div id="sift" hidden="{{siftHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div>threshold: &nbsp;</div>
+                        <div>
+                            <input type="number" step="0.01" max="1" min="0" value="{{tresholdSift}}">
+                        </div>
+                        <label class="coment">Values below the threshold (0.05 default) predict protein DAMAGE</label>
+                      </div>
+                    </div>
+
+                    <div class="horizontal layout" style="line-height: 25px;">
+                        <label class="jso-control">
+                            <input type="checkbox" checked="true" on-click="selectPoly">
+                            <span style="margin-right: 100px">PolyPhen</span>
+                        </label>
+                        <div id="poly" hidden="{{polyHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div>threshold: &nbsp;</div>
+                        <div>
+                            <input type="number" step="0.01" max="1" min="0" value="{{tresholdPolyphen}}">
+                        </div>
+                        <label class="coment">Values below the threshold (0.95 default) predict protein DAMAGE</label>
+                        </div>
+                    </div>
+                    <div class="horizontal layout" style="line-height: 25px;">
+                        <label class="jso-control">
+                            <input type="checkbox" on-click="selectPhats">
+                            <span style="margin-right: 100px">PhastCons</span>
+                        </label>
+                        <div id="phats" hidden="{{phatsHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div>threshold: &nbsp;</div>
+                        <div>
+                            <input type="number" step="0.01" max="1" min="0" value="{{tresholdCons}}">
+                        </div>
+                        <label class="coment">Values below the threshold (200 default) predict protein DAMAGE</label>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout">
+                    <div class="flex">Pathways</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectAllPw">Select all</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectNonePw">Deselect all</div>
+                </div>
+                <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
+                    <template is="dom-repeat" items="{{pathwaysSet}}">
+                        <label class="jso-control">
+                            <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
+                            <span>{{item.name}}</span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout">
+                    <div class="flex">Tissues</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectExpression">Expression atlas</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectHuman">Human protein atlas</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectCustom">Custom</div>
+                </div>
+                <div id="tissues" class="jso-formcontent" style="overflow-y:scroll; height:100px" hidden="{{additionHidden}}">
+                    <template is="dom-repeat" items="{{selectedTissueSet}}">
+                        <label class="jso-control">
+                            <input type="checkbox" checked$="{{item.selected}}">
+                            <span>{{item.name}}</span>
+                        </label>
+                    </template>
+                </div>
+                <div class="jso-formcontent" hidden="{{customHidden}}">
+                    <div>Write one gene name per line:</div>
+                    <textarea></textarea>
+                </div>
+            </div>
+
+            <div class="jso-formbox" hidden="{{additionHidden}}">
+                <div class="jso-formtitle">
+                    Additional gene list (optional)
+                </div>
+                <div class="jso-formcontent">
+                    <div>Write one gene name per line:</div>
+                    <textarea></textarea>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Job information
+                </div>
+                <div class="jso-formcontent">
+                    <p>
+                        <div class="coment">Output folder</div>
+                        <div class="coment">You can create folders using the button &nbsp;<i class="fa fa-folder-o"></i>&nbsp;+ inside file browser.</div>
+                        <jso-opencga-file-origin
+                                id="inputFile"
+                                bioformats="{{bioformats}}"
+                                projects="{{projects}}"
+                                columns="{{columns}}"
+                                items="{{items}}"
+                                selected="{{selected}}">
+                        </jso-opencga-file-origin>
+                    </p>
+                    <div class="coment">Job name</div>
+                    <div>
+                        <input type="text" value="Pathivar job"=>
+                    </div>
+                    <div class="coment">Description</div>
+                    <div>
+                        <input type="text" value="Description">
+                    </div>
+                    <p>
+                    </p>
                 </div>
             </div>
 
         </form>
-
+        <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
     </template>
 
     <script>
         Polymer({
-            is:'jso-pathivar-form',
-            properties:{
+            is: 'jso-pathivar-form',
 
+            properties: {
+                pathwaysSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getPathwaysSet();
+                    }
+                },
+                typesSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getTypesSet();
+                    }
+                },
+                expressionSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getExpressionSet();
+                    }
+                },
+                humanSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getHumanSet();
+                    }
+                },
+                selectedTissueSet: {
+                  type: Array
+                },
+                siftHidden: {
+
+                },
+                polyHidden: {
+
+                },
+                phatsHidden: {
+
+                },
+                customHidden: {
+
+                },
+                additionHidden: {
+
+                },
+
+            },
+
+            ready: function (){
+              this.set('selectedTissueSet', this.expressionSet);
+              this.set('siftHidden', false);
+              this.set('polyHidden', false);
+              this.set('phatsHidden', true);
+              this.set('customHidden', true);
+              this.set('additionHidden', false);
+              this.tresholdSift = 0.05;
+              this.tresholdPolyphen = 0.95;
+              this.tresholdCons = 200;
+            },
+
+            launchJob: function() {
+
+                var treshold = '';
+                if (this.siftSelected) {
+                    methodscore += 'sift';
+                    treshold += this.tresholdSift;
+                }
+                if (this.polyphenSelected) {
+                    methodscore += 'polyphen';
+                    treshold += ':' + this.tresholdPolyphen;
+                }
+                if (this.consSelected) {
+                    methodscore += 'cons';
+                    treshold += ':' + this.tresholdCons;
+                }
+            },
+
+            selectSift: function(e){
+              var b=this.get('siftHidden');
+              if (b == false) {
+              this.set('siftHidden', true);
             }
+            else{
+              this.set('siftHidden', false);
+            }
+            },
+
+            selectPoly: function(e){
+              var b=this.get('polyHidden');
+              if (b == false) {
+              this.set('polyHidden', true);
+            }
+            else{
+              this.set('polyHidden', false);
+            }
+            },
+            selectPhats: function(e){
+              var b=this.get('phatsHidden');
+              if (b == false) {
+              this.set('phatsHidden', true);
+            }
+            else{
+              this.set('phatsHidden', false);
+            }
+            },
+
+            selectHuman: function(e){
+              this.set('selectedTissueSet', this.humanSet);
+              this.set('additionHidden', false);
+              this.set('customHidden', true);
+            },
+            selectExpression: function(e){
+              this.set('selectedTissueSet', this.expressionSet);
+              this.set('additionHidden', false);
+              this.set('customHidden', true);
+            },
+            selectCustom: function(e){
+              this.set('additionHidden', true);
+              this.set('customHidden', false);
+
+            },
+
+            selectAllCt: function(e) {
+              var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                   els[i].checked = true;
+                }
+            },
+
+            selectNoneCt: function(e) {
+              var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                   els[i].checked = false;
+                }
+
+            },
+
+            selectAllPw: function(e) {
+              var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                   els[i].checked = true;
+                    //this.set('pathwaysSet.' + i + '.selected', true);
+                }
+            },
+
+            selectNonePw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                  for (var i = 0; i < els.length; i++) {
+                     els[i].checked = false;
+                      //this.set('pathwaysSet.' + i + '.selected', false);
+                  }
+            },
+
+            /* */
+            getPathwaysSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: true,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: true,
+                    value: '04020'
+                }, {
+                    name: 'CYTOKINE-CYTOKINE RECEPTOR',
+                    selected: false,
+                    value: '04060',
+                    id: 'pathways04060' + this.id
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'p53 SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04115',
+                    id: 'pathways04115' + this.id
+                }, {
+                    name: 'mTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04150',
+                    id: 'pathways04150' + this.id
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'HEDGEHOG SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04340',
+                    id: 'pathways04340' + this.id
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'ECM-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04512',
+                    id: 'pathways04512' + this.id
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'TIGH JUNCTION',
+                    selected: false,
+                    value: '04530',
+                    id: 'pathways04530' + this.id
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04620',
+                    id: 'pathways04620' + this.id
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'T CELL RECPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04660',
+                    id: 'pathways04660' + this.id
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            },
+
+            getTypesSet: function() {
+                return [{
+                    name: "splice_acceptor_variant",
+                    text: "splice acceptor variant",
+                    selected: true
+                }, {
+                    name: "splice_donor_variant",
+                    text: "splice donor variant",
+                    selected: true
+                }, {
+                    name: "stop_gained",
+                    text: "stop gained",
+                    selected: true
+                }, {
+                    name: "stop_lost",
+                    text: "stop lost",
+                    selected: true
+                }, {
+                    name: "non_synonymous_codon",
+                    text: "non synonymous codon",
+                    selected: true
+                }, {
+                    name: "splice_region_variant",
+                    text: "splice region variant",
+                    selected: false
+                }, {
+                    name: "synonymous_codon",
+                    text: "synonymous codon",
+                    selected: false
+                }, {
+                    name: "exon_variant",
+                    text: "exon variant",
+                    selected: false
+                }, {
+                    name: "coding_sequence_variant",
+                    text: "coding sequence variant",
+                    selected: false
+                }, {
+                    name: "5_prime_UTR_variant",
+                    text: "5 prime UTR variant",
+                    selected: false
+                }, {
+                    name: "3_prime_UTR_variant",
+                    text: "3 prime UTR variant",
+                    selected: false
+                }, {
+                    name: "intron_variant",
+                    text: "intron variant",
+                    selected: false
+                }, {
+                    name: "5KB_upstream_variant",
+                    text: "5KB upstream variant",
+                    selected: false
+                }, {
+                    name: "5KB_downstream_variant",
+                    text: "5KB downstream variant",
+                    selected: false
+                }, ];
+            },
+            getExpressionSet: function() {
+                return [{
+                    name: "adipose tissue normal",
+                    selected: false
+                }, {
+                    name: "adipose-derived adult stem cells",
+                    selected: false
+                }, {
+                    name: "amygdala",
+                    selected: false
+                }, {
+                    name: "B cell",
+                    selected: false
+                }, {
+                    name: "bladder",
+                    selected: false
+                }, {
+                    name: "bladder mucosa",
+                    selected: false
+                }, {
+                    name: "blood",
+                    selected: false
+                }, {
+                    name: "bone",
+                    selected: false
+                }, {
+                    name: "brain",
+                    selected: false
+                }, {
+                    name: "bronchial epithelia",
+                    selected: false
+                }, {
+                    name: "bronchoalveolar lavage cell",
+                    selected: false
+                }, {
+                    name: "caudate nucleus",
+                    selected: false
+                }, {
+                    name: "CD138+ plasma cell",
+                    selected: false
+                }, {
+                    name: "CD33+ cells",
+                    selected: false
+                }, {
+                    name: "CD34+ blood cell",
+                    selected: false
+                }, {
+                    name: "CD34+ blood cell thymus",
+                    selected: false
+                }, {
+                    name: "cerebellum",
+                    selected: false
+                }, {
+                    name: "conjunctiva",
+                    selected: false
+                }, {
+                    name: "connective tissue fibroblast",
+                    selected: false
+                }, {
+                    name: "dendritic cell",
+                    selected: false
+                }, {
+                    name: "embryonic lung fibroblast",
+                    selected: false
+                }, {
+                    name: "endothelial cell",
+                    selected: false
+                }, {
+                    name: "epidermis",
+                    selected: false
+                }, {
+                    name: "erythrocyte",
+                    selected: false
+                }, {
+                    name: "esophagus epithelium",
+                    selected: false
+                }, {
+                    name: "fetal lung",
+                    selected: false
+                }, {
+                    name: "frontal cortex",
+                    selected: false
+                }, {
+                    name: "granulocyte",
+                    selected: false
+                }, {
+                    name: "heart",
+                    selected: false
+                }, {
+                    name: "hematopoietic stem cell",
+                    selected: false
+                }, {
+                    name: "hippocampus CA1",
+                    selected: false
+                }, {
+                    name: "hypopharynx",
+                    selected: false
+                }, {
+                    name: "hypothalamus",
+                    selected: false
+                }, {
+                    name: "keratinocyte",
+                    selected: false
+                }, {
+                    name: "kidney",
+                    selected: false
+                }, {
+                    name: "kidney epithelium",
+                    selected: false
+                }, {
+                    name: "leukocyte",
+                    selected: false
+                }, {
+                    name: "liver",
+                    selected: false
+                }, {
+                    name: "lung",
+                    selected: true
+                }, {
+                    name: "lymph node",
+                    selected: false
+                }, {
+                    name: "lymphocyte",
+                    selected: false
+                }, {
+                    name: "macrophage",
+                    selected: false
+                }, {
+                    name: "mesangial cell",
+                    selected: false
+                }, {
+                    name: "mesenchymal stem cell",
+                    selected: false
+                }, {
+                    name: "monocyte",
+                    selected: false
+                }, {
+                    name: "mononuclear cell",
+                    selected: false
+                }, {
+                    name: "multipotent adult progenitor cell",
+                    selected: false
+                }, {
+                    name: "myometrium",
+                    selected: false
+                }, {
+                    name: "oropharynx",
+                    selected: false
+                }, {
+                    name: "ovary",
+                    selected: false
+                }, {
+                    name: "placenta basal plate",
+                    selected: false
+                }, {
+                    name: "prefrontal cortex",
+                    selected: false
+                }, {
+                    name: "prostate gland",
+                    selected: false
+                }, {
+                    name: "skeletal muscle",
+                    selected: false
+                }, {
+                    name: "skin",
+                    selected: false
+                }, {
+                    name: "small intestine",
+                    selected: false
+                }, {
+                    name: "smooth muscle",
+                    selected: false
+                }, {
+                    name: "T cell",
+                    selected: false
+                }, {
+                    name: "testis",
+                    selected: false
+                }, {
+                    name: "theca",
+                    selected: false
+                }, {
+                    name: "thymocyte",
+                    selected: false
+                }, {
+                    name: "thyrocyte",
+                    selected: false
+                }, {
+                    name: "thyroid gland",
+                    selected: false
+                }, {
+                    name: "tonsil",
+                    selected: false
+                }, {
+                    name: "trabecular meshwork cell",
+                    selected: false
+                }, {
+                    name: "umbilical vein endothelial cell",
+                    selected: false
+                }];
+            },
+
+            getHumanSet: function() {
+                return [
+                {name: "adrenal gland", selected: false},
+                {name: "appendix", selected: false},
+                {name: "bone marrow", selected: false},
+                {name: "breast", selected: false},
+                {name: "bronchus", selected: false},
+                {name: "cerebellum", selected: false},
+                {name: "cerebral cortex", selected: false},
+                {name: "cervix, uterine", selected: false},
+                {name: "colon", selected: false},
+                {name: "duodenum", selected: false},
+                {name: "endometrium 1", selected: false},
+                {name: "endometrium 2", selected: false},
+                {name: "epididymis", selected: false},
+                {name: "esophagus", selected: false},
+                {name: "fallopian tube", selected: false},
+                {name: "gallbladder", selected: false},
+                {name: "heart muscle", selected: false},
+                {name: "hippocampus", selected: false},
+                {name: "kidney", selected: false},
+                {name: "lateral ventricle", selected: false},
+                {name: "liver", selected: false},
+                {name: "lung", selected: false},
+                {name: "lymph node", selected: false},
+                {name: "nasopharynx", selected: false},
+                {name: "oral mucosa", selected: false},
+                {name: "ovary", selected: false},
+                {name: "pancreas", selected: false},
+                {name: "parathyroid gland", selected: false},
+                {name: "placenta", selected: false},
+                {name: "prostate", selected: false},
+                {name: "rectum", selected: false},
+                {name: "salivary gland", selected: false},
+                {name: "seminal vesicle", selected: false},
+                {name: "skeletal muscle", selected: false},
+                {name: "skin 1", selected: false},
+                {name: "skin 2", selected: false},
+                {name: "small intestine", selected: false},
+                {name: "smooth muscle", selected: false},
+                {name: "soft tissue 1", selected: false},
+                {name: "soft tissue 2", selected: false},
+                {name: "spleen", selected: false},
+                {name: "stomach 1", selected: false},
+                {name: "stomach 2", selected: false},
+                {name: "testis", selected: false},
+                {name: "thyroid gland", selected: false},
+                {name: "tonsil", selected: false},
+                {name: "urinary bladder", selected: false},
+                {name: "vagina", selected: false}
+                ];
+            },
+
+
         });
+        /*  function Selectall () {
+            var p = document.getElementsByTagName("s");
+
+            p.checked=true;
+          }*/
     </script>
 </dom-module>
