@@ -70,7 +70,7 @@
                         <option value=""> </option>
                     </select> -->
                     <div class="jso-select" style="width:150px;">
-                        <select value="{{samplecol}}">
+                        <select id="samplecol">
                             <template is="dom-repeat" items="{{sampleNameList}}">
                                 <option value="{{item}}">{{item}}</option>
                             </template>
@@ -84,10 +84,6 @@
                     Inheritance pattern
                 </div>
                 <div class="jso-formcontent">
-                    <!-- <select>
-                        <option value="recessive" on-click="selectRecessive">Recessive</option>
-                        <option value="dominant" on-click="selectDominant">Dominant</option>
-                    </select> -->
                     <label class="jso-control">
                         <input type="radio" name="inheritance" on-click="selectRecessive" checked="True">
                         <span>Recessive</span>
@@ -112,13 +108,10 @@
                     <div class="jso-btn jso-btn-shdw" on-click="selectAllCt">Select all</div>
                     <div class="jso-btn jso-btn-shdw" on-click="selectNoneCt">Deselect all</div>
                 </div>
-
-
-
                 <div id="typesContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
                     <template is="dom-repeat" items="{{typesSet}}">
                         <label class="jso-control">
-                            <input type="checkbox" checked$="{{item.selected}}">
+                            <input type="checkbox" checked$="{{item.selected}}" name$={{item.name}}>
                             <span>{{item.text}}</span>
                         </label>
                     </template>
@@ -130,41 +123,41 @@
                     Deleteriousness indexes
                 </div>
                 <div class="jso-formcontent">
-                    <div class="horizontal layout" style="line-height: 25px;">
+                    <div id="sift" class="horizontal layout" style="line-height: 25px;">
                         <label class="jso-control">
                             <input type="checkbox" checked="true" on-click="selectSift">
                             <span style="margin-right: 100px">SIFT</span>
                         </label>
-                        <div id="sift" hidden="{{siftHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div hidden="{{siftHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div>
+                            <div id=siftValue>
                                 <input type="number" step="0.01" max="1" min="0" value="{{tresholdSift}}">
                             </div>
                             <label class="coment">Values below the threshold (0.05 default) predict protein DAMAGE</label>
                         </div>
                     </div>
 
-                    <div class="horizontal layout" style="line-height: 25px;">
+                    <div id="poly" class="horizontal layout" style="line-height: 25px;">
                         <label class="jso-control">
                             <input type="checkbox" checked="true" on-click="selectPoly">
                             <span style="margin-right: 100px">PolyPhen</span>
                         </label>
-                        <div id="poly" hidden="{{polyHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div hidden="{{polyHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div>
+                            <div id=polyValue>
                                 <input type="number" step="0.01" max="1" min="0" value="{{tresholdPolyphen}}">
                             </div>
                             <label class="coment">Values below the threshold (0.95 default) predict protein DAMAGE</label>
                         </div>
                     </div>
-                    <div class="horizontal layout" style="line-height: 25px;">
+                    <div id="phats" class="horizontal layout" style="line-height: 25px;">
                         <label class="jso-control">
                             <input type="checkbox" on-click="selectPhats">
                             <span style="margin-right: 100px">PhastCons</span>
                         </label>
-                        <div id="phats" hidden="{{phatsHidden}}" class="horizontal layout" style="line-height: 25px;">
+                        <div hidden="{{phatsHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div>
+                            <div id=phatsValue>
                                 <input type="number" max="1000" min="0" value="{{tresholdCons}}">
                             </div>
                             <label class="coment">Values below the threshold (200 default) predict protein DAMAGE</label>
@@ -199,14 +192,15 @@
                 <div id="tissue" class="jso-formcontent" style="overflow-y:scroll; height:100px" hidden="{{additionHidden}}">
                     <template is="dom-repeat" items="{{selectedTissueSet}}">
                         <label class="jso-control">
-                            <input type="checkbox" checked$="{{item.selected}}">
+                            <input type="radio" name$="{{tissueSet}}" checked$="{{item.selected}}" value$="{{item.name}}">
                             <span>{{item.name}}</span>
                         </label>
                     </template>
                 </div>
+
                 <div class="jso-formcontent" hidden="{{customHidden}}">
                     <div>Write one gene name per line:</div>
-                    <textarea class="jso sgenesTextArea"></textarea>
+                    <textarea id="customSgenesTextArea" class="jso sgenesTextArea"></textarea>
                 </div>
             </div>
 
@@ -216,7 +210,7 @@
                 </div>
                 <div class="jso-formcontent">
                     <div>Write one gene name per line:</div>
-                    <textarea class="jso sgenesTextArea"></textarea>
+                    <textarea id="additionalSgenesTextArea" class="jso sgenesTextArea"></textarea>
                 </div>
             </div>
 
@@ -229,10 +223,10 @@
                     <div class="coment">Output folder</div>
                     <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
                     </jso-opencga-file-origin>
-                    <div class="coment" id="jobName">Job name</div>
-                    <input type="text" style="width:150px;" value="{{jobName}}">
+                    <div class="coment">Job name</div>
+                    <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
                     <div class="coment">Description</div>
-                    <textarea value="{{descrip}}"></textarea>
+                    <textarea id="descripTextArea" value="{{descrip}}"></textarea>
                 </div>
             </div>
 
@@ -250,882 +244,964 @@
 
     <script>
         Polymer({
-                    is: 'jso-pathivar-form',
+            is: 'jso-pathivar-form',
 
-                    properties: {
-                        pathwaysSet: {
-                            type: Array,
-                            value: function() {
-                                return this.getPathwaysSet();
-                            }
-                        },
-                        typesSet: {
-                            type: Array,
-                            value: function() {
-                                return this.getTypesSet();
-                            }
-                        },
-                        expressionSet: {
-                            type: Array,
-                            value: function() {
-                                return this.getExpressionSet();
-                            }
-                        },
-                        humanSet: {
-                            type: Array,
-                            value: function() {
-                                return this.getHumanSet();
-                            }
-                        },
-                        selectedTissueSet: {
-                            type: Array
-                        },
-                        siftHidden: {
-                            type: Boolean
-                        },
-                        polyHidden: {
-                            type: Boolean
-                        },
-                        phatsHidden: {
-                            type: Boolean
-                        },
-                        customHidden: {
-                            type: Boolean
-                        },
-                        additionHidden: {
-                            type: Boolean
-                        },
-                        recessiveHidden: {
-                            type: Boolean
-                        },
-                        projects: {
-                            type: Array,
+            properties: {
+                pathwaysSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getPathwaysSet();
+                    }
+                },
+                typesSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getTypesSet();
+                    }
+                },
+                expressionSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getExpressionSet();
+                    }
+                },
+                humanSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getHumanSet();
+                    }
+                },
+                selectedTissueSet: {
+                    type: Array,
+                },
+                siftHidden: {
+                    type: Boolean,
+                },
+                polyHidden: {
+                    type: Boolean,
+                },
+                phatsHidden: {
+                    type: Boolean,
+                },
+                customHidden: {
+                    type: Boolean,
+                },
+                additionHidden: {
+                    type: Boolean,
+                },
+                recessiveHidden: {
+                    type: Boolean,
+                },
+                projects: {
+                    type: Array,
+
+                },
+                sampleNameList: {
+                    type: Array,
+                },
+                model: {
+                    type: String,
+                },
+                custom: {
+                    type: Boolean,
+                },
+                tissueSet: {
+                    type: String,
+                },
+
+            },
+
+            ready: function() {
+                this.set('selectedTissueSet', this.expressionSet);
+                this.set('siftHidden', false);
+                this.set('polyHidden', false);
+                this.set('recessiveHidden', false);
+                this.model = 'recessive';
+                this.custom = false;
+                this.tissueSet = 'ea';
+                this.set('phatsHidden', true);
+                this.set('customHidden', true);
+                this.set('additionHidden', false);
+                this.tresholdSift = 0.05;
+                this.tresholdPolyphen = 0.95;
+                this.tresholdCons = 200;
+                this.jobName = 'Pathivar job';
+                this.descrip = 'Description';
+                this.toolName= 'Pathiways';
+                this.execution= 'Pathivar';
+              },
+
+
+            vcfFileSelected: function(e) {
+                if (this.checkVcfFile(e.currentTarget.selectedFile)) {
+                    this.getSamplesFromVcf(e.currentTarget.selectedFile);
+                }
+            },
+
+            checkVcfFile: function(vcfFile) {
+                var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
+                if (bool) {
+                    this.vcfFileMessage = '';
+                } else {
+                    this.vcfFileMessage = 'This file is not VCF';
+                }
+                return bool;
+            },
+
+            getSamplesFromVcf: function(vcfFile) {
+                var me = this;
+                OpencgaManager.files.contentGrep({
+                    id: vcfFile.id,
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                        ignoreCase: true,
+                        multi: false,
+                        pattern: encodeURIComponent('^#CHR.*')
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            me.sampleNameList = response.trim().split("\t").slice(9);
 
                         },
-                        sampleNameList: {
-                            type: Array,
-                        },
-                        model: {
-                            type: String,
+                        error: function() {
+                            console.log('Server error, try again later.');
                         }
+                    }
+                });
+            },
 
+
+            runExample: function() {
+
+                var me = this;
+                OpencgaManager.jobs.create({
+                    query: {
+                        sid: Cookies("bioinfo_sid"),
+                        execution: this.execution,
+                        studyId: this.$.inputFile.selectedStudy.id,
+                        toolId: this.toolName,
+                        name: "Pathivar example",
+                        description: this.descrip,
+                        outdir: folder.id,
+
+                        annotvcf: "example_annotvcf1000g.vpa",
+                        ctypes: "splice_acceptor_variant,splice_donor_variant,stop_gained,stop_lost,non_synonymous_codon,exon_variant",
+                        samplecol: "NA19600",
+                        pathways: "hsa04012,hsa04020,hsa04080,hsa04210",
+                        tissue: "lung",
+                        model: "recessive",
+                        comhom: "Y",
+                        methodscore: "siftpolyphen",
+                        treshold: "0.05:0.85:NA",
+                        tissueSet: "ea"
                     },
-
-                    ready: function() {
-                        this.set('selectedTissueSet', this.expressionSet);
-                        this.set('siftHidden', false);
-                        this.set('polyHidden', false);
-                        this.set('recessiveHidden', false);
-                        this.model ='recessive';
-                        this.set('phatsHidden', true);
-                        this.set('customHidden', true);
-                        this.set('additionHidden', false);
-                        this.tresholdSift = 0.05;
-                        this.tresholdPolyphen = 0.95;
-                        this.tresholdCons = 200;
-                        this.jobName = 'Pathivar job';
-                        this.descrip = 'Description';
-                    },
-
-                    vcfFileSelected: function(e) {
-                        if (this.checkVcfFile(e.currentTarget.selectedFile)) {
-                            this.getSamplesFromVcf(e.currentTarget.selectedFile);
-                        }
-                    },
-
-                    checkVcfFile: function(vcfFile) {
-                        var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
-                        if (bool) {
-                            this.vcfFileMessage = '';
-                        } else {
-                            this.vcfFileMessage = 'This file is not VCF';
-                        }
-                        return bool;
-                    },
-
-                    getSamplesFromVcf: function(vcfFile) {
-                        var me = this;
-                        OpencgaManager.files.contentGrep({
-                            id: vcfFile.id,
-                            query: {
-                                sid: Cookies('bioinfo_sid'),
-                                ignoreCase: true,
-                                multi: false,
-                                pattern: encodeURIComponent('^#CHR.*')
-                            },
-                            request: {
-                                async: false,
-                                success: function(response) {
-                                    debugger
-                                    me.sampleNameList = response.trim().split("\t").slice(9);
-
-                                },
-                                error: function() {
-                                    console.log('Server error, try again later.');
-                                }
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var jobId = response.response[0].result[0].id;
+                                me.selectedOption = "jobLaunched"
+                            } else {
+                                me.message = response.response[0].errorMsg;
                             }
-                        });
-                    },
-
-                    sampleNamesChanged: function(oldValue, newValue) {
-                        this.samplecol = this.sampleNameList[0];
-                    },
-
-                    runExample: function() {
-
-                        var me = this;
-                        OpencgaManager.jobs.create({
-                            query: {
-                                sid: Cookies("bioinfo_sid"),
-                                execution: this.execution,
-                                studyId: this.$.inputFile.selectedStudy.id,
-                                toolId: this.toolName,
-                                name: "Pathivar example",
-                                description: this.description,
-                                outdir: folder.id,
-
-                                annotvcf: "example_annotvcf1000g.vpa",
-                                ctypes: "splice_acceptor_variant,splice_donor_variant,stop_gained,stop_lost,non_synonymous_codon,exon_variant",
-                                samplecol: "NA19600",
-                                pathways: "hsa04012,hsa04020,hsa04080,hsa04210",
-                                tissue: "lung",
-                                model: "recessive",
-                                comhom: "Y",
-                                methodscore: "siftpolyphen",
-                                treshold: "0.05:0.85:NA",
-                                tissueSet: "ea"
-                            },
-                            request: {
-                                //method: 'POST',
-                                success: function(response) {
-                                    if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                        var jobId = response.response[0].result[0].id;
-                                        me.selectedOption = "jobLaunched"
-                                    } else {
-                                        me.message = response.response[0].errorMsg;
-                                    }
-                                    me.selectedStudy = null;
-                                },
-                                error: function() {
-                                    me.message = 'Server error, try again later.';
-                                }
-                            }
-                        });
-
-                    },
-
-                    launchJob: function(e) {
-
-                        //var me = this;
-                        //this.errors = [];
-                      //  var outdirId;
-                        // if (this.$.outputFolder.selectedFile == null) {
-                        //     outdirId = this.$.inputFile.selectedStudy.id;
-                        // } else {
-
-                      //  outdirId = this.$.outputFolder.selectedFile.id;
-                        //}
-
-                         var query = {};
-                        // query['sid'] = Cookies("bioinfo_sid");
-                        // query['execution'] = this.execution;
-                        // query['studyId'] = this.$.inputFile.selectedStudy.id;
-                        // query['toolId'] = this.toolName;
-                        // query['name'] = this.jobName != '' ? this.jobName : 'Pathivar job';
-                        // query['description'] = this.description;
-                        // query['outdir'] = outdirId;
-                        //
-                        // if (this.checkVcfFile(e.currentTarget.selectedFile)) {
-                        //     query['vcfFile'] = this.vcfFile.id;
-                        //      } else {
-                        //          this.errors.push("No input VCF file selected. Please select one. ");
-                        //     }
-                            // if (this.samplecol != null) {
-                            //     query['samplecol'] = this.samplecol;
-                            // }
-                            if (this.model != null) {
-                                query['model'] = this.model;
-                            }
-                            if (this.model == 'recessive') {
-                                query['comhom'] = this.$.recessiveOption.value;
-                            }
-
-                            var ctypes = [];
-                            var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
-                            debugger
-                            for (var i = 0; i < els.length; i++) {
-                              var ctype= els[i];
-                              if (ctype.checked) {
-                                  ctypes.push(ctype.name);
-                              }
-                            }
-                            if (ctypes.length > 0) {
-                                query['ctypes'] = ctypes;
-                             }//else {
-                            //     this.errors.push('Please select at least one Consequence Type');
-                            // }
-
-                            var pathways = [];
-                            var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-                            for (var i = 0; i < els.length; i++) {
-                              var pathway= els[i];
-                              if (pathway.checked) {
-                                  pathways.push('hsa' + pathway.value);
-                              }
-                            }
-                            if (pathways.length > 0) {
-                                query['pathways'] = pathways;
-                             } //else {
-                            //     this.errors.push('Please select at least one Pathway');
-                            // }
-debugger
-                            // if (this.errors.length > 0) {
-                            //     return;
-                            // }
-                            //
-                            // console.log(this.$.form.checkValidity())
-
-                            // if (this.$.form.checkValidity()) {
-                            //     //                       annotvcf: this.annotvcf,
-                            //     OpencgaManager.jobs.create({
-                            //         query: query,
-                            //         request: {
-                            //             //method: 'POST',
-                            //             success: function(response) {
-                            //                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            //                     var job = response.response[0].result[0];
-                            //                     me.selectedOption = "jobLaunched"
-                            //                     console.log(job);
-                            //                     //                                    me.message = job.commandLine;
-                            //                 } else {
-                            //                     me.message = response.response[0].errorMsg;
-                            //                 }
-                            //             },
-                            //             error: function() {
-                            //                 me.message = 'Server error, try again later.';
-                            //             }
-                            //         }
-                            //     });
-                            //
-                            // }
+                            me.selectedStudy = null;
                         },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
 
-                        selectRecessive: function(e) {
-                                this.set('recessiveHidden', false);
-                                this.model = 'recessive';
-                            },
+            },
 
-                            selectDominant: function(e) {
-                                this.set('recessiveHidden', true);
-                                this.model = 'dominant';
-                            },
+            launchJob: function(e) {
 
-                            selectSift: function(e) {
-                                var b = this.get('siftHidden');
-                                if (b == false) {
-                                    this.set('siftHidden', true);
+                var me = this;
+                this.errors = [];
+                var outdirId;
+                if (this.$.outputFolder.selectedFile == null) {
+                    outdirId = this.$.inputFile.selectedStudy.id;
+                } else {
+                    outdirId = this.$.outputFolder.selectedFile.id;
+                }
+
+                var query = {};
+                query['sid'] = Cookies("bioinfo_sid");
+                query['execution'] = this.execution;
+                query['studyId'] = this.$.inputFile.selectedStudy.id;
+                query['toolId'] = this.toolName;
+                query['name'] = this.$.jobNameTextArea.value;
+                query['description'] = this.$.descripTextArea.value;
+                query['outdir'] = outdirId;
+
+                if (this.checkVcfFile(e.currentTarget.selectedFile)) {
+                    query['vcfFile'] = this.vcfFile.id;
+                          } else {
+                              this.errors.push("No input VCF file selected. Please select one. ");
+                }
+
+                if (this.sampleNameList != null) {
+
+                    query['samplecol'] = this.$.samplecol.value;
+                }
+                if (this.model != null) {
+                    query['model'] = this.model;
+                }
+                if (this.model == 'recessive') {
+                    query['comhom'] = this.$.recessiveOption.value;
+                }
+
+                var ctypes = [];
+                var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    var ctype = els[i];
+                    if (ctype.checked) {
+                        ctypes.push(ctype.name);
+                    }
+                }
+                if (ctypes.length > 0) {
+                    query['ctypes'] = ctypes;
+                } else {
+                     this.errors.push('Please select at least one Consequence Type');
+                 }
+
+                var methodscore = '';
+                var treshold = '';
+                s = this.$.sift.querySelector('input[type=checkbox]');
+                sv = this.$.siftValue.querySelector('input[type=number]');
+                if (s.checked) {
+                    methodscore += 'sift';
+                    treshold += sv.value;
+                }
+                p = this.$.poly.querySelector('input[type=checkbox]');
+                pv = this.$.polyValue.querySelector('input[type=number]');
+                if (p.checked) {
+                    methodscore += 'polyphen';
+                    treshold += ':' + pv.value;
+                }
+                c = this.$.phats.querySelector('input[type=checkbox]');
+                cv = this.$.phatsValue.querySelector('input[type=number]');
+                if (c.checked) {
+                    methodscore += 'cons';
+                    treshold += ':' + cv.value;
+                }
+                if (methodscore == '') {
+                    methodscore = 'none';
+                }
+                query['methodscore'] = methodscore;
+                query['treshold'] = treshold;
+
+                var pathways = [];
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    var pathway = els[i];
+                    if (pathway.checked) {
+                        pathways.push('hsa' + pathway.value);
+                    }
+                }
+                if (pathways.length > 0) {
+                    query['pathways'] = pathways;
+                } else {
+                     this.errors.push('Please select at least one Pathway');
+                 }
+
+                if (this.custom == false) {
+                    var tissue = [];
+                    var els = this.$.tissue.querySelectorAll('input[type=radio]');
+                    for (var i = 0; i < els.length; i++) {
+                        var t = els[i];
+                        if (t.checked) {
+                            tissue.push(t.value.replace(/ /gi, "_"));
+                        }
+                    }
+                    query['tissue'] = tissue;
+                    var sgenes = this.$.additionalSgenesTextArea.value.trim().replace(/\n/g, '%0A');
+                    if (sgenes != '') {
+                        query['sgenes-text'] = sgenes;
+                    }
+
+                } else {
+                    t = 'none';
+                    var sgenes = this.$.customSgenesTextArea.value.trim().replace(/\n/g, '%0A');
+                    if (sgenes != '') {
+                        this.tMessage = '';
+                        query['sgenes-text'] = sgenes;
+                        query['tissue'] = 'none';
+                    } else {
+                         this.errors.push('Please write at least one gene when using custom Tissue');
+                     }
+                }
+
+                query['tissueSet'] = this.tissueSet;
+
+                // if (this.errors.length > 0) {
+                //     return;
+                // }
+                //
+                // console.log(this.$.form.checkValidity())
+
+                // if (this.$.form.checkValidity()) {
+                //     //                       annotvcf: this.annotvcf,
+                    OpencgaManager.jobs.create({
+                        query: query,
+                        request: {
+                            //method: 'POST',
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    var job = response.response[0].result[0];
+                                    me.selectedOption = "jobLaunched"
+                                    console.log(job);
+                                    //                                    me.message = job.commandLine;
                                 } else {
-                                    this.set('siftHidden', false);
+                                    me.message = response.response[0].errorMsg;
                                 }
                             },
-
-                            selectPoly: function(e) {
-                                var b = this.get('polyHidden');
-                                if (b == false) {
-                                    this.set('polyHidden', true);
-                                } else {
-                                    this.set('polyHidden', false);
-                                }
-                            },
-
-                            selectPhats: function(e) {
-                                var b = this.get('phatsHidden');
-                                if (b == false) {
-                                    this.set('phatsHidden', true);
-                                } else {
-                                    this.set('phatsHidden', false);
-                                }
-                            },
-
-                            selectHuman: function(e) {
-                                this.set('selectedTissueSet', this.humanSet);
-                                this.set('additionHidden', false);
-                                this.set('customHidden', true);
-                            },
-
-                            selectExpression: function(e) {
-                                this.set('selectedTissueSet', this.expressionSet);
-                                this.set('additionHidden', false);
-                                this.set('customHidden', true);
-                            },
-
-                            selectCustom: function(e) {
-                                this.set('additionHidden', true);
-                                this.set('customHidden', false);
-                            },
-
-                            selectAllCt: function(e) {
-                                var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
-                                for (var i = 0; i < els.length; i++) {
-                                    els[i].checked = true;
-                                }
-                            },
-
-                            selectNoneCt: function(e) {
-                                var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
-                                for (var i = 0; i < els.length; i++) {
-                                    els[i].checked = false;
-                                }
-
-                            },
-
-                            selectAllPw: function(e) {
-                                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-                                for (var i = 0; i < els.length; i++) {
-                                    els[i].checked = true;
-                                }
-                            },
-
-                            selectNonePw: function(e) {
-                                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-                                for (var i = 0; i < els.length; i++) {
-                                    els[i].checked = false;
-                                }
-                            },
-
-
-                            /* */
-                            getPathwaysSet: function() {
-                                return [{
-                                    name: 'PPAR SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '03320'
-                                }, {
-                                    name: 'ERBB SIGNALING PATHWAY',
-                                    selected: true,
-                                    value: '04012'
-                                }, {
-                                    name: 'CALCIUM SIGNALING PATHWAY',
-                                    selected: true,
-                                    value: '04020'
-                                }, {
-                                    name: 'CYTOKINE-CYTOKINE RECEPTOR',
-                                    selected: false,
-                                    value: '04060',
-                                    id: 'pathways04060' + this.id
-                                }, {
-                                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
-                                    selected: false,
-                                    value: '04080'
-                                }, {
-                                    name: 'p53 SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04115',
-                                    id: 'pathways04115' + this.id
-                                }, {
-                                    name: 'mTOR SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04150',
-                                    id: 'pathways04150' + this.id
-                                }, {
-                                    name: 'APOPTOSIS',
-                                    selected: false,
-                                    value: '04210'
-                                }, {
-                                    name: 'WNT SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04310'
-                                }, {
-                                    name: 'NOTCH SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04330'
-                                }, {
-                                    name: 'HEDGEHOG SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04340',
-                                    id: 'pathways04340' + this.id
-                                }, {
-                                    name: 'VEGF SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04370'
-                                }, {
-                                    name: 'ECM-RECEPTOR INTERACTION',
-                                    selected: false,
-                                    value: '04512',
-                                    id: 'pathways04512' + this.id
-                                }, {
-                                    name: 'CELL ADHESION MOLECULES',
-                                    selected: false,
-                                    value: '04514'
-                                }, {
-                                    name: 'TIGH JUNCTION',
-                                    selected: false,
-                                    value: '04530',
-                                    id: 'pathways04530' + this.id
-                                }, {
-                                    name: 'GAP JUNCTION',
-                                    selected: false,
-                                    value: '04540'
-                                }, {
-                                    name: 'ANTIGEN PROCESING AND PRESENTATION',
-                                    selected: false,
-                                    value: '04612'
-                                }, {
-                                    name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04620',
-                                    id: 'pathways04620' + this.id
-                                }, {
-                                    name: 'JAK-STAT SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04630'
-                                }, {
-                                    name: 'T CELL RECPTOR SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04660',
-                                    id: 'pathways04660' + this.id
-                                }, {
-                                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04662'
-                                }, {
-                                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04664'
-                                }, {
-                                    name: 'INSULIN SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04910'
-                                }, {
-                                    name: 'GnRH SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04912'
-                                }, {
-                                    name: 'MELANOGENESIS',
-                                    selected: false,
-                                    value: '04916'
-                                }, {
-                                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
-                                    selected: false,
-                                    value: '04920'
-                                }];
-                            },
-
-                            getTypesSet: function() {
-                                return [{
-                                    name: "splice_acceptor_variant",
-                                    text: "splice acceptor variant",
-                                    selected: true
-                                }, {
-                                    name: "splice_donor_variant",
-                                    text: "splice donor variant",
-                                    selected: true
-                                }, {
-                                    name: "stop_gained",
-                                    text: "stop gained",
-                                    selected: true
-                                }, {
-                                    name: "stop_lost",
-                                    text: "stop lost",
-                                    selected: true
-                                }, {
-                                    name: "non_synonymous_codon",
-                                    text: "non synonymous codon",
-                                    selected: true
-                                }, {
-                                    name: "splice_region_variant",
-                                    text: "splice region variant",
-                                    selected: false
-                                }, {
-                                    name: "synonymous_codon",
-                                    text: "synonymous codon",
-                                    selected: false
-                                }, {
-                                    name: "exon_variant",
-                                    text: "exon variant",
-                                    selected: false
-                                }, {
-                                    name: "coding_sequence_variant",
-                                    text: "coding sequence variant",
-                                    selected: false
-                                }, {
-                                    name: "5_prime_UTR_variant",
-                                    text: "5 prime UTR variant",
-                                    selected: false
-                                }, {
-                                    name: "3_prime_UTR_variant",
-                                    text: "3 prime UTR variant",
-                                    selected: false
-                                }, {
-                                    name: "intron_variant",
-                                    text: "intron variant",
-                                    selected: false
-                                }, {
-                                    name: "5KB_upstream_variant",
-                                    text: "5KB upstream variant",
-                                    selected: false
-                                }, {
-                                    name: "5KB_downstream_variant",
-                                    text: "5KB downstream variant",
-                                    selected: false
-                                }, ];
-                            },
-                            getExpressionSet: function() {
-                                return [{
-                                    name: "adipose tissue normal",
-                                    selected: false
-                                }, {
-                                    name: "adipose-derived adult stem cells",
-                                    selected: false
-                                }, {
-                                    name: "amygdala",
-                                    selected: false
-                                }, {
-                                    name: "B cell",
-                                    selected: false
-                                }, {
-                                    name: "bladder",
-                                    selected: false
-                                }, {
-                                    name: "bladder mucosa",
-                                    selected: false
-                                }, {
-                                    name: "blood",
-                                    selected: false
-                                }, {
-                                    name: "bone",
-                                    selected: false
-                                }, {
-                                    name: "brain",
-                                    selected: false
-                                }, {
-                                    name: "bronchial epithelia",
-                                    selected: false
-                                }, {
-                                    name: "bronchoalveolar lavage cell",
-                                    selected: false
-                                }, {
-                                    name: "caudate nucleus",
-                                    selected: false
-                                }, {
-                                    name: "CD138+ plasma cell",
-                                    selected: false
-                                }, {
-                                    name: "CD33+ cells",
-                                    selected: false
-                                }, {
-                                    name: "CD34+ blood cell",
-                                    selected: false
-                                }, {
-                                    name: "CD34+ blood cell thymus",
-                                    selected: false
-                                }, {
-                                    name: "cerebellum",
-                                    selected: false
-                                }, {
-                                    name: "conjunctiva",
-                                    selected: false
-                                }, {
-                                    name: "connective tissue fibroblast",
-                                    selected: false
-                                }, {
-                                    name: "dendritic cell",
-                                    selected: false
-                                }, {
-                                    name: "embryonic lung fibroblast",
-                                    selected: false
-                                }, {
-                                    name: "endothelial cell",
-                                    selected: false
-                                }, {
-                                    name: "epidermis",
-                                    selected: false
-                                }, {
-                                    name: "erythrocyte",
-                                    selected: false
-                                }, {
-                                    name: "esophagus epithelium",
-                                    selected: false
-                                }, {
-                                    name: "fetal lung",
-                                    selected: false
-                                }, {
-                                    name: "frontal cortex",
-                                    selected: false
-                                }, {
-                                    name: "granulocyte",
-                                    selected: false
-                                }, {
-                                    name: "heart",
-                                    selected: false
-                                }, {
-                                    name: "hematopoietic stem cell",
-                                    selected: false
-                                }, {
-                                    name: "hippocampus CA1",
-                                    selected: false
-                                }, {
-                                    name: "hypopharynx",
-                                    selected: false
-                                }, {
-                                    name: "hypothalamus",
-                                    selected: false
-                                }, {
-                                    name: "keratinocyte",
-                                    selected: false
-                                }, {
-                                    name: "kidney",
-                                    selected: false
-                                }, {
-                                    name: "kidney epithelium",
-                                    selected: false
-                                }, {
-                                    name: "leukocyte",
-                                    selected: false
-                                }, {
-                                    name: "liver",
-                                    selected: false
-                                }, {
-                                    name: "lung",
-                                    selected: true
-                                }, {
-                                    name: "lymph node",
-                                    selected: false
-                                }, {
-                                    name: "lymphocyte",
-                                    selected: false
-                                }, {
-                                    name: "macrophage",
-                                    selected: false
-                                }, {
-                                    name: "mesangial cell",
-                                    selected: false
-                                }, {
-                                    name: "mesenchymal stem cell",
-                                    selected: false
-                                }, {
-                                    name: "monocyte",
-                                    selected: false
-                                }, {
-                                    name: "mononuclear cell",
-                                    selected: false
-                                }, {
-                                    name: "multipotent adult progenitor cell",
-                                    selected: false
-                                }, {
-                                    name: "myometrium",
-                                    selected: false
-                                }, {
-                                    name: "oropharynx",
-                                    selected: false
-                                }, {
-                                    name: "ovary",
-                                    selected: false
-                                }, {
-                                    name: "placenta basal plate",
-                                    selected: false
-                                }, {
-                                    name: "prefrontal cortex",
-                                    selected: false
-                                }, {
-                                    name: "prostate gland",
-                                    selected: false
-                                }, {
-                                    name: "skeletal muscle",
-                                    selected: false
-                                }, {
-                                    name: "skin",
-                                    selected: false
-                                }, {
-                                    name: "small intestine",
-                                    selected: false
-                                }, {
-                                    name: "smooth muscle",
-                                    selected: false
-                                }, {
-                                    name: "T cell",
-                                    selected: false
-                                }, {
-                                    name: "testis",
-                                    selected: false
-                                }, {
-                                    name: "theca",
-                                    selected: false
-                                }, {
-                                    name: "thymocyte",
-                                    selected: false
-                                }, {
-                                    name: "thyrocyte",
-                                    selected: false
-                                }, {
-                                    name: "thyroid gland",
-                                    selected: false
-                                }, {
-                                    name: "tonsil",
-                                    selected: false
-                                }, {
-                                    name: "trabecular meshwork cell",
-                                    selected: false
-                                }, {
-                                    name: "umbilical vein endothelial cell",
-                                    selected: false
-                                }];
-                            },
-
-                            getHumanSet: function() {
-                                return [{
-                                    name: "adrenal gland",
-                                    selected: false
-                                }, {
-                                    name: "appendix",
-                                    selected: false
-                                }, {
-                                    name: "bone marrow",
-                                    selected: false
-                                }, {
-                                    name: "breast",
-                                    selected: false
-                                }, {
-                                    name: "bronchus",
-                                    selected: false
-                                }, {
-                                    name: "cerebellum",
-                                    selected: false
-                                }, {
-                                    name: "cerebral cortex",
-                                    selected: false
-                                }, {
-                                    name: "cervix, uterine",
-                                    selected: false
-                                }, {
-                                    name: "colon",
-                                    selected: false
-                                }, {
-                                    name: "duodenum",
-                                    selected: false
-                                }, {
-                                    name: "endometrium 1",
-                                    selected: false
-                                }, {
-                                    name: "endometrium 2",
-                                    selected: false
-                                }, {
-                                    name: "epididymis",
-                                    selected: false
-                                }, {
-                                    name: "esophagus",
-                                    selected: false
-                                }, {
-                                    name: "fallopian tube",
-                                    selected: false
-                                }, {
-                                    name: "gallbladder",
-                                    selected: false
-                                }, {
-                                    name: "heart muscle",
-                                    selected: false
-                                }, {
-                                    name: "hippocampus",
-                                    selected: false
-                                }, {
-                                    name: "kidney",
-                                    selected: false
-                                }, {
-                                    name: "lateral ventricle",
-                                    selected: false
-                                }, {
-                                    name: "liver",
-                                    selected: false
-                                }, {
-                                    name: "lung",
-                                    selected: false
-                                }, {
-                                    name: "lymph node",
-                                    selected: false
-                                }, {
-                                    name: "nasopharynx",
-                                    selected: false
-                                }, {
-                                    name: "oral mucosa",
-                                    selected: false
-                                }, {
-                                    name: "ovary",
-                                    selected: false
-                                }, {
-                                    name: "pancreas",
-                                    selected: false
-                                }, {
-                                    name: "parathyroid gland",
-                                    selected: false
-                                }, {
-                                    name: "placenta",
-                                    selected: false
-                                }, {
-                                    name: "prostate",
-                                    selected: false
-                                }, {
-                                    name: "rectum",
-                                    selected: false
-                                }, {
-                                    name: "salivary gland",
-                                    selected: false
-                                }, {
-                                    name: "seminal vesicle",
-                                    selected: false
-                                }, {
-                                    name: "skeletal muscle",
-                                    selected: false
-                                }, {
-                                    name: "skin 1",
-                                    selected: false
-                                }, {
-                                    name: "skin 2",
-                                    selected: false
-                                }, {
-                                    name: "small intestine",
-                                    selected: false
-                                }, {
-                                    name: "smooth muscle",
-                                    selected: false
-                                }, {
-                                    name: "soft tissue 1",
-                                    selected: false
-                                }, {
-                                    name: "soft tissue 2",
-                                    selected: false
-                                }, {
-                                    name: "spleen",
-                                    selected: false
-                                }, {
-                                    name: "stomach 1",
-                                    selected: false
-                                }, {
-                                    name: "stomach 2",
-                                    selected: false
-                                }, {
-                                    name: "testis",
-                                    selected: false
-                                }, {
-                                    name: "thyroid gland",
-                                    selected: false
-                                }, {
-                                    name: "tonsil",
-                                    selected: false
-                                }, {
-                                    name: "urinary bladder",
-                                    selected: false
-                                }, {
-                                    name: "vagina",
-                                    selected: false
-                                }];
-                            },
-
-
+                            error: function() {
+                                me.message = 'Server error, try again later.';
+                            }
+                        }
                     });
-                /*  function Selectall () {
-                    var p = document.getElementsByTagName("s");
+                //
+                // }
+                debugger
+            },
 
-                    p.checked=true;
-                  }*/
+            selectRecessive: function(e) {
+                this.set('recessiveHidden', false);
+                this.model = 'recessive';
+            },
+
+            selectDominant: function(e) {
+                this.set('recessiveHidden', true);
+                this.model = 'dominant';
+            },
+
+            selectSift: function(e) {
+                var b = this.get('siftHidden');
+                if (b == false) {
+                    this.set('siftHidden', true);
+                } else {
+                    this.set('siftHidden', false);
+                }
+            },
+
+            selectPoly: function(e) {
+                var b = this.get('polyHidden');
+                if (b == false) {
+                    this.set('polyHidden', true);
+                } else {
+                    this.set('polyHidden', false);
+                }
+            },
+
+            selectPhats: function(e) {
+                var b = this.get('phatsHidden');
+                if (b == false) {
+                    this.set('phatsHidden', true);
+                } else {
+                    this.set('phatsHidden', false);
+                }
+            },
+
+            selectHuman: function(e) {
+                this._uncheckTissues();
+                this.set('selectedTissueSet', this.humanSet);
+                this.set('additionHidden', false);
+                this.set('customHidden', true);
+                this.custom = false;
+                this.tissueSet = 'hpa';
+            },
+
+            selectExpression: function(e) {
+                this._uncheckTissues();
+                this.set('selectedTissueSet', this.expressionSet);
+                this.set('additionHidden', false);
+                this.set('customHidden', true);
+                this.custom = false;
+                this.tissueSet = 'ea';
+            },
+
+            _uncheckTissues: function() {
+                var eaRadio = this.$.tissue.querySelector('input[type=radio][name=ea]');
+                var hpaRadio = this.$.tissue.querySelector('input[type=radio][name=hpa]');
+                if (eaRadio != null) {
+                    eaRadio.checked = false;
+                }
+                if (hpaRadio != null) {
+                    hpaRadio.checked = false;
+                }
+            },
+
+            selectCustom: function(e) {
+                this.set('additionHidden', true);
+                this.set('customHidden', false);
+                this.custom = true;
+                this.tissueSet = 'cus';
+            },
+
+            selectAllCt: function(e) {
+                var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = true;
+                }
+            },
+
+            selectNoneCt: function(e) {
+                var els = this.$.typesContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = false;
+                }
+
+            },
+
+            selectAllPw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = true;
+                }
+            },
+
+            selectNonePw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = false;
+                }
+            },
+
+
+            /* */
+            getPathwaysSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: true,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: true,
+                    value: '04020'
+                }, {
+                    name: 'CYTOKINE-CYTOKINE RECEPTOR',
+                    selected: false,
+                    value: '04060',
+                    id: 'pathways04060' + this.id
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'p53 SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04115',
+                    id: 'pathways04115' + this.id
+                }, {
+                    name: 'mTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04150',
+                    id: 'pathways04150' + this.id
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'HEDGEHOG SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04340',
+                    id: 'pathways04340' + this.id
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'ECM-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04512',
+                    id: 'pathways04512' + this.id
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'TIGH JUNCTION',
+                    selected: false,
+                    value: '04530',
+                    id: 'pathways04530' + this.id
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04620',
+                    id: 'pathways04620' + this.id
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'T CELL RECPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04660',
+                    id: 'pathways04660' + this.id
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            },
+
+            getTypesSet: function() {
+                return [{
+                    name: "splice_acceptor_variant",
+                    text: "splice acceptor variant",
+                    selected: true
+                }, {
+                    name: "splice_donor_variant",
+                    text: "splice donor variant",
+                    selected: true
+                }, {
+                    name: "stop_gained",
+                    text: "stop gained",
+                    selected: true
+                }, {
+                    name: "stop_lost",
+                    text: "stop lost",
+                    selected: true
+                }, {
+                    name: "non_synonymous_codon",
+                    text: "non synonymous codon",
+                    selected: true
+                }, {
+                    name: "splice_region_variant",
+                    text: "splice region variant",
+                    selected: false
+                }, {
+                    name: "synonymous_codon",
+                    text: "synonymous codon",
+                    selected: false
+                }, {
+                    name: "exon_variant",
+                    text: "exon variant",
+                    selected: false
+                }, {
+                    name: "coding_sequence_variant",
+                    text: "coding sequence variant",
+                    selected: false
+                }, {
+                    name: "5_prime_UTR_variant",
+                    text: "5 prime UTR variant",
+                    selected: false
+                }, {
+                    name: "3_prime_UTR_variant",
+                    text: "3 prime UTR variant",
+                    selected: false
+                }, {
+                    name: "intron_variant",
+                    text: "intron variant",
+                    selected: false
+                }, {
+                    name: "5KB_upstream_variant",
+                    text: "5KB upstream variant",
+                    selected: false
+                }, {
+                    name: "5KB_downstream_variant",
+                    text: "5KB downstream variant",
+                    selected: false
+                }, ];
+            },
+            getExpressionSet: function() {
+                return [{
+                    name: "adipose tissue normal",
+                    selected: false
+                }, {
+                    name: "adipose-derived adult stem cells",
+                    selected: false
+                }, {
+                    name: "amygdala",
+                    selected: false
+                }, {
+                    name: "B cell",
+                    selected: false
+                }, {
+                    name: "bladder",
+                    selected: false
+                }, {
+                    name: "bladder mucosa",
+                    selected: false
+                }, {
+                    name: "blood",
+                    selected: false
+                }, {
+                    name: "bone",
+                    selected: false
+                }, {
+                    name: "brain",
+                    selected: false
+                }, {
+                    name: "bronchial epithelia",
+                    selected: false
+                }, {
+                    name: "bronchoalveolar lavage cell",
+                    selected: false
+                }, {
+                    name: "caudate nucleus",
+                    selected: false
+                }, {
+                    name: "CD138+ plasma cell",
+                    selected: false
+                }, {
+                    name: "CD33+ cells",
+                    selected: false
+                }, {
+                    name: "CD34+ blood cell",
+                    selected: false
+                }, {
+                    name: "CD34+ blood cell thymus",
+                    selected: false
+                }, {
+                    name: "cerebellum",
+                    selected: false
+                }, {
+                    name: "conjunctiva",
+                    selected: false
+                }, {
+                    name: "connective tissue fibroblast",
+                    selected: false
+                }, {
+                    name: "dendritic cell",
+                    selected: false
+                }, {
+                    name: "embryonic lung fibroblast",
+                    selected: false
+                }, {
+                    name: "endothelial cell",
+                    selected: false
+                }, {
+                    name: "epidermis",
+                    selected: false
+                }, {
+                    name: "erythrocyte",
+                    selected: false
+                }, {
+                    name: "esophagus epithelium",
+                    selected: false
+                }, {
+                    name: "fetal lung",
+                    selected: false
+                }, {
+                    name: "frontal cortex",
+                    selected: false
+                }, {
+                    name: "granulocyte",
+                    selected: false
+                }, {
+                    name: "heart",
+                    selected: false
+                }, {
+                    name: "hematopoietic stem cell",
+                    selected: false
+                }, {
+                    name: "hippocampus CA1",
+                    selected: false
+                }, {
+                    name: "hypopharynx",
+                    selected: false
+                }, {
+                    name: "hypothalamus",
+                    selected: false
+                }, {
+                    name: "keratinocyte",
+                    selected: false
+                }, {
+                    name: "kidney",
+                    selected: false
+                }, {
+                    name: "kidney epithelium",
+                    selected: false
+                }, {
+                    name: "leukocyte",
+                    selected: false
+                }, {
+                    name: "liver",
+                    selected: false
+                }, {
+                    name: "lung",
+                    selected: true
+                }, {
+                    name: "lymph node",
+                    selected: false
+                }, {
+                    name: "lymphocyte",
+                    selected: false
+                }, {
+                    name: "macrophage",
+                    selected: false
+                }, {
+                    name: "mesangial cell",
+                    selected: false
+                }, {
+                    name: "mesenchymal stem cell",
+                    selected: false
+                }, {
+                    name: "monocyte",
+                    selected: false
+                }, {
+                    name: "mononuclear cell",
+                    selected: false
+                }, {
+                    name: "multipotent adult progenitor cell",
+                    selected: false
+                }, {
+                    name: "myometrium",
+                    selected: false
+                }, {
+                    name: "oropharynx",
+                    selected: false
+                }, {
+                    name: "ovary",
+                    selected: false
+                }, {
+                    name: "placenta basal plate",
+                    selected: false
+                }, {
+                    name: "prefrontal cortex",
+                    selected: false
+                }, {
+                    name: "prostate gland",
+                    selected: false
+                }, {
+                    name: "skeletal muscle",
+                    selected: false
+                }, {
+                    name: "skin",
+                    selected: false
+                }, {
+                    name: "small intestine",
+                    selected: false
+                }, {
+                    name: "smooth muscle",
+                    selected: false
+                }, {
+                    name: "T cell",
+                    selected: false
+                }, {
+                    name: "testis",
+                    selected: false
+                }, {
+                    name: "theca",
+                    selected: false
+                }, {
+                    name: "thymocyte",
+                    selected: false
+                }, {
+                    name: "thyrocyte",
+                    selected: false
+                }, {
+                    name: "thyroid gland",
+                    selected: false
+                }, {
+                    name: "tonsil",
+                    selected: false
+                }, {
+                    name: "trabecular meshwork cell",
+                    selected: false
+                }, {
+                    name: "umbilical vein endothelial cell",
+                    selected: false
+                }];
+            },
+
+            getHumanSet: function() {
+                return [{
+                    name: "adrenal gland",
+                    selected: false
+                }, {
+                    name: "appendix",
+                    selected: false
+                }, {
+                    name: "bone marrow",
+                    selected: false
+                }, {
+                    name: "breast",
+                    selected: false
+                }, {
+                    name: "bronchus",
+                    selected: false
+                }, {
+                    name: "cerebellum",
+                    selected: false
+                }, {
+                    name: "cerebral cortex",
+                    selected: false
+                }, {
+                    name: "cervix, uterine",
+                    selected: false
+                }, {
+                    name: "colon",
+                    selected: false
+                }, {
+                    name: "duodenum",
+                    selected: false
+                }, {
+                    name: "endometrium 1",
+                    selected: false
+                }, {
+                    name: "endometrium 2",
+                    selected: false
+                }, {
+                    name: "epididymis",
+                    selected: false
+                }, {
+                    name: "esophagus",
+                    selected: false
+                }, {
+                    name: "fallopian tube",
+                    selected: false
+                }, {
+                    name: "gallbladder",
+                    selected: false
+                }, {
+                    name: "heart muscle",
+                    selected: false
+                }, {
+                    name: "hippocampus",
+                    selected: false
+                }, {
+                    name: "kidney",
+                    selected: false
+                }, {
+                    name: "lateral ventricle",
+                    selected: false
+                }, {
+                    name: "liver",
+                    selected: false
+                }, {
+                    name: "lung",
+                    selected: false
+                }, {
+                    name: "lymph node",
+                    selected: false
+                }, {
+                    name: "nasopharynx",
+                    selected: false
+                }, {
+                    name: "oral mucosa",
+                    selected: false
+                }, {
+                    name: "ovary",
+                    selected: false
+                }, {
+                    name: "pancreas",
+                    selected: false
+                }, {
+                    name: "parathyroid gland",
+                    selected: false
+                }, {
+                    name: "placenta",
+                    selected: false
+                }, {
+                    name: "prostate",
+                    selected: false
+                }, {
+                    name: "rectum",
+                    selected: false
+                }, {
+                    name: "salivary gland",
+                    selected: false
+                }, {
+                    name: "seminal vesicle",
+                    selected: false
+                }, {
+                    name: "skeletal muscle",
+                    selected: false
+                }, {
+                    name: "skin 1",
+                    selected: false
+                }, {
+                    name: "skin 2",
+                    selected: false
+                }, {
+                    name: "small intestine",
+                    selected: false
+                }, {
+                    name: "smooth muscle",
+                    selected: false
+                }, {
+                    name: "soft tissue 1",
+                    selected: false
+                }, {
+                    name: "soft tissue 2",
+                    selected: false
+                }, {
+                    name: "spleen",
+                    selected: false
+                }, {
+                    name: "stomach 1",
+                    selected: false
+                }, {
+                    name: "stomach 2",
+                    selected: false
+                }, {
+                    name: "testis",
+                    selected: false
+                }, {
+                    name: "thyroid gland",
+                    selected: false
+                }, {
+                    name: "tonsil",
+                    selected: false
+                }, {
+                    name: "urinary bladder",
+                    selected: false
+                }, {
+                    name: "vagina",
+                    selected: false
+                }];
+            },
+
+
+        });
+        /*  function Selectall () {
+            var p = document.getElementsByTagName("s");
+
+            p.checked=true;
+          }*/
     </script>
 </dom-module>
