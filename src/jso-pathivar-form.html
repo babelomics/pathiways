@@ -327,9 +327,9 @@
                 this.tresholdCons = 200;
                 this.jobName = 'Pathivar job';
                 this.descrip = 'Description';
-                this.toolName= 'Pathiways';
-                this.execution= 'Pathivar';
-              },
+                this.toolName = 'pathiways';
+                this.execution = 'pathivar';
+            },
 
 
             vcfFileSelected: function(e) {
@@ -342,9 +342,9 @@
                 var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
                 if (bool) {
                     this.vcfFileMessage = '';
-                } else {
-                    this.vcfFileMessage = 'This file is not VCF';
-                }
+                } //else {
+                //this.vcfFileMessage = 'This file is not VCF';
+                //}
                 return bool;
             },
 
@@ -375,6 +375,12 @@
             runExample: function() {
 
                 var me = this;
+                var outdirId;
+                if (this.$.outputFolder.selectedFile == null) {
+                    outdirId = this.$.inputFile.selectedStudy.id;
+                } else {
+                    outdirId = this.$.outputFolder.selectedFile.id;
+                }
                 OpencgaManager.jobs.create({
                     query: {
                         sid: Cookies("bioinfo_sid"),
@@ -383,7 +389,7 @@
                         toolId: this.toolName,
                         name: "Pathivar example",
                         description: this.descrip,
-                        outdir: folder.id,
+                        outdir: outdirId,
 
                         annotvcf: "example_annotvcf1000g.vpa",
                         ctypes: "splice_acceptor_variant,splice_donor_variant,stop_gained,stop_lost,non_synonymous_codon,exon_variant",
@@ -417,11 +423,14 @@
 
             launchJob: function(e) {
 
+                // Parametros obligatorios
+                //{"vcfFile","samplecol","model","comhom","ctypes","methodscore","treshold","pathways","tissue"}
+
                 var me = this;
                 this.errors = [];
                 var outdirId;
                 if (this.$.outputFolder.selectedFile == null) {
-                    outdirId = this.$.inputFile.selectedStudy.id;
+                    outdirId = this._getStudyFolder(this.$.inputFile.selectedStudy.id).id;
                 } else {
                     outdirId = this.$.outputFolder.selectedFile.id;
                 }
@@ -437,9 +446,9 @@
 
                 if (this.checkVcfFile(e.currentTarget.selectedFile)) {
                     query['vcfFile'] = this.vcfFile.id;
-                          } else {
-                              this.errors.push("No input VCF file selected. Please select one. ");
-                }
+                } //else {
+                //this.errors.push("No input VCF file selected. Please select one. ");
+                //  }
 
                 if (this.sampleNameList != null) {
 
@@ -462,9 +471,9 @@
                 }
                 if (ctypes.length > 0) {
                     query['ctypes'] = ctypes;
-                } else {
-                     this.errors.push('Please select at least one Consequence Type');
-                 }
+                } //else {
+                // this.errors.push('Please select at least one Consequence Type');
+                //}
 
                 var methodscore = '';
                 var treshold = '';
@@ -502,9 +511,9 @@
                 }
                 if (pathways.length > 0) {
                     query['pathways'] = pathways;
-                } else {
-                     this.errors.push('Please select at least one Pathway');
-                 }
+                } //else {
+                // this.errors.push('Please select at least one Pathway');
+                //}
 
                 if (this.custom == false) {
                     var tissue = [];
@@ -528,9 +537,9 @@
                         this.tMessage = '';
                         query['sgenes-text'] = sgenes;
                         query['tissue'] = 'none';
-                    } else {
-                         this.errors.push('Please write at least one gene when using custom Tissue');
-                     }
+                    } //else {
+                    // this.errors.push('Please write at least one gene when using custom Tissue');
+                    //}
                 }
 
                 query['tissueSet'] = this.tissueSet;
@@ -539,29 +548,29 @@
                 //     return;
                 // }
                 //
-                // console.log(this.$.form.checkValidity())
+                console.log(this.$.form.checkValidity())
 
                 // if (this.$.form.checkValidity()) {
                 //     //                       annotvcf: this.annotvcf,
-                    OpencgaManager.jobs.create({
-                        query: query,
-                        request: {
-                            //method: 'POST',
-                            success: function(response) {
-                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                    var job = response.response[0].result[0];
-                                    me.selectedOption = "jobLaunched"
-                                    console.log(job);
-                                    //                                    me.message = job.commandLine;
-                                } else {
-                                    me.message = response.response[0].errorMsg;
-                                }
-                            },
-                            error: function() {
-                                me.message = 'Server error, try again later.';
+                OpencgaManager.jobs.create({
+                    query: query,
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var job = response.response[0].result[0];
+                                me.selectedOption = "jobLaunched"
+                                console.log(job);
+                                //                                    me.message = job.commandLine;
+                            } else {
+                                me.message = response.response[0].errorMsg;
                             }
-                        }
-                    });
+                        },
+                        // error: function() {
+                        //     me.message = 'Server error, try again later.';
+                        // }
+                    }
+                });
                 //
                 // }
                 debugger
@@ -669,7 +678,32 @@
                 }
             },
 
-
+            _getStudyFolder: function(studyId) {
+                var me = this;
+                var folder;
+                OpencgaManager.files.search({
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                        studyId: studyId,
+                        name: '.'
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            console.log(response);
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                folder = response.response[0].result[0];
+                            } else {
+                                console.log(response.response[0].errorMsg)
+                            }
+                        },
+                        error: function() {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                });
+                return folder;
+            },
             /* */
             getPathwaysSet: function() {
                 return [{

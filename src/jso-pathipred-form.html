@@ -38,64 +38,65 @@
     <form id="form">
       <div class="flex"></div>
       <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
-        <div class="jso-formbox">
-            <div class="jso-formtitle">
-                Species
-            </div>
-            <div class="jso-formcontent ">
-              <label>Species: &nbsp;</label>
-              <dl>
-                <dd>
+      <div class="jso-formbox">
+          <div class="jso-formtitle">
+              Species
+          </div>
+          <div class="jso-formcontent ">
+            <label>Species: &nbsp;</label>
+            <dl>
+              <dd>
+              <label class="jso-control">
+                  <input type="radio" name="species" checked="true" on-click="selectHumanSpecie">
+                  <span>Human (Homo sapiens)</span>
+              </label>
+              </dd>
+              <dd>
                 <label class="jso-control">
-                    <input id="human" type="radio" name="species" checked="true" on-click="selectHumanSpecie">
-                    <span>Human (Homo sapiens)</span>
+                    <input type="radio" name="species" on-click="selectMouseSpecie">
+                    <span>Mouse (Mus musculus)</span>
+                </label>
+              </dd>
+            </dl>
+            <div>Platform: &nbsp;</div>
+            <dl hidden="{{humanHidden}}" id="human" >
+              <dd>
+                <label class="jso-control">
+                    <input type="radio" name="shuman" checked="true" value="HGU133Plus2">
+                    <span>Affymetrix Human Genome U133 Plus 2.0 Array</span>
                 </label>
                 </dd>
-                <dd>
-                  <label class="jso-control">
-                      <input id="mouse" type="radio" name="species" on-click="selectMouseSpecie">
-                      <span>Mouse (Mus musculus)</span>
-                  </label>
+              <dd>
+                <label class="jso-control">
+                    <input type="radio" name="shuman" value="HGU133A">
+                    <span>Affymetrix Human Genome U133A Array</span>
+                </label>
                 </dd>
-              </dl>
-              <div>Platform: &nbsp;</div>
-              <dl hidden="{{humanHidden}}">
-                <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="shuman" checked="true">
-                      <span>Affymetrix Human Genome U133 Plus 2.0 Array</span>
-                  </label>
-                  </dd>
-                <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="shuman">
-                      <span>Affymetrix Human Genome U133A Array</span>
-                  </label>
-                  </dd>
-                <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="shuman">
-                      <span>Affymetrix Human Genome U133A 2.0 Array</span>
-                  </label>
-                </dd>
-              </dl>
+              <dd>
+                <label class="jso-control">
+                    <input type="radio" name="shuman" value="HGU133A_2">
+                    <span>Affymetrix Human Genome U133A 2.0 Array</span>
+                </label>
+              </dd>
+            </dl>
 
-              <dl hidden="{{mouseHidden}}">
-                <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="smouse" checked="true">
-                      <span>Affymetrix Mouse Gene 1.0 ST Array</span>
-                  </label>
-                  </dd>
-                <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="smouse">
-                      <span>Affymetrix Mouse Genome 430 2.0 Array</span>
-                  </label>
-                  </dd>
-              </dl>
-            </div>
-        </div>
+            <dl hidden="{{mouseHidden}}" id="mouse">
+              <dd>
+                <label class="jso-control">
+                    <input type="radio" name="smouse" checked="true" value="MG_1ST">
+                    <span>Affymetrix Mouse Gene 1.0 ST Array</span>
+                </label>
+                </dd>
+              <dd>
+                <label class="jso-control">
+                    <input type="radio" name="smouse" value="MG430_2">
+                    <span>Affymetrix Mouse Genome 430 2.0 Array</span>
+                </label>
+                </dd>
+            </dl>
+
+          </div>
+      </div>
         <div class="jso-formbox">
             <div class="jso-formtitle">
                 Select your data
@@ -204,17 +205,16 @@
           </div>
           <div class="jso-formcontent">
 
-            <div class="coment">Output folder</div>
-            <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
+              <div class="coment">Output folder</div>
+              <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
               </jso-opencga-file-origin>
               <div class="coment">Job name</div>
-              <input type="text" style="width:150px;">
+              <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
               <div class="coment">Description</div>
-              <textarea ></textarea>
-
+              <textarea id="descripTextArea" value="{{descrip}}"></textarea>
           </div>
         </div>
-        <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+        <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
     </form>
   </template>
 
@@ -238,12 +238,19 @@
               type: Array
             },
               contHidden:{
+                type:Boolean,
               },
               humanHidden: {
+                type:Boolean,
               },
               mouseHidden: {
+                type:Boolean,
               },
               wilHidden: {
+                type:Boolean,
+              },
+              specie: {
+                type: String,
               },
 
           },
@@ -257,18 +264,116 @@
             this.set('wilHidden', true);
             this.toolName= 'Pathiways';
             this.execution= 'Pathired';
+            this.jobName = 'Pathivar job';
+            this.descrip = 'Description';
+          },
+          runExample: function() {
+
+              OpencgaManager.jobs.create({
+                  query: {
+
+                  },
+                  request: {
+                      //method: 'POST',
+                      success: function(response) {
+                          if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                              var jobId = response.response[0].result[0].id;
+                              me.selectedOption = "jobLaunched"
+                          } else {
+                              me.message = response.response[0].errorMsg;
+                          }
+                          me.selectedStudy = null;
+                      },
+                      error: function() {
+                          me.message = 'Server error, try again later.';
+                      }
+                  }
+              });
+
           },
 
+          launchJob: function(e) {
+
+          // Parametros obligatorios
+          //{}
+
+          var query = {};
+          query['sid'] = Cookies("bioinfo_sid");
+          query['execution'] = this.execution;
+          // query['studyId'] = this.$.inputFile.selectedStudy.id;
+          query['toolId'] = this.toolName;
+          query['name'] = this.$.jobNameTextArea.value;
+          query['description'] = this.$.descripTextArea.value;
+          // query['outdir'] = outdirId;
+
+          query['specie'] = this.specie;
+          if (this.specie == 'hsa') {
+            s=this.$.human.querySelectorAll('input[type=radio]');
+            for (var i = 0; i < s.length; i++) {
+              if(s[i].checked){
+            query['platform'] = s[i].value;
+              }
+            }
+          }
+          if (this.specie == 'mmu') {
+              s=this.$.mouse.querySelectorAll('input[type=radio]');
+              for (var i = 0; i < s.length; i++) {
+                if(s[i].checked){
+                query['platform'] = s[i].value;
+                }
+              }
+          }
+
+          var pathways = [];
+          var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+          for (var i = 0; i < els.length; i++) {
+              var pathway = els[i];
+              if (pathway.checked) {
+                  pathways.push('hsa' + pathway.value);
+              }
+          }
+          if (pathways.length > 0) {
+              query['pathways'] = pathways;
+          } //else {
+              // this.errors.push('Please select at least one Pathway');
+           //}
+debugger
+              //  console.log(this.$.form.checkValidity())
+              // // if (this.$.form.checkValidity()) {
+              // //     //                       annotvcf: this.annotvcf,
+              //     OpencgaManager.jobs.create({
+              //         query: query,
+              //         request: {
+              //             //method: 'POST',
+              //             success: function(response) {
+              //                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+              //                     var job = response.response[0].result[0];
+              //                     me.selectedOption = "jobLaunched"
+              //                     console.log(job);
+              //                     //                                    me.message = job.commandLine;
+              //                 } else {
+              //                     me.message = response.response[0].errorMsg;
+              //                 }
+              //             },
+              //             // error: function() {
+              //             //     me.message = 'Server error, try again later.';
+              //             // }
+              //         }
+              //     });
+              // }
+          },
 
           selectHumanSpecie: function(e){
             this.set('humanHidden', false);
             this.set('mouseHidden', true);
             this.set('selectPathwaysSet', this.pathwaysHumanSet);
+            this.specie = 'hsa';
           },
           selectMouseSpecie: function(e){
             this.set('humanHidden', true);
             this.set('mouseHidden', false);
             this.set('selectPathwaysSet', this.pathwaysMouseSet);
+            this.specie = 'mmu';
           },
 
           selectWil: function (e){
