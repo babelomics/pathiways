@@ -24,12 +24,13 @@
     <style>
         :host {
             display: block;
-            position: relative;
+            position:  absolute;
             cursor: default;
             font-size: 13px;
             background-color: var(--default-primary-color);
-            height: 100%;
+            height:  100%;
             width: 100%;
+
         }
 
         #menu div.option {
@@ -40,7 +41,6 @@
             cursor: pointer;
             text-align: center;
             line-height: 30px;
-            padding: 0 5px;
         }
 
         #menu div.option:hover {
@@ -65,8 +65,8 @@
             position: absolute;
             width: 100%;
             top: 60px;
-            height: calc(100vh - 60px);
-            background-color: transparent;
+            min-height: calc(100vh - 60px);
+            background-color: inherit;
         }
 
         jso-job-result {
@@ -134,15 +134,15 @@
         </div>
 
         <div class="content" menu-option="pathiways">
-            <jso-pathiways-form id="pathiwaysForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathiways-form>
+            <jso-pathiways-form id="pathiwaysForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}"></jso-pathiways-form>
         </div>
 
         <div class="content" menu-option="pathipred">
-            <jso-pathipred-form id="pathipredForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathipred-form>
+            <jso-pathipred-form id="pathipredForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}"></jso-pathipred-form>
         </div>
 
         <div class="content" menu-option="pathivar">
-            <jso-pathivar-form id="pathivarForm" selectedOption="{{selectedOption}}" studies="{{studies}}" selectedStudy="{{selectedStudy}}"></jso-pathivar-form>
+            <jso-pathivar-form id="pathivarForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}" ></jso-pathivar-form>
         </div>
 
 
@@ -267,7 +267,11 @@
                     }, {
                         value: 'IDLIST_RANKED',
                         text: 'ID list ranked'
-                    }]
+                    }, {
+                      value: 'VARIANT',
+                      text: 'VCF'
+                    }
+                  ]
                 },
                 allowedTools: {
                     type: Array,

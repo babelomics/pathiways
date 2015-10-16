@@ -1,14 +1,18 @@
 <dom-module id="jso-pathipred-form">
 <style>
     :host {
-        display: block;
-        position: relative;
-        box-sizing: border-box;
-        padding: 15px 40px;
+      display: block;
+      position: relative;
+      box-sizing: border-box;
+      padding: 15px 40px;
 
-        background-color: var(--light-primary-color);
+      margin: 0px auto 0px auto;
 
-        margin: 0px 10%;
+      max-width: 1000px;
+      border: 1px solid #c6d0da;
+      transition: all 0.2s;
+      box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
+      background-color: #FFFFFF;
     }
 
     #title{
@@ -22,6 +26,10 @@
       color: #445D76;
       margin: 5px;
       width: 150px;
+    }
+
+    .coment {
+        color: #666;
     }
 
 </style>
@@ -109,15 +117,7 @@
                 </dd>
               </dl>
               <div class="horizontal layout" style="line-height: 25px;">Input file: &nbsp;
-                <jso-opencga-file-origin
-                        id="inputFile"
-                        bioformats="{{bioformats}}"
-                        projects="{{projects}}"
-
-                        columns="{{columns}}"
-                        items="{{items}}"
-                        selected="{{selected}}">
-                </jso-opencga-file-origin>
+                <jso-opencga-file-origin id="inputFile" bioformats="{{bioformats}}" projects="{{projects}}">
               </div>
             </div>
         </div>
@@ -128,14 +128,7 @@
             </div>
             <div class="jso-formcontent">
               <div class="horizontal layout" style="line-height: 25px;">Experimental design data: &nbsp;
-                <jso-opencga-file-origin
-                        id="inputFile"
-                        bioformats="{{bioformats}}"
-                        projects="{{projects}}"
-                        columns="{{columns}}"
-                        items="{{items}}"
-                        selected="{{selected}}">
-                </jso-opencga-file-origin>
+                <jso-opencga-file-origin id="inputFile" bioformats="{{bioformats}}" projects="{{projects}}">
             </div>
             <label>Platform: &nbsp;</label>
             <dl>
@@ -210,28 +203,19 @@
               Job information
           </div>
           <div class="jso-formcontent">
-          <p>
+
             <div class="coment">Output folder</div>
-            <div class="coment">You can create folders using the button &nbsp;<i class="fa fa-folder-o"></i>&nbsp;+ inside file browser.</div>
-            <jso-opencga-file-origin
-                    id="inputFile"
-                    bioformats="{{bioformats}}"
-                    projects="{{projects}}"
-                    columns="{{columns}}"
-                    items="{{items}}"
-                    selected="{{selected}}">
-            </jso-opencga-file-origin>
-          </p>
-            <div class="coment">Job name</div>
-            <div><input type="text" value="Pathipred job"=></div>
-            <div class="coment">Description</div>
-            <div><input type="text" value="Description"></div>
-          <p>
-          </p>
+            <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
+              </jso-opencga-file-origin>
+              <div class="coment">Job name</div>
+              <input type="text" style="width:150px;">
+              <div class="coment">Description</div>
+              <textarea ></textarea>
+
           </div>
         </div>
+        <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
     </form>
-    <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
   </template>
 
   <script>
@@ -272,13 +256,7 @@
             this.set('mouseHidden', true);
             this.set('wilHidden', true);
           },
-          launchJob: function() {
-            var kfold = '';
-            if (this.siftSelected) {
-                methodscore += 'sift';
-                kfold += this.kfoldSift;
-            }
-          },
+
 
           selectHumanSpecie: function(e){
             this.set('humanHidden', false);
