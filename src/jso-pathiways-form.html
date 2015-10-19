@@ -307,19 +307,19 @@
 
             vcfFileSelected: function(e) {
                 vcfFile = e.currentTarget.selectedFile;
-                this.checkVcfFile(e.currentTarget.selectedFile);
+                //this.checkVcfFile(e.currentTarget.selectedFile);
             },
 
-            checkVcfFile: function(vcfFile) {
-                var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
-                if (bool) {
-                    this.vcfFileMessage = '';
-                } else {
-                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                    this.vcfFileMessage = 'This file is not VCF';
-                }
-                return bool;
-            },
+            // checkVcfFile: function(vcfFile) {
+            //     var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
+            //     if (bool) {
+            //         this.vcfFileMessage = '';
+            //     } else {
+            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
+            //         this.vcfFileMessage = 'This file is not VCF';
+            //     }
+            //     return bool;
+            // },
 
             fileSelected: function(e) {
                 file = e.currentTarget.selectedFile;
@@ -401,40 +401,41 @@
 
                 var me = this;
                 this.errors = [];
-                var outdirId;
+
                 var query = {};
-                if (this.checkVcfFile(vcfFile) == true && vcfFile != null) {
-                    query['vcfFile'] = vcfFile.id;
-                    if (this.$.outputFolder.selectedFile == null) {
-                        if (this.$.inputFile.selectedStudy != null) {
-                            var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
-                            if (studyFolder != null) {
-                                outdirId = studyFolder.id;
-                            }
-                        }
-                    } else {
-                        outdirId = this.$.outputFolder.selectedFile.id;
-                    }
-                    var studyId = this.$.inputFile.selectedStudy.id;
-                    query['studyId'] = studyId;
-                    query['outdir'] = outdirId;
-                    query['sid'] = Cookies("bioinfo_sid");
-                    this.errorMessage = "";
-                } else {
-                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                }
+                //if (vcfFile != null) {
+                    //this.checkVcfFile(vcfFile) == true && dentro del if
+                    //query['vcfFile'] = vcfFile.id;
+                    // if (this.$.outputFolder.selectedFile == null) {
+                    //     if (this.$.inputFile.selectedStudy != null) {
+                    //         var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
+                    //         if (studyFolder != null) {
+                    //             outdirId = studyFolder.id;
+                    //         }
+                    //     }
+                    // } else {
+                    //     outdirId = this.$.outputFolder.selectedFile.id;
+                    // }
+                    // var studyId = this.$.inputFile.selectedStudy.id;
+                    //query['studyId'] = studyId;
+                    //query['outdir'] = outdirId;
+                    //query['sid'] = Cookies("bioinfo_sid");
+                    //this.errorMessage = "";
+                // } else {
+                //     this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                // }
 
                 query['execution'] = this.execution;
                 query['toolId'] = this.toolName;
-                query['exp-name'] = this.$.jobNameTextArea.value;
-                query['description'] = this.$.descripTextArea.value;
+                query['jobname'] = this.$.jobNameTextArea.value;
+                query['jobdescription'] = this.$.descripTextArea.value;
 
-                query['control'] = this.specie; //"control","disease"
+                query['species'] = this.specie;
                 if (this.specie == 'hsa') {
                     s = this.$.human.querySelectorAll('input[type=radio]');
                     for (var i = 0; i < s.length; i++) {
                         if (s[i].checked) {
-                            query['disease'] = s[i].value;
+                            query['platform'] = s[i].value;
                         }
                     }
                 }
@@ -442,28 +443,31 @@
                     s = this.$.mouse.querySelectorAll('input[type=radio]');
                     for (var i = 0; i < s.length; i++) {
                         if (s[i].checked) {
-                            query['disease'] = s[i].value;
+                            query['platform'] = s[i].value;
                         }
                     }
                 }
 
-                //if (this.checkfile(file) == true && file != null) {
-                //query['exp-design'] = file.id;
-                //}else {
-                //this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                //}
+                if (file != null) {
+                    //this.checkfile(file) == true && dentro del if
+                    query['exp-design'] = file.id;
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.fileMessage = "No file selected";
+                }
 
                 dt = this.$.dataType.querySelectorAll('input[type=radio]');
                 for (var i = 0; i < dt.length; i++) {
                     if (dt[i].checked) {
-                        query['platform'] = dt[i].value; //"norm-matrix"(false),"cel-compressed-file"(true)
+                        query['cel-compressed-file'] = dt[i].value; //"norm-matrix"(false),"cel-compressed-file"(true)
                     }
                 }
+                //query['norm-matrix'] = (.txt);
 
                 var condition1 = this.$.condition1.value.trim().replace(/\n/g, '%0A');
                 if (condition1 != '') {
                     this.errorCondition1 = '';
-                    query['condition1'] = condition1;
+                    query['control'] = condition1;
                 } else {
                     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                     this.errorCondition1 = 'This field is required';
@@ -471,7 +475,7 @@
                 var condition2 = this.$.condition2.value.trim().replace(/\n/g, '%0A');
                 if (condition2 != '') {
                     this.errorCondition2 = '';
-                    query['condition2'] = condition2;
+                    query['disease'] = condition2;
                 } else {
                     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                     this.errorCondition2 = 'This field is required';
@@ -488,6 +492,8 @@
                             query['paired'] = s[i].value;
                         }
                     }
+                }else{
+                  query['paired'] = "NULL";
                 }
 
                 var pathways = [];
