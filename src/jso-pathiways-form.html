@@ -1,611 +1,762 @@
 <dom-module id="jso-pathiways-form">
-<style>
-    :host {
-      display: block;
-      position: relative;
-      box-sizing: border-box;
-      padding: 15px 40px;
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            padding: 15px 40px;
+            margin: 0px auto 0px auto;
+            max-width: 1000px;
+            border: 1px solid #c6d0da;
+            transition: all 0.2s;
+            box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
+            background-color: #FFFFFF;
+        }
 
+        #title {
+            text-align: center;
+            font-size: 20px;
+            color: #666;
+        }
 
-      margin: 0px auto 0px auto;
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 150px;
+        }
 
-      max-width: 1000px;
-      border: 1px solid #c6d0da;
-      transition: all 0.2s;
-      box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
-      background-color: #FFFFFF;
-    }
+        .coment {
+            color: #666;
+        }
 
-    #title{
-      text-align: center;
-      font-size: 20px;
-      color: #666;
-    }
+        .conditionTextArea {
+            box-sizing: border-box;
+            width: 25%;
+            height: 25px;
+            resize: none;
+        }
 
-    .file{
-      text-align: center;
-      color: #445D76;
-      margin: 5px;
-      width: 150px;
-    }
-    .coment {
-        color: #666;
-    }
-
+        .errmsg {
+            color: #8b0000;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
     </style>
-      <template>
-        <p id= "title"><strong>PATHiWAYS input parameters</strong></p>
+    <template>
+        <p id="title">
+            <strong>PATHiWAYS input parameters</strong>
+        </p>
         <form id="form">
-          <div class="flex"></div>
-          <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
-          <div class="jso-formbox">
-              <div class="jso-formtitle">
-                  Species
-              </div>
-              <div class="jso-formcontent ">
-                <label>Species: &nbsp;</label>
-                <dl>
-                  <dd>
-                  <label class="jso-control">
-                      <input type="radio" name="species" checked="true" on-click="selectHumanSpecie">
-                      <span>Human (Homo sapiens)</span>
-                  </label>
-                  </dd>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="species" on-click="selectMouseSpecie">
-                        <span>Mouse (Mus musculus)</span>
-                    </label>
-                  </dd>
-                </dl>
-                <div>Platform: &nbsp;</div>
-                <dl hidden="{{humanHidden}}" id="human" >
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="shuman" checked="true" value="HGU133Plus2">
-                        <span>Affymetrix Human Genome U133 Plus 2.0 Array</span>
-                    </label>
-                    </dd>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="shuman" value="HGU133A">
-                        <span>Affymetrix Human Genome U133A Array</span>
-                    </label>
-                    </dd>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="shuman" value="HGU133A_2">
-                        <span>Affymetrix Human Genome U133A 2.0 Array</span>
-                    </label>
-                  </dd>
-                </dl>
-
-                <dl hidden="{{mouseHidden}}" id="mouse">
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="smouse" checked="true" value="MG_1ST">
-                        <span>Affymetrix Mouse Gene 1.0 ST Array</span>
-                    </label>
-                    </dd>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="smouse" value="MG430_2">
-                        <span>Affymetrix Mouse Genome 430 2.0 Array</span>
-                    </label>
-                    </dd>
-                </dl>
-
-              </div>
-          </div>
-          <div class="jso-formbox">
-              <div class="jso-formtitle">
-                  Select your data
-              </div>
-              <div class="jso-formcontent">
-                <label>Platform: &nbsp;</label>
-                <dl>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="data">
-                        <span>CEL compressed file</span>
-                    </label>
-                  </dd>
-                  <dd>
-                    <label class="jso-control">
-                        <input type="radio" name="data" checked="true">
-                        <span>Normalized matrix</span>
-                    </label>
-                  </dd>
-                </dl>
-                <div class="horizontal layout" style="line-height: 25px;">Input file: &nbsp;
-                <jso-opencga-file-origin id="inputFile" bioformats="{{bioformats}}" projects="{{projects}}">
+            <div class="flex"></div>
+            <div class="jso-btn jso-btn-shdw file"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Species
                 </div>
-              </div>
-          </div>
+                <div class="jso-formcontent ">
+                    <label>Species: &nbsp;</label>
+                    <dl>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="species" checked="true" on-click="selectHumanSpecie">
+                                <span>Human (Homo sapiens)</span>
+                            </label>
+                        </dd>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="species" on-click="selectMouseSpecie">
+                                <span>Mouse (Mus musculus)</span>
+                            </label>
+                        </dd>
+                    </dl>
+                    <div>Platform: &nbsp;</div>
+                    <dl hidden="{{humanHidden}}" id="human">
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="shuman" checked="true" value="HGU133Plus2">
+                                <span>Affymetrix Human Genome U133 Plus 2.0 Array</span>
+                            </label>
+                        </dd>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="shuman" value="HGU133A">
+                                <span>Affymetrix Human Genome U133A Array</span>
+                            </label>
+                        </dd>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="shuman" value="HGU133A_2">
+                                <span>Affymetrix Human Genome U133A 2.0 Array</span>
+                            </label>
+                        </dd>
+                    </dl>
 
-          <div class="jso-formbox">
-              <div class="jso-formtitle">
-                  Experimental design
-              </div>
-              <div class="jso-formcontent">
+                    <dl hidden="{{mouseHidden}}" id="mouse">
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="smouse" checked="true" value="MG_1ST">
+                                <span>Affymetrix Mouse Gene 1.0 ST Array</span>
+                            </label>
+                        </dd>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="smouse" value="MG430_2">
+                                <span>Affymetrix Mouse Genome 430 2.0 Array</span>
+                            </label>
+                        </dd>
+                    </dl>
 
-                <div class="horizontal layout" style="line-height: 25px;">Experimental design data: &nbsp;
-                  <jso-opencga-file-origin id="inputFile" bioformats="{{bioformats}}" projects="{{projects}}">
-              </div>
-                <div>Condition 1: &nbsp; <input type="text"> </div>
-                <div>Condition 2: &nbsp; <input type="text"> </div>
-              </div>
-          </div>
-
-          <div class="jso-formbox">
-              <div class="jso-formtitle">
-                  Other parameters
-              </div>
-              <div class="jso-formcontent horizontal layout">
-                <label>Summ: &nbsp;</label>
-                <select>
-                  <option value="90th">90th percentile</option>
-                  <option value="95th">95th percentile</option>
-                  <option value="99th">99th percentile</option>
-                  <option value="mean">mean</option>
-                  <option value="median">mediant</option>
-                  <option value="max">max</option>
-                  <option value="min">minimun</option>
-                </select>
-              </div>
-          </div>
-
-          <div class="jso-formbox">
-              <div class="jso-formtitle">
-                  Comparison tests
-              </div>
-              <div class="jso-formcontent">
-                  <dl>
-                    <label class="jso-control">
-                        <input type="radio" name="test" checked="true" on-click="selectMult" value="multilevel">
-                        <span>Multilevel test</span>
-                    </label>
-                  </dl>
-                  <dl>
-                    <label class="jso-control">
-                        <input type="radio" name="test" on-click="selectWil" value="wilcoxon">
-                        <span>Wilcoxon test</span>
-                    </label>
-                    <dd hidden="{{wilHidden}}" id=wilPaired>
-                      <label class="jso-control">
-                          <input type="radio" name="wilTest" value="TRUE">
-                          <span>Paired</span>
-                      </label>
-                      <label class="jso-control">
-                        <input type="radio" name="wilTest" value="FALSE">
-                        <span>No Paired</span>
-                      </label>
-                    </dd>
-                  </dl>
-
-              </div>
-          </div>
-
-          <div class="jso-formbox">
-              <div class="jso-formtitle horizontal layout">
-                  <div class="flex">Pathways</div>
-                  <div class="jso-btn jso-btn-shdw" on-click="SelectAllPw">Select all</div>
-                  <div class="jso-btn jso-btn-shdw" on-click="SelectNonePw">Deselect all</div>
-              </div>
-              <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
-                  <template is="dom-repeat" items="{{selectPathwaysSet}}">
-                      <label class="jso-control">
-                          <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
-                          <span>{{item.name}}</span>
-                      </label>
-                  </template>
-              </div>
-          </div>
-
-          <div class="jso-formbox">
-            <div class="jso-formtitle">
-                Job information
+                </div>
             </div>
-            <div class="jso-formcontent">
-
-                <div class="coment">Output folder</div>
-                <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
-                </jso-opencga-file-origin>
-                <div class="coment">Job name</div>
-                <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
-                <div class="coment">Description</div>
-                <textarea id="descripTextArea" value="{{descrip}}"></textarea>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Select your data
+                </div>
+                <div class="jso-formcontent">
+                    <label>Platform: &nbsp;</label>
+                    <dl id="dataType">
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="data" value="true">
+                                <span>CEL compressed file</span>
+                            </label>
+                        </dd>
+                        <dd>
+                            <label class="jso-control">
+                                <input type="radio" name="data" value="false" checked="true">
+                                <span>Normalized matrix</span>
+                            </label>
+                        </dd>
+                    </dl>
+                    <div class="horizontal layout" style="line-height: 25px;">Input file: &nbsp;
+                        <jso-opencga-file-origin id="inputFile" name="{{vcfFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="vcfFileSelected">
+                        </jso-opencga-file-origin>
+                        <span class="errmsg">{{vcfFileMessage}}</span>
+                    </div>
+                </div>
             </div>
-          </div>
 
-          <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Experimental design
+                </div>
+                <div class="jso-formcontent">
+
+                    <div class="horizontal layout" style="line-height: 25px;">Experimental design data: &nbsp;
+                        <jso-opencga-file-origin id="expdesign" name="{{file}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="fileSelected">
+                        </jso-opencga-file-origin>
+                        <span class="errmsg">{{fileMessage}}</span>
+                    </div>
+                    <div class="horizontal layout" style="line-height: 25px;">Condition 1: &nbsp;
+                        <textarea id="condition1" class="jso conditionTextArea"></textarea>
+                        <span class="errmsg">{{errorCondition1}}</span>
+                    </div>
+                    <div class="horizontal layout" style="line-height: 25px;">Condition 2: &nbsp;
+                        <textarea id="condition2" class="jso conditionTextArea"></textarea>
+                        <span class="errmsg">{{errorCondition2}}</span>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Other parameters
+                    </div>
+                    <div class="jso-formcontent horizontal layout">
+                        <label>Summ: &nbsp;</label>
+                        <select id="summ">
+                            <option value="per90">90th percentile</option>
+                            <option value="per95">95th percentile</option>
+                            <option value="per99">99th percentile</option>
+                            <option value="mean">mean</option>
+                            <option value="median">mediant</option>
+                            <option value="max">max</option>
+                            <option value="min">minimun</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Comparison tests
+                    </div>
+                    <div class="jso-formcontent">
+                        <dl>
+                            <label class="jso-control">
+                                <input type="radio" name="test" checked="true" on-click="selectMult" value="multilevel">
+                                <span>Multilevel test</span>
+                            </label>
+                        </dl>
+                        <dl>
+                            <label class="jso-control">
+                                <input type="radio" name="test" on-click="selectWil" value="wilcoxon">
+                                <span>Wilcoxon test</span>
+                            </label>
+                            <dd hidden="{{wilHidden}}" id=wilPaired>
+                                <label class="jso-control">
+                                    <input type="radio" name="wilTest" value="TRUE">
+                                    <span>Paired</span>
+                                </label>
+                                <label class="jso-control">
+                                    <input type="radio" name="wilTest" value="FALSE">
+                                    <span>No Paired</span>
+                                </label>
+                            </dd>
+                        </dl>
+
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle horizontal layout">
+                        <div class="flex">Pathways</div>
+                        <div class="jso-btn jso-btn-shdw" on-click="SelectAllPw">Select all</div>
+                        <div class="jso-btn jso-btn-shdw" on-click="SelectNonePw">Deselect all</div>
+                    </div>
+                    <span class="errmsg">{{errorPathways}}</span>
+                    <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
+                        <template is="dom-repeat" items="{{selectPathwaysSet}}">
+                            <label class="jso-control">
+                                <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
+                                <span>{{item.name}}</span>
+                            </label>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Job information
+                    </div>
+                    <div class="jso-formcontent">
+
+                        <div class="coment">Output folder</div>
+                        <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
+                        </jso-opencga-file-origin>
+                        <div class="coment">Job name</div>
+                        <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
+                        <div class="coment">Description</div>
+                        <textarea id="descripTextArea" value="{{descrip}}"></textarea>
+                    </div>
+                </div>
+
+                <div class="horizontal layout" style="line-height: 25px;">
+                    <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+                    <span class="errmsg">{{errorMessage}}</span>
+                </div>
         </form>
 
-      </template>
+    </template>
 
-      <script>
-          Polymer({
-              is:'jso-pathiways-form',
-              properties: {
-                  pathwaysHumanSet: {
-                      type: Array,
-                      value: function(){
-                          return this.getPathwaysHumanSet();
-                      }
-                  },
-                  pathwaysMouseSet: {
-                      type: Array,
-                      value: function(){
-                          return this.getPathwaysMouseSet();
-                      }
-                  },
-                  selectPathwaysSet: {
+    <script>
+        Polymer({
+            is: 'jso-pathiways-form',
+            properties: {
+                pathwaysHumanSet: {
                     type: Array,
-                  },
-                  humanHidden: {
+                    value: function() {
+                        return this.getPathwaysHumanSet();
+                    }
+                },
+                pathwaysMouseSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getPathwaysMouseSet();
+                    }
+                },
+                selectPathwaysSet: {
+                    type: Array,
+                },
+                humanHidden: {
                     type: Boolean,
-                  },
-                  mouseHidden: {
+                },
+                mouseHidden: {
                     type: Boolean,
-                  },
-                  wilHidden: {
+                },
+                wilHidden: {
                     type: Boolean,
-                  },
-                  specie: {
+                },
+                specie: {
                     type: String,
-                  },
-                  test: {
+                },
+                test: {
                     type: String,
-                  },
-              },
+                },
+                vcfFile: {
+                    type: Array,
+                },
+                file: {
+                    type: Array,
+                },
+            },
 
-              ready: function (){
+            ready: function() {
                 this.set('selectPathwaysSet', this.pathwaysHumanSet);
                 this.set('humanHidden', false);
                 this.set('mouseHidden', true);
                 this.set('wilHidden', true);
-                this.toolName= 'Pathiways';
-                this.execution= 'Pathiways';
+                this.toolName = 'Pathiways';
+                this.execution = 'Pathiways';
                 this.specie = 'hsa';
                 this.test = 'multilevel';
                 this.jobName = 'Pathivar job';
                 this.descrip = 'Description';
-              },
-              runExample: function() {
+                vcfFile = null;
+                file = null;
+            },
 
-                  OpencgaManager.jobs.create({
-                      query: {
+            vcfFileSelected: function(e) {
+                vcfFile = e.currentTarget.selectedFile;
+                this.checkVcfFile(e.currentTarget.selectedFile);
+            },
 
-                      },
-                      request: {
-                          //method: 'POST',
-                          success: function(response) {
-                              if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                  var jobId = response.response[0].result[0].id;
-                                  me.selectedOption = "jobLaunched"
-                              } else {
-                                  me.message = response.response[0].errorMsg;
-                              }
-                              me.selectedStudy = null;
-                          },
-                          error: function() {
-                              me.message = 'Server error, try again later.';
-                          }
-                      }
-                  });
-
-              },
-
-              launchJob: function(e) {
-
-              // Parametros obligatorios
-              //{}
-
-              var query = {};
-              query['sid'] = Cookies("bioinfo_sid");
-              query['execution'] = this.execution;
-              // query['studyId'] = this.$.inputFile.selectedStudy.id;
-              query['toolId'] = this.toolName;
-              query['name'] = this.$.jobNameTextArea.value;
-              query['description'] = this.$.descripTextArea.value;
-              // query['outdir'] = outdirId;
-
-              query['specie'] = this.specie;
-              if (this.specie == 'hsa') {
-                var s=this.$.human.querySelectorAll('input[type=radio]');
-                for (var i = 0; i < s.length; i++) {
-                  if(s[i].checked){
-                query['platform'] = s[i].value;
-                  }
+            checkVcfFile: function(vcfFile) {
+                var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
+                if (bool) {
+                    this.vcfFileMessage = '';
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.vcfFileMessage = 'This file is not VCF';
                 }
-              }
-              if (this.specie == 'mmu') {
-                  var s=this.$.mouse.querySelectorAll('input[type=radio]');
-                  for (var i = 0; i < s.length; i++) {
-                    if(s[i].checked){
-                    query['platform'] = s[i].value;
+                return bool;
+            },
+
+            fileSelected: function(e) {
+                file = e.currentTarget.selectedFile;
+                //  this.checkfile(e.currentTarget.selectedFile);
+            },
+
+            // checkfile: function(file) {
+            //     var bool = (file != null && Utils.endsWith(vcfFile.name, "...") && vcfFile.bioformat == "...");
+            //     if (bool) {
+            //         this.fileMessage = '';
+            //     } else {
+            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
+            //         this.fileMessage = 'This file is not ...';
+            //     }
+            //     return bool;
+            // },
+            _getStudyFolder: function(studyId) {
+                var me = this;
+                var folder;
+                OpencgaManager.files.search({
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                        studyId: studyId,
+                        name: '.'
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            console.log(response);
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                folder = response.response[0].result[0];
+                            } else {
+                                console.log(response.response[0].errorMsg)
+                            }
+                        },
+                        error: function() {
+                            console.log('Server error, try again later.');
+                        }
                     }
-                  }
-              }
+                });
+                return folder;
+            },
 
-            query['test'] = this.test;
-            if (this.test == 'wilcoxon') {
-                var s=this.$.wilPaired.querySelectorAll('input[type=radio]');
-                for (var i = 0; i < s.length; i++) {
-                  if(s[i].checked){
-                  query['paired'] = s[i].value;
-                  }
+            runExample: function() {
+
+                OpencgaManager.jobs.create({
+                    query: {
+                        sid: Cookies("bioinfo_sid"),
+                        execution: this.execution,
+                        studyId: this.$.inputFile.selectedStudy.id,
+                        toolId: this.toolName,
+                        name: "Pathivar example",
+                        description: this.descrip,
+                        outdir: this.$.outputFolder.selectedFile.id,
+                    },
+
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var jobId = response.response[0].result[0].id;
+                                me.selectedOption = "jobLaunched"
+                            } else {
+                                me.message = response.response[0].errorMsg;
+                            }
+                            me.selectedStudy = null;
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
+
+            },
+
+            launchJob: function(e) {
+                // Parametros obligatorios
+                //{"exp-design","pathways","summ","control","disease","platform","exp-name","test","paired"}
+
+                var me = this;
+                this.errors = [];
+                var outdirId;
+                var query = {};
+                if (this.checkVcfFile(vcfFile) == true && vcfFile != null) {
+                    query['vcfFile'] = vcfFile.id;
+                    if (this.$.outputFolder.selectedFile == null) {
+                        if (this.$.inputFile.selectedStudy != null) {
+                            var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
+                            if (studyFolder != null) {
+                                outdirId = studyFolder.id;
+                            }
+                        }
+                    } else {
+                        outdirId = this.$.outputFolder.selectedFile.id;
+                    }
+                    var studyId = this.$.inputFile.selectedStudy.id;
+                    query['studyId'] = studyId;
+                    query['outdir'] = outdirId;
+                    query['sid'] = Cookies("bioinfo_sid");
+                    this.errorMessage = "";
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
                 }
-            }
 
-              var pathways = [];
-              var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-              for (var i = 0; i < els.length; i++) {
-                  var pathway = els[i];
-                  if (pathway.checked) {
-                      pathways.push('hsa' + pathway.value);
-                  }
-              }
-              if (pathways.length > 0) {
-                  query['pathways'] = pathways;
-              } //else {
-                  // this.errors.push('Please select at least one Pathway');
-               //}
-debugger
-                  // console.log(this.$.form.checkValidity())
-                  // if (this.$.form.checkValidity()) {
-                  //     //                       annotvcf: this.annotvcf,
-                      // OpencgaManager.jobs.create({
-                      //     query: query,
-                      //     request: {
-                      //         //method: 'POST',
-                      //         success: function(response) {
-                      //             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                      //                 var job = response.response[0].result[0];
-                      //                 me.selectedOption = "jobLaunched"
-                      //                 console.log(job);
-                      //                 //                                    me.message = job.commandLine;
-                      //             } else {
-                      //                 me.message = response.response[0].errorMsg;
-                      //             }
-                      //         },
-                              // error: function() {
-                              //     me.message = 'Server error, try again later.';
-                              // }
-                  //         }
-                  //     });
-                   // }
-              },
+                query['execution'] = this.execution;
+                query['toolId'] = this.toolName;
+                query['exp-name'] = this.$.jobNameTextArea.value;
+                query['description'] = this.$.descripTextArea.value;
 
-              selectHumanSpecie: function(e){
+                query['control'] = this.specie; //"control","disease"
+                if (this.specie == 'hsa') {
+                    s = this.$.human.querySelectorAll('input[type=radio]');
+                    for (var i = 0; i < s.length; i++) {
+                        if (s[i].checked) {
+                            query['disease'] = s[i].value;
+                        }
+                    }
+                }
+                if (this.specie == 'mmu') {
+                    s = this.$.mouse.querySelectorAll('input[type=radio]');
+                    for (var i = 0; i < s.length; i++) {
+                        if (s[i].checked) {
+                            query['disease'] = s[i].value;
+                        }
+                    }
+                }
+
+                //if (this.checkfile(file) == true && file != null) {
+                //query['exp-design'] = file.id;
+                //}else {
+                //this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                //}
+
+                dt = this.$.dataType.querySelectorAll('input[type=radio]');
+                for (var i = 0; i < dt.length; i++) {
+                    if (dt[i].checked) {
+                        query['platform'] = dt[i].value; //"norm-matrix"(false),"cel-compressed-file"(true)
+                    }
+                }
+
+                var condition1 = this.$.condition1.value.trim().replace(/\n/g, '%0A');
+                if (condition1 != '') {
+                    this.errorCondition1 = '';
+                    query['condition1'] = condition1;
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.errorCondition1 = 'This field is required';
+                }
+                var condition2 = this.$.condition2.value.trim().replace(/\n/g, '%0A');
+                if (condition2 != '') {
+                    this.errorCondition2 = '';
+                    query['condition2'] = condition2;
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.errorCondition2 = 'This field is required';
+                }
+
+                query['summ'] = this.$.summ.value;
+
+
+                query['test'] = this.test;
+                if (this.test == 'wilcoxon') {
+                    var s = this.$.wilPaired.querySelectorAll('input[type=radio]');
+                    for (var i = 0; i < s.length; i++) {
+                        if (s[i].checked) {
+                            query['paired'] = s[i].value;
+                        }
+                    }
+                }
+
+                var pathways = [];
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    var pathway = els[i];
+                    if (pathway.checked) {
+                        pathways.push('hsa' + pathway.value);
+                    }
+                }
+                if (pathways.length > 0) {
+                    this.errorPathways = '';
+                    query['pathways'] = pathways;
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.errorPathways = 'Please select at least one Pathway';
+                }
+                debugger
+                // console.log(this.$.form.checkValidity())
+                // if (this.$.form.checkValidity()) {
+                //     //                       annotvcf: this.annotvcf,
+                // OpencgaManager.jobs.create({
+                //     query: query,
+                //     request: {
+                //         //method: 'POST',
+                //         success: function(response) {
+                //             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                //                 var job = response.response[0].result[0];
+                //                 me.selectedOption = "jobLaunched"
+                //                 console.log(job);
+                //                 //                                    me.message = job.commandLine;
+                //             } else {
+                //                 me.message = response.response[0].errorMsg;
+                //             }
+                //         },
+                // error: function() {
+                //     me.message = 'Server error, try again later.';
+                // }
+                //         }
+                //     });
+                // }
+            },
+
+            selectHumanSpecie: function(e) {
                 this.set('humanHidden', false);
                 this.set('mouseHidden', true);
                 this.set('selectPathwaysSet', this.pathwaysHumanSet);
                 this.specie = 'hsa';
-              },
-              selectMouseSpecie: function(e){
+            },
+            selectMouseSpecie: function(e) {
                 this.set('humanHidden', true);
                 this.set('mouseHidden', false);
                 this.set('selectPathwaysSet', this.pathwaysMouseSet);
                 this.specie = 'mmu';
-              },
+            },
 
-              selectWil: function (e){
+            selectWil: function(e) {
                 this.set('wilHidden', false);
                 this.test = 'wilcoxon';
-              },
-              selectMult: function (e){
+            },
+            selectMult: function(e) {
                 this.set('wilHidden', true);
                 this.test = 'multilevel';
-              },
-              SelectAllPw: function(e) {
+            },
+            SelectAllPw: function(e) {
                 var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-                  for (var i = 0; i < els.length; i++) {
-                     els[i].checked = true;
-                  }
-              },
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = true;
+                }
+            },
 
-              SelectNonePw: function(e) {
-                  var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
-                    for (var i = 0; i < els.length; i++) {
-                       els[i].checked = false;
-                    }
-              },
-              /* */
-              getPathwaysHumanSet: function() {
-                  return [{
-                          name: 'PPAR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '03320'
-                      }, {
-                          name: 'ERBB SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04012'
-                      }, {
-                          name: 'CALCIUM SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04020'
-                      }, {
-                          name: 'CYTOKINE-CYTOKINE RECEPTOR',
-                          selected: false,
-                          value: '04060',
-                          id: 'pathways04060' + this.id
-                      },
-                         {
-                          name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
-                          selected: false,
-                          value: '04080'
-                      }, {
-                          name: 'p53 SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04115',
-                          id: 'pathways04115' + this.id
-                      }, {
-                          name: 'mTOR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04150',
-                          id: 'pathways04150' + this.id
-                      }, {
-                          name: 'APOPTOSIS',
-                          selected: false,
-                          value: '04210'
-                      }, {
-                          name: 'WNT SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04310'
-                      }, {
-                          name: 'NOTCH SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04330'
-                      }, {
-                          name: 'HEDGEHOG SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04340',
-                          id: 'pathways04340' + this.id
-                      }, {
-                          name: 'VEGF SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04370'
-                      }, {
-                          name: 'ECM-RECEPTOR INTERACTION',
-                          selected: false,
-                          value: '04512',
-                          id: 'pathways04512' + this.id
-                      }, {
-                          name: 'CELL ADHESION MOLECULES',
-                          selected: false,
-                          value: '04514'
-                      }, {
-                          name: 'TIGH JUNCTION',
-                          selected: false,
-                          value: '04530',
-                          id: 'pathways04530' + this.id
-                      }, {
-                          name: 'GAP JUNCTION',
-                          selected: false,
-                          value: '04540'
-                      }, {
-                          name: 'ANTIGEN PROCESING AND PRESENTATION',
-                          selected: false,
-                          value: '04612'
-                      }, {
-                          name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04620',
-                          id: 'pathways04620' + this.id
-                      }, {
-                          name: 'JAK-STAT SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04630'
-                      }, {
-                          name: 'T CELL RECPTOR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04660',
-                          id: 'pathways04660' + this.id
-                      }, {
-                          name: 'B CELL RECEPTOR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04662'
-                      }, {
-                          name: 'Fc EPSILON RI SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04664'
-                      }, {
-                          name: 'INSULIN SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04910'
-                      }, {
-                          name: 'GnRH SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04912'
-                      }, {
-                          name: 'MELANOGENESIS',
-                          selected: false,
-                          value: '04916'
-                      }, {
-                          name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04920'
-                      }
-                  ];
-              },
+            SelectNonePw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = false;
+                }
+            },
+            /* */
+            getPathwaysHumanSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04020'
+                }, {
+                    name: 'CYTOKINE-CYTOKINE RECEPTOR',
+                    selected: false,
+                    value: '04060',
+                    id: 'pathways04060' + this.id
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'p53 SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04115',
+                    id: 'pathways04115' + this.id
+                }, {
+                    name: 'mTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04150',
+                    id: 'pathways04150' + this.id
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'HEDGEHOG SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04340',
+                    id: 'pathways04340' + this.id
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'ECM-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04512',
+                    id: 'pathways04512' + this.id
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'TIGH JUNCTION',
+                    selected: false,
+                    value: '04530',
+                    id: 'pathways04530' + this.id
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04620',
+                    id: 'pathways04620' + this.id
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'T CELL RECPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04660',
+                    id: 'pathways04660' + this.id
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            },
 
-              getPathwaysMouseSet: function() {
-                  return [{
-                          name: 'PPAR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '03320'
-                      }, {
-                          name: 'ERBB SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04012'
-                      }, {
-                          name: 'CALCIUM SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04020'
-                      }, {
-                          name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
-                          selected: false,
-                          value: '04080'
-                      }, {
-                          name: 'APOPTOSIS',
-                          selected: false,
-                          value: '04210'
-                      }, {
-                          name: 'WNT SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04310'
-                      }, {
-                          name: 'NOTCH SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04330'
-                      },{
-                          name: 'VEGF SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04370'
-                      },{
-                          name: 'CELL ADHESION MOLECULES',
-                          selected: false,
-                          value: '04514'
-                      },{
-                          name: 'GAP JUNCTION',
-                          selected: false,
-                          value: '04540'
-                      }, {
-                          name: 'ANTIGEN PROCESING AND PRESENTATION',
-                          selected: false,
-                          value: '04612'
-                      },{
-                          name: 'JAK-STAT SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04630'
-                      },{
-                          name: 'B CELL RECEPTOR SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04662'
-                      }, {
-                          name: 'Fc EPSILON RI SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04664'
-                      }, {
-                          name: 'INSULIN SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04910'
-                      }, {
-                          name: 'GnRH SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04912'
-                      }, {
-                          name: 'MELANOGENESIS',
-                          selected: false,
-                          value: '04916'
-                      }, {
-                          name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
-                          selected: false,
-                          value: '04920'
-                      }
-                  ];
-              }
-          });
-      </script>
-      </dom-module>
+            getPathwaysMouseSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04020'
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            }
+        });
+    </script>
+</dom-module>

@@ -40,6 +40,11 @@
         .errmsg {
             color: #8b0000;
             margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        .message {
+            margin-top: 20px;
         }
     </style>
     <template>
@@ -55,7 +60,7 @@
                     VCF file
                 </div>
                 <div class="jso-formcontent">
-                    <jso-opencga-file-origin id="inputFile" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="vcfFileSelected">
+                    <jso-opencga-file-origin id="inputFile" name="{{vcfFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="vcfFileSelected">
                     </jso-opencga-file-origin>
                     <span class="errmsg">{{vcfFileMessage}}</span>
                 </div>
@@ -108,6 +113,7 @@
                     <div class="jso-btn jso-btn-shdw" on-click="selectAllCt">Select all</div>
                     <div class="jso-btn jso-btn-shdw" on-click="selectNoneCt">Deselect all</div>
                 </div>
+                <span class="errmsg">{{errorCtypes}}</span>
                 <div id="typesContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
                     <template is="dom-repeat" items="{{typesSet}}">
                         <label class="jso-control">
@@ -130,7 +136,7 @@
                         </label>
                         <div hidden="{{siftHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div id=siftValue>
+                            <div id="siftValue">
                                 <input type="number" step="0.01" max="1" min="0" value="{{tresholdSift}}">
                             </div>
                             <label class="coment">Values below the threshold (0.05 default) predict protein DAMAGE</label>
@@ -144,7 +150,7 @@
                         </label>
                         <div hidden="{{polyHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div id=polyValue>
+                            <div id="polyValue">
                                 <input type="number" step="0.01" max="1" min="0" value="{{tresholdPolyphen}}">
                             </div>
                             <label class="coment">Values below the threshold (0.95 default) predict protein DAMAGE</label>
@@ -157,7 +163,7 @@
                         </label>
                         <div hidden="{{phatsHidden}}" class="horizontal layout" style="line-height: 25px;">
                             <div>threshold: &nbsp;</div>
-                            <div id=phatsValue>
+                            <div id="phatsValue">
                                 <input type="number" max="1000" min="0" value="{{tresholdCons}}">
                             </div>
                             <label class="coment">Values below the threshold (200 default) predict protein DAMAGE</label>
@@ -172,6 +178,7 @@
                     <div class="jso-btn jso-btn-shdw" on-click="selectAllPw">Select all</div>
                     <div class="jso-btn jso-btn-shdw" on-click="selectNonePw">Deselect all</div>
                 </div>
+                <span class="errmsg">{{errorPathways}}</span>
                 <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
                     <template is="dom-repeat" items="{{pathwaysSet}}">
                         <label class="jso-control">
@@ -189,6 +196,8 @@
                     <div class="jso-btn jso-btn-shdw" on-click="selectHuman">Human protein atlas</div>
                     <div class="jso-btn jso-btn-shdw" on-click="selectCustom">Custom</div>
                 </div>
+                <span class="errmsg">{{errorTissue}}</span>
+                <span class="errmsg">{{errorCustom}}</span>
                 <div id="tissue" class="jso-formcontent" style="overflow-y:scroll; height:100px" hidden="{{additionHidden}}">
                     <template is="dom-repeat" items="{{selectedTissueSet}}">
                         <label class="jso-control">
@@ -235,7 +244,10 @@
                     <div>{{error}}</div>
                 </template>
             </div> -->
-            <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+            <div class="horizontal layout" style="line-height: 25px;">
+                <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+                <span class="errmsg">{{errorMessage}}</span>
+            </div>
         </form>
 
         <!-- <div class="message">{{message}}</div>
@@ -308,6 +320,9 @@
                 tissueSet: {
                     type: String,
                 },
+                vcfFile: {
+                    type: Array,
+                },
 
             },
 
@@ -329,10 +344,12 @@
                 this.descrip = 'Description';
                 this.toolName = 'pathiways';
                 this.execution = 'pathivar';
+                vcfFile = null;
             },
 
 
             vcfFileSelected: function(e) {
+                vcfFile = e.currentTarget.selectedFile;
                 if (this.checkVcfFile(e.currentTarget.selectedFile)) {
                     this.getSamplesFromVcf(e.currentTarget.selectedFile);
                 }
@@ -342,9 +359,10 @@
                 var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
                 if (bool) {
                     this.vcfFileMessage = '';
-                } //else {
-                //this.vcfFileMessage = 'This file is not VCF';
-                //}
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.vcfFileMessage = 'This file is not VCF';
+                }
                 return bool;
             },
 
@@ -375,12 +393,6 @@
             runExample: function() {
 
                 var me = this;
-                var outdirId;
-                if (this.$.outputFolder.selectedFile == null) {
-                    outdirId = this.$.inputFile.selectedStudy.id;
-                } else {
-                    outdirId = this.$.outputFolder.selectedFile.id;
-                }
                 OpencgaManager.jobs.create({
                     query: {
                         sid: Cookies("bioinfo_sid"),
@@ -389,7 +401,7 @@
                         toolId: this.toolName,
                         name: "Pathivar example",
                         description: this.descrip,
-                        outdir: outdirId,
+                        outdir: this.$.outputFolder.selectedFile.id,
 
                         annotvcf: "example_annotvcf1000g.vpa",
                         ctypes: "splice_acceptor_variant,splice_donor_variant,stop_gained,stop_lost,non_synonymous_codon,exon_variant",
@@ -429,34 +441,38 @@
                 var me = this;
                 this.errors = [];
                 var outdirId;
-                if (this.$.outputFolder.selectedFile == null) {
-                    outdirId = this._getStudyFolder(this.$.inputFile.selectedStudy.id).id;
-                } else {
-                    outdirId = this.$.outputFolder.selectedFile.id;
-                }
-
                 var query = {};
-                query['sid'] = Cookies("bioinfo_sid");
+                if (this.checkVcfFile(vcfFile) == true && vcfFile != null) {
+                    query['vcfFile'] = vcfFile.id;
+                    if (this.$.outputFolder.selectedFile == null) {
+                        if (this.$.inputFile.selectedStudy != null) {
+                            var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
+                            if (studyFolder != null) {
+                                outdirId = studyFolder.id;
+                            }
+                        }
+                    } else {
+                        outdirId = this.$.outputFolder.selectedFile.id;
+                    }
+                    var studyId = this.$.inputFile.selectedStudy.id;
+                    query['studyId'] = studyId;
+                    query['outdir'] = outdirId;
+                    query['sid'] = Cookies("bioinfo_sid");
+                    this.errorMessage = "";
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                }
+                
                 query['execution'] = this.execution;
-                query['studyId'] = this.$.inputFile.selectedStudy.id;
                 query['toolId'] = this.toolName;
                 query['name'] = this.$.jobNameTextArea.value;
                 query['description'] = this.$.descripTextArea.value;
-                query['outdir'] = outdirId;
-
-                if (this.checkVcfFile(e.currentTarget.selectedFile)) {
-                    query['vcfFile'] = this.vcfFile.id;
-                } //else {
-                //this.errors.push("No input VCF file selected. Please select one. ");
-                //  }
 
                 if (this.sampleNameList != null) {
-
                     query['samplecol'] = this.$.samplecol.value;
                 }
-                if (this.model != null) {
-                    query['model'] = this.model;
-                }
+
+                query['model'] = this.model;
                 if (this.model == 'recessive') {
                     query['comhom'] = this.$.recessiveOption.value;
                 }
@@ -470,10 +486,12 @@
                     }
                 }
                 if (ctypes.length > 0) {
+                    this.errorCtypes = '';
                     query['ctypes'] = ctypes;
-                } //else {
-                // this.errors.push('Please select at least one Consequence Type');
-                //}
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.errorCtypes = 'Please select at least one Consequence Type';
+                }
 
                 var methodscore = '';
                 var treshold = '';
@@ -511,9 +529,11 @@
                 }
                 if (pathways.length > 0) {
                     query['pathways'] = pathways;
-                } //else {
-                // this.errors.push('Please select at least one Pathway');
-                //}
+                    this.errorPathways = '';
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.errorPathways = 'Please select at least one Pathway';
+                }
 
                 if (this.custom == false) {
                     var tissue = [];
@@ -524,7 +544,13 @@
                             tissue.push(t.value.replace(/ /gi, "_"));
                         }
                     }
-                    query['tissue'] = tissue;
+                    if (tissue != '') {
+                        query['tissue'] = tissue;
+                        this.errorTissue = '';
+                    } else {
+                        this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                        this.errorTissue = 'Please select one Tissue';
+                    }
                     var sgenes = this.$.additionalSgenesTextArea.value.trim().replace(/\n/g, '%0A');
                     if (sgenes != '') {
                         query['sgenes-text'] = sgenes;
@@ -534,12 +560,14 @@
                     t = 'none';
                     var sgenes = this.$.customSgenesTextArea.value.trim().replace(/\n/g, '%0A');
                     if (sgenes != '') {
+                        this.errorCustom = '';
                         this.tMessage = '';
                         query['sgenes-text'] = sgenes;
                         query['tissue'] = 'none';
-                    } //else {
-                    // this.errors.push('Please write at least one gene when using custom Tissue');
-                    //}
+                    } else {
+                        this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                        this.errorCustom = 'Please write at least one gene when using custom Tissue';
+                    }
                 }
 
                 query['tissueSet'] = this.tissueSet;
@@ -547,33 +575,32 @@
                 // if (this.errors.length > 0) {
                 //     return;
                 // }
-                //
+
                 console.log(this.$.form.checkValidity())
 
-                // if (this.$.form.checkValidity()) {
-                //     //                       annotvcf: this.annotvcf,
-                OpencgaManager.jobs.create({
-                    query: query,
-                    request: {
-                        //method: 'POST',
-                        success: function(response) {
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                var job = response.response[0].result[0];
-                                me.selectedOption = "jobLaunched"
-                                console.log(job);
-                                //                                    me.message = job.commandLine;
-                            } else {
-                                me.message = response.response[0].errorMsg;
+                if (this.$.form.checkValidity()) {
+                    //                       annotvcf: this.annotvcf,
+                    OpencgaManager.jobs.create({
+                        query: query,
+                        request: {
+                            //method: 'POST',
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    var job = response.response[0].result[0];
+                                    me.selectedOption = "jobLaunched"
+                                    console.log(job);
+                                    //                                    me.message = job.commandLine;
+                                } else {
+                                    me.message = response.response[0].errorMsg;
+                                }
+                            },
+                            error: function() {
+                                me.message = 'Server error, try again later.';
                             }
-                        },
-                        // error: function() {
-                        //     me.message = 'Server error, try again later.';
-                        // }
-                    }
-                });
-                //
-                // }
-                debugger
+                        }
+                    });
+                    //
+                }
             },
 
             selectRecessive: function(e) {
@@ -632,13 +659,17 @@
             },
 
             _uncheckTissues: function() {
-                var eaRadio = this.$.tissue.querySelector('input[type=radio][name=ea]');
-                var hpaRadio = this.$.tissue.querySelector('input[type=radio][name=hpa]');
+                var eaRadio = this.$.tissue.querySelectorAll('input[type=radio][name=ea]');
+                var hpaRadio = this.$.tissue.querySelectorAll('input[type=radio][name=hpa]');
                 if (eaRadio != null) {
-                    eaRadio.checked = false;
+                    for (var i = 0; i < eaRadio.length; i++) {
+                        eaRadio[i].checked = false;
+                    }
                 }
                 if (hpaRadio != null) {
-                    hpaRadio.checked = false;
+                    for (var i = 0; i < hpaRadio.length; i++) {
+                        hpaRadio[i].checked = false;
+                    }
                 }
             },
 
