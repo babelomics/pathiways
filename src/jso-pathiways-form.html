@@ -129,10 +129,10 @@
                             </label>
                         </dd>
                     </dl>
-                    <div class="horizontal layout" style="line-height: 25px;">Input file: &nbsp;
-                        <jso-opencga-file-origin id="inputFile" name="{{vcfFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="vcfFileSelected">
+                    <div>Input file: &nbsp;
+                        <jso-opencga-file-origin id="inputFile" name="{{txtFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="txtFileSelected">
                         </jso-opencga-file-origin>
-                        <span class="errmsg">{{vcfFileMessage}}</span>
+                        <span class="errmsg">{{txtFileMessage}}</span>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                 </div>
                 <div class="jso-formcontent">
 
-                    <div class="horizontal layout" style="line-height: 25px;">Experimental design data: &nbsp;
+                    <div>Experimental design data: &nbsp;
                         <jso-opencga-file-origin id="expdesign" name="{{file}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="fileSelected">
                         </jso-opencga-file-origin>
                         <span class="errmsg">{{fileMessage}}</span>
@@ -175,75 +175,77 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Comparison tests
-                    </div>
-                    <div class="jso-formcontent">
-                        <dl>
-                            <label class="jso-control">
-                                <input type="radio" name="test" checked="true" on-click="selectMult" value="multilevel">
-                                <span>Multilevel test</span>
-                            </label>
-                        </dl>
-                        <dl>
-                            <label class="jso-control">
-                                <input type="radio" name="test" on-click="selectWil" value="wilcoxon">
-                                <span>Wilcoxon test</span>
-                            </label>
-                            <dd hidden="{{wilHidden}}" id=wilPaired>
-                                <label class="jso-control">
-                                    <input type="radio" name="wilTest" value="TRUE">
-                                    <span>Paired</span>
-                                </label>
-                                <label class="jso-control">
-                                    <input type="radio" name="wilTest" value="FALSE">
-                                    <span>No Paired</span>
-                                </label>
-                            </dd>
-                        </dl>
-
-                    </div>
+            </div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Comparison tests
                 </div>
-
-                <div class="jso-formbox">
-                    <div class="jso-formtitle horizontal layout">
-                        <div class="flex">Pathways</div>
-                        <div class="jso-btn jso-btn-shdw" on-click="SelectAllPw">Select all</div>
-                        <div class="jso-btn jso-btn-shdw" on-click="SelectNonePw">Deselect all</div>
-                    </div>
-                    <span class="errmsg">{{errorPathways}}</span>
-                    <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
-                        <template is="dom-repeat" items="{{selectPathwaysSet}}">
+                <div class="jso-formcontent">
+                    <dl>
+                        <label class="jso-control">
+                            <input type="radio" name="test" checked="true" on-click="selectMult" value="multilevel">
+                            <span>Multilevel test</span>
+                        </label>
+                    </dl>
+                    <dl>
+                        <label class="jso-control">
+                            <input type="radio" name="test" on-click="selectWil" value="wilcoxon">
+                            <span>Wilcoxon test</span>
+                        </label>
+                        <dd hidden="{{wilHidden}}" id=wilPaired>
                             <label class="jso-control">
-                                <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
-                                <span>{{item.name}}</span>
+                                <input type="radio" name="wilTest" value="TRUE">
+                                <span>Paired</span>
                             </label>
-                        </template>
-                    </div>
+                            <label class="jso-control">
+                                <input type="radio" name="wilTest" value="FALSE">
+                                <span>No Paired</span>
+                            </label>
+                        </dd>
+                    </dl>
+
                 </div>
+            </div>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Job information
-                    </div>
-                    <div class="jso-formcontent">
+            <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout">
+                    <div class="flex">Pathways</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="SelectAllPw">Select all</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="SelectNonePw">Deselect all</div>
+                </div>
+                <span class="errmsg">{{errorPathways}}</span>
+                <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
+                    <template is="dom-repeat" items="{{selectPathwaysSet}}">
+                        <label class="jso-control">
+                            <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
+                            <span>{{item.name}}</span>
+                        </label>
+                    </template>
+                </div>
+            </div>
 
-                        <div class="coment">Output folder</div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Job information
+                </div>
+                <div class="jso-formcontent">
+
+                    <div>Output folder: &nbsp;
                         <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
                         </jso-opencga-file-origin>
-                        <div class="coment">Job name</div>
-                        <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
-                        <div class="coment">Description</div>
-                        <textarea id="descripTextArea" value="{{descrip}}"></textarea>
+                        <span class="errmsg">{{errorOutputFolder}}</span>
                     </div>
+                    <div class="coment">Job name</div>
+                    <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
+                    <div class="coment">Description</div>
+                    <textarea id="descripTextArea" value="{{descrip}}"></textarea>
                 </div>
+            </div>
 
-                <div class="horizontal layout" style="line-height: 25px;">
-                    <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
-                    <span class="errmsg">{{errorMessage}}</span>
-                </div>
+            <div class="horizontal layout" style="line-height: 25px;">
+                <div class="jso-btn jso-btn-shdw file" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+                <span class="errmsg">{{errorMessage}}</span>
+            </div>
         </form>
 
     </template>
@@ -282,7 +284,7 @@
                 test: {
                     type: String,
                 },
-                vcfFile: {
+                txtFile: {
                     type: Array,
                 },
                 file: {
@@ -295,85 +297,94 @@
                 this.set('humanHidden', false);
                 this.set('mouseHidden', true);
                 this.set('wilHidden', true);
-                this.toolName = 'Pathiways';
-                this.execution = 'Pathiways';
+                this.toolName = 'pathiways';
+                this.execution = 'pathiways';
                 this.specie = 'hsa';
                 this.test = 'multilevel';
-                this.jobName = 'Pathivar job';
+                this.jobName = 'Pathiways job';
                 this.descrip = 'Description';
-                vcfFile = null;
+                txtFile = null;
                 file = null;
             },
 
-            vcfFileSelected: function(e) {
-                vcfFile = e.currentTarget.selectedFile;
-                //this.checkVcfFile(e.currentTarget.selectedFile);
+            txtFileSelected: function(e) {
+                txtFile = e.currentTarget.selectedFile;
+                this.checkTxtFile(e.currentTarget.selectedFile);
             },
 
-            // checkVcfFile: function(vcfFile) {
-            //     var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
-            //     if (bool) {
-            //         this.vcfFileMessage = '';
-            //     } else {
-            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
-            //         this.vcfFileMessage = 'This file is not VCF';
-            //     }
-            //     return bool;
-            // },
+            checkTxtFile: function(txtFile) {
+                var bool = (txtFile != null && Utils.endsWith(txtFile.name, ".txt") && txtFile.bioformat == "IDLIST");
+                if (bool) {
+                    this.txtFileMessage = '';
+                } else {
+                    this.txtFileMessage = 'This file is not TXT';
+                }
+                return bool;
+            },
 
             fileSelected: function(e) {
                 file = e.currentTarget.selectedFile;
-                //  this.checkfile(e.currentTarget.selectedFile);
+                this.checkfile(e.currentTarget.selectedFile);
             },
 
-            // checkfile: function(file) {
-            //     var bool = (file != null && Utils.endsWith(vcfFile.name, "...") && vcfFile.bioformat == "...");
-            //     if (bool) {
-            //         this.fileMessage = '';
-            //     } else {
-            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
-            //         this.fileMessage = 'This file is not ...';
-            //     }
-            //     return bool;
-            // },
-            _getStudyFolder: function(studyId) {
-                var me = this;
-                var folder;
-                OpencgaManager.files.search({
-                    query: {
-                        sid: Cookies('bioinfo_sid'),
-                        studyId: studyId,
-                        name: '.'
-                    },
-                    request: {
-                        async: false,
-                        success: function(response) {
-                            console.log(response);
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                folder = response.response[0].result[0];
-                            } else {
-                                console.log(response.response[0].errorMsg)
-                            }
-                        },
-                        error: function() {
-                            console.log('Server error, try again later.');
-                        }
-                    }
-                });
-                return folder;
+            checkfile: function(file) {
+                var bool = (file != null && Utils.endsWith(file.name, ".txt") && file.bioformat == "IDLIST");
+                if (bool) {
+                    this.fileMessage = '';
+                } else {
+                    this.fileMessage = 'This file is not TXT';
+                }
+                return bool;
             },
+            // _getStudyFolder: function(studyId) {
+            //     var me = this;
+            //     var folder;
+            //     OpencgaManager.files.search({
+            //         query: {
+            //             sid: Cookies('bioinfo_sid'),
+            //             studyId: studyId,
+            //             name: '.'
+            //         },
+            //         request: {
+            //             async: false,
+            //             success: function(response) {
+            //                 console.log(response);
+            //                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+            //                     folder = response.response[0].result[0];
+            //                 } else {
+            //                     console.log(response.response[0].errorMsg)
+            //                 }
+            //             },
+            //             error: function() {
+            //                 console.log('Server error, try again later.');
+            //             }
+            //         }
+            //     });
+            //     return folder;
+            // },
 
             runExample: function() {
 
                 OpencgaManager.jobs.create({
                     query: {
-                        sid: Cookies("bioinfo_sid"),
+
                         execution: this.execution,
-                        studyId: this.$.inputFile.selectedStudy.id,
                         toolId: this.toolName,
-                        name: "Pathivar example",
+                        name: "Pathiways example",
                         description: this.descrip,
-                        outdir: this.$.outputFolder.selectedFile.id,
+
+                        species: 'hsapiens',
+                        platform: 'HGU133Plus2',
+                        expdesigntype: 'categorical',
+                        control: 'CONTROL',
+                        disease: 'CRC',
+                        summ: 'per90',
+                        test: 'multilevel',
+                        pathways: "hsa03320,hsa04012,hsa04020,hsa04060,hsa04080,hsa04115,hsa04150,hsa04210,hsa04310,hsa04330,hsa04340,hsa04370,hsa04512,hsa04514,hsa04530,hsa04540,hsa04612,hsa04620,hsa04630,hsa04660,hsa04662,hsa04664,hsa04910,hsa04912,hsa04916,hsa04920",
+
+                        normmatrix: 'example_GSE4107.txt',
+                        expdesign: 'example_ED_GSE4107.txt',
+
                     },
 
                     request: {
@@ -403,32 +414,43 @@
                 this.errors = [];
 
                 var query = {};
-                //if (vcfFile != null) {
-                    //this.checkVcfFile(vcfFile) == true && dentro del if
-                    //query['vcfFile'] = vcfFile.id;
-                    // if (this.$.outputFolder.selectedFile == null) {
-                    //     if (this.$.inputFile.selectedStudy != null) {
-                    //         var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
-                    //         if (studyFolder != null) {
-                    //             outdirId = studyFolder.id;
-                    //         }
-                    //     }
-                    // } else {
-                    //     outdirId = this.$.outputFolder.selectedFile.id;
-                    // }
-                    // var studyId = this.$.inputFile.selectedStudy.id;
-                    //query['studyId'] = studyId;
-                    //query['outdir'] = outdirId;
-                    //query['sid'] = Cookies("bioinfo_sid");
-                    //this.errorMessage = "";
+                //if (txtFile != null) {
+                //this.checkTxtFile(txtFile) == true && dentro del if
+                //query['txtFile'] = txtFile.id;
+                // if (this.$.outputFolder.selectedFile == null) {
+                //     if (this.$.inputFile.selectedStudy != null) {
+                //         var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
+                //         if (studyFolder != null) {
+                //             outdirId = studyFolder.id;
+                //         }
+                //     }
+                // } else {
+                //   outdirId = this.$.outputFolder.selectedFile.id;
+                // }
+                // var studyId = this.$.inputFile.selectedStudy.id;
+                //query['studyId'] = studyId;
+                //query['outdir'] = outdirId;
+                //query['sid'] = Cookies("bioinfo_sid");
+                //this.errorMessage = "";
                 // } else {
                 //     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                 // }
 
+                if (this.$.outputFolder.selectedFile == null) {
+                    this.errorOutputFolder = "No folder selected";
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                } else {
+                    this.errorOutputFolder = '';
+                    query['outdir'] = this.$.outputFolder.selectedFile.id;
+                    query['studyId'] = this.$.outputFolder.selectedStudy.id;
+                }
+
+                query['sid'] = Cookies("bioinfo_sid");
                 query['execution'] = this.execution;
                 query['toolId'] = this.toolName;
-                query['jobname'] = this.$.jobNameTextArea.value;
-                query['jobdescription'] = this.$.descripTextArea.value;
+                query['name'] = this.$.jobNameTextArea.value;
+                query['exp-name'] = this.$.jobNameTextArea.value;
+                query['description'] = this.$.descripTextArea.value;
 
                 query['species'] = this.specie;
                 if (this.specie == 'hsa') {
@@ -448,21 +470,26 @@
                     }
                 }
 
-                if (file != null) {
-                    //this.checkfile(file) == true && dentro del if
-                    query['exp-design'] = file.id;
-                } else {
-                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                    this.fileMessage = "No file selected";
-                }
-
                 dt = this.$.dataType.querySelectorAll('input[type=radio]');
                 for (var i = 0; i < dt.length; i++) {
                     if (dt[i].checked) {
                         query['cel-compressed-file'] = dt[i].value; //"norm-matrix"(false),"cel-compressed-file"(true)
                     }
                 }
-                //query['norm-matrix'] = (.txt);
+
+                if (this.checkTxtFile(txtFile) == true && txtFile != null) {
+                    query['norm-matrix'] = txtFile.id; //(.name)
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.txtFileMessage = "This file is not TXT";
+                }
+
+                if (this.checkfile(file) == true && file != null) {
+                    query['exp-design'] = file.id; //(.name)
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.fileMessage = "This file is not TXT";
+                }
 
                 var condition1 = this.$.condition1.value.trim().replace(/\n/g, '%0A');
                 if (condition1 != '') {
@@ -492,8 +519,8 @@
                             query['paired'] = s[i].value;
                         }
                     }
-                }else{
-                  query['paired'] = "NULL";
+                } else {
+                    query['paired'] = "NULL";
                 }
 
                 var pathways = [];
@@ -511,30 +538,35 @@
                     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                     this.errorPathways = 'Please select at least one Pathway';
                 }
-                debugger
-                // console.log(this.$.form.checkValidity())
-                // if (this.$.form.checkValidity()) {
-                //     //                       annotvcf: this.annotvcf,
-                // OpencgaManager.jobs.create({
-                //     query: query,
-                //     request: {
-                //         //method: 'POST',
-                //         success: function(response) {
-                //             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                //                 var job = response.response[0].result[0];
-                //                 me.selectedOption = "jobLaunched"
-                //                 console.log(job);
-                //                 //                                    me.message = job.commandLine;
-                //             } else {
-                //                 me.message = response.response[0].errorMsg;
-                //             }
-                //         },
-                // error: function() {
-                //     me.message = 'Server error, try again later.';
-                // }
-                //         }
-                //     });
-                // }
+
+                if (this.errorOutputFolder == '' && this.errorPathways == '' && this.errorCondition2 == '' && this.errorCondition1 == '' && this.fileMessage == '' && this.txtFileMessage == '') {
+                    this.errorMessage = '';
+
+                    debugger
+
+                    console.log(this.$.form.checkValidity())
+                    if (this.$.form.checkValidity()) {
+                        OpencgaManager.jobs.create({
+                            query: query,
+                            request: {
+                                //method: 'POST',
+                                success: function(response) {
+                                    if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                        var job = response.response[0].result[0];
+                                        me.selectedOption = "jobLaunched"
+                                        console.log(job);
+                                        //                                    me.message = job.commandLine;
+                                    } else {
+                                        me.message = response.response[0].errorMsg;
+                                    }
+                                },
+                                error: function() {
+                                    me.message = 'Server error, try again later.';
+                                }
+                            }
+                        });
+                    }
+                }
             },
 
             selectHumanSpecie: function(e) {

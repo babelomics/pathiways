@@ -129,10 +129,10 @@
                             </label>
                         </dd>
                     </dl>
-                    <div class="horizontal layout" style="line-height: 25px;">Input file: &nbsp;
-                        <jso-opencga-file-origin id="inputFile" name="{{vcfFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="vcfFileSelected">
+                    <div>Input file: &nbsp;
+                        <jso-opencga-file-origin id="inputFile" name="{{txtFile}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="txtFileSelected">
                         </jso-opencga-file-origin>
-                        <span class="errmsg">{{vcfFileMessage}}</span>
+                        <span class="errmsg">{{txtFileMessage}}</span>
                     </div>
                 </div>
             </div>
@@ -142,7 +142,7 @@
                     Experimental design
                 </div>
                 <div class="jso-formcontent">
-                    <div class="horizontal layout" style="line-height: 25px;">Experimental design data: &nbsp;
+                    <div>Experimental design data: &nbsp;
                         <jso-opencga-file-origin id="expdesign" name="{{file}}" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="fileSelected">
                         </jso-opencga-file-origin>
                         <span class="errmsg">{{fileMessage}}</span>
@@ -174,7 +174,7 @@
                     </div>
                 </div>
             </div>
-            </div>
+
 
             <div class="jso-formbox">
                 <div class="jso-formtitle">
@@ -228,9 +228,11 @@
                 </div>
                 <div class="jso-formcontent">
 
-                    <div class="coment">Output folder</div>
-                    <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
-                    </jso-opencga-file-origin>
+                    <div>Output folder: &nbsp;
+                        <jso-opencga-file-origin id="outputFolder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click>
+                        </jso-opencga-file-origin>
+                        <span class="errmsg">{{errorOutputFolder}}</span>
+                    </div>
                     <div class="coment">Job name</div>
                     <textarea id="jobNameTextArea" style="resize:none;height:20px;" value="{{jobName}}"></textarea>
                     <div class="coment">Description</div>
@@ -280,7 +282,7 @@
                 specie: {
                     type: String,
                 },
-                vcfFile: {
+                txtFile: {
                     type: Array,
                 },
                 file: {
@@ -298,84 +300,95 @@
                 this.set('mouseHidden', true);
                 this.set('wilHidden', true);
                 this.expDesingType = 'categorical';
-                this.toolName = 'Pathiways';
-                this.execution = 'Pathired';
-                this.jobName = 'Pathivar job';
+                this.toolName = 'pathiways';
+                this.execution = 'pathipred';
+                this.jobName = 'Pathipred job';
                 this.descrip = 'Description';
-                vcfFile = null;
+                txtFile = null;
                 file = null;
             },
 
-            vcfFileSelected: function(e) {
-                vcfFile = e.currentTarget.selectedFile;
-                //this.checkVcfFile(e.currentTarget.selectedFile);
+            txtFileSelected: function(e) {
+                txtFile = e.currentTarget.selectedFile;
+                this.checkTxtFile(e.currentTarget.selectedFile);
             },
 
-            // checkVcfFile: function(vcfFile) {
-            //     var bool = (vcfFile != null && Utils.endsWith(vcfFile.name, ".vcf") && vcfFile.bioformat == "VARIANT");
-            //     if (bool) {
-            //         this.vcfFileMessage = '';
-            //     } else {
-            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
-            //         this.vcfFileMessage = 'This file is not VCF';
-            //     }
-            //     return bool;
-            // },
+            checkTxtFile: function(txtFile) {
+                var bool = (txtFile != null && Utils.endsWith(txtFile.name, ".txt") && txtFile.bioformat == "IDLIST");
+                if (bool) {
+                    this.txtFileMessage = '';
+                } else {
+                    this.txtFileMessage = 'This file is not TXT';
+                }
+                return bool;
+            },
 
             fileSelected: function(e) {
                 file = e.currentTarget.selectedFile;
-                //  this.checkfile(e.currentTarget.selectedFile);
+                this.checkfile(e.currentTarget.selectedFile);
             },
 
-            // checkfile: function(file) {
-            //     var bool = (file != null && Utils.endsWith(vcfFile.name, "...") && vcfFile.bioformat == "...");
-            //     if (bool) {
-            //         this.fileMessage = '';
-            //     } else {
-            //         this.errorMessage = "There are errors in the form. Correct them before launching work.";
-            //         this.fileMessage = 'This file is not ...';
-            //     }
-            //     return bool;
+            checkfile: function(file) {
+                var bool = (file != null && Utils.endsWith(file.name, ".txt") && txtFile.bioformat == "IDLIST");
+                if (bool) {
+                    this.fileMessage = '';
+                } else {
+                    this.fileMessage = 'This file is not TXT';
+                }
+                return bool;
+            },
+            // _getStudyFolder: function(studyId) {
+            //     var me = this;
+            //     var folder;
+            //     OpencgaManager.files.search({
+            //         query: {
+            //             sid: Cookies('bioinfo_sid'),
+            //             studyId: studyId,
+            //             name: '.'
+            //         },
+            //         request: {
+            //             async: false,
+            //             success: function(response) {
+            //                 console.log(response);
+            //                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+            //                     folder = response.response[0].result[0];
+            //                 } else {
+            //                     console.log(response.response[0].errorMsg)
+            //                 }
+            //             },
+            //             error: function() {
+            //                 console.log('Server error, try again later.');
+            //             }
+            //         }
+            //     });
+            //     return folder;
             // },
-
-            _getStudyFolder: function(studyId) {
-                var me = this;
-                var folder;
-                OpencgaManager.files.search({
-                    query: {
-                        sid: Cookies('bioinfo_sid'),
-                        studyId: studyId,
-                        name: '.'
-                    },
-                    request: {
-                        async: false,
-                        success: function(response) {
-                            console.log(response);
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                folder = response.response[0].result[0];
-                            } else {
-                                console.log(response.response[0].errorMsg)
-                            }
-                        },
-                        error: function() {
-                            console.log('Server error, try again later.');
-                        }
-                    }
-                });
-                return folder;
-            },
 
             runExample: function() {
 
                 OpencgaManager.jobs.create({
                     query: {
-                        sid: Cookies("bioinfo_sid"),
+
                         execution: this.execution,
-                        studyId: this.$.inputFile.selectedStudy.id,
                         toolId: this.toolName,
-                        name: "Pathivar example",
+                        name: "Pathipred example",
                         description: this.descrip,
-                        outdir: this.$.outputFolder.selectedFile.id,
+
+                        species: 'hsapiens',
+                        platform: 'HGU133Plus2',
+                        expdesigntype: 'categorical',
+                        control: 'normal',
+                        disease: 'malignant',
+                        summ: 'per90',
+                        k: 10,
+                        predmethod: 'model',
+                        pathways: "hsa03320,hsa04012,hsa04020,hsa04060,hsa04080,hsa04115,hsa04150,hsa04210,hsa04310,hsa04330,hsa04340,hsa04370,hsa04512,hsa04514,hsa04530,hsa04540,hsa04612,hsa04620,hsa04630,hsa04660,hsa04662,hsa04664,hsa04910,hsa04912,hsa04916,hsa04920",
+
+
+                        normmatrix: 'example_GSE27562.txt',
+                        expdesign: 'example_ED_GSE27562.txt',
+
+
                     },
                     request: {
                         //method: 'POST',
@@ -403,10 +416,9 @@
 
                 var me = this;
                 this.errors = [];
-                //var outdirId;
                 var query = {};
-                // if (this.checkVcfFile(vcfFile) == true && vcfFile != null) {
-                //     query['vcfFile'] = vcfFile.id;
+                // if (this.checkTxtFile(txtFile) == true && txtFile != null) {
+                //     query['txtFile'] = txtFile.id;
                 //     if (this.$.outputFolder.selectedFile == null) {
                 //         if (this.$.inputFile.selectedStudy != null) {
                 //             var studyFolder = this._getStudyFolder(this.$.inputFile.selectedStudy.id);
@@ -426,10 +438,22 @@
                 //     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                 // }
 
+                if (this.$.outputFolder.selectedFile == null) {
+                    this.errorOutputFolder = "No folder selected";
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                } else {
+                    this.errorOutputFolder = '';
+                    query['outdir'] = this.$.outputFolder.selectedFile.id;
+                    query['studyId'] = this.$.outputFolder.selectedStudy.id;
+                }
+
+                query['sid'] = Cookies("bioinfo_sid");
+
                 query['execution'] = this.execution;
                 query['toolId'] = this.toolName;
-                query['jobname'] = this.$.jobNameTextArea.value;
-                query['jobdescription'] = this.$.descripTextArea.value;
+                query['name'] = this.$.jobNameTextArea.value;
+                query['exp-name'] = this.$.jobNameTextArea.value;
+                query['description'] = this.$.descripTextArea.value;
 
                 query['species'] = this.specie; //"control","disease"
                 if (this.specie == 'hsa') {
@@ -455,15 +479,21 @@
                         query['cel-compressed-file'] = dt[i].value; //"norm-matrix","cel-compressed-file"
                     }
                 }
-                //query['norm-matrix'] = (.txt);
 
-                if (file != null) {
-                    //this.checkfile(file) == true && dentro del if
+                if (this.checkTxtFile(txtFile) == true && txtFile != null) {
+                    query['norm-matrix'] = txtFile.id;
+                } else {
+                    this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                    this.txtFileMessage = "This file is not TXT";
+                }
+
+                if (this.checkfile(file) == true && file != null) {
                     query['exp-design'] = file.id;
                 } else {
                     this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                    this.fileMessage = "No file selected";
+                    this.fileMessage = "This file is not TXT";
                 }
+
                 query['expdesigntype'] = this.expDesingType;
                 if (this.expDesingType == 'categorical') {
                     var condition1 = this.$.condition1.value.trim().replace(/\n/g, '%0A');
@@ -508,30 +538,64 @@
                     this.errorMessage = "There are errors in the form. Correct them before launching work.";
                     this.errorPathways = 'Please select at least one Pathway';
                 }
-                debugger
-                //  console.log(this.$.form.checkValidity())
-                // // if (this.$.form.checkValidity()) {
-                // //     //                       annotvcf: this.annotvcf,
-                //     OpencgaManager.jobs.create({
-                //         query: query,
-                //         request: {
-                //             //method: 'POST',
-                //             success: function(response) {
-                //                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                //                     var job = response.response[0].result[0];
-                //                     me.selectedOption = "jobLaunched"
-                //                     console.log(job);
-                //                     //                                    me.message = job.commandLine;
-                //                 } else {
-                //                     me.message = response.response[0].errorMsg;
-                //                 }
-                //             },
-                //             // error: function() {
-                //             //     me.message = 'Server error, try again later.';
-                //             // }
-                //         }
-                //     });
-                // }
+
+                if (this.errorPathways == '' && this.fileMessage == '' && this.txtFileMessage == '' && this.errorOutputFolder == '') {
+                    if (this.expDesingType == 'categorical') {
+                        if (this.errorCondition2 == '' && this.errorCondition1 == '') {
+                            this.errorMessage = '';
+                            debugger
+                            console.log(this.$.form.checkValidity())
+                            if (this.$.form.checkValidity()) {
+                                OpencgaManager.jobs.create({
+                                    query: query,
+                                    request: {
+                                        //method: 'POST',
+                                        success: function(response) {
+                                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                                var job = response.response[0].result[0];
+                                                me.selectedOption = "jobLaunched"
+                                                console.log(job);
+                                                //                                    me.message = job.commandLine;
+                                            } else {
+                                                me.message = response.response[0].errorMsg;
+                                            }
+                                        },
+                                        error: function() {
+                                            me.message = 'Server error, try again later.';
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    } else {
+                        this.errorMessage = '';
+
+
+                        debugger
+                        console.log(this.$.form.checkValidity())
+                        if (this.$.form.checkValidity()) {
+                            OpencgaManager.jobs.create({
+                                query: query,
+                                request: {
+                                    //method: 'POST',
+                                    success: function(response) {
+                                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                            var job = response.response[0].result[0];
+                                            me.selectedOption = "jobLaunched"
+                                            console.log(job);
+                                            //                                    me.message = job.commandLine;
+                                        } else {
+                                            me.message = response.response[0].errorMsg;
+                                        }
+                                    },
+                                    error: function() {
+                                        me.message = 'Server error, try again later.';
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
             },
 
             selectHumanSpecie: function(e) {
