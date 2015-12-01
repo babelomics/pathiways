@@ -182,7 +182,7 @@
                 <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll; height:100px">
                     <template is="dom-repeat" items="{{pathwaysSet}}">
                         <label class="jso-control">
-                            <input type="checkbox" value$="{{item.value}}" checked$="{{item.selected}}">
+                            <input type="checkbox" value="{{item.value}}" checked$="{{item.selected}}">
                             <span>{{item.name}}</span>
                         </label>
                     </template>
@@ -201,7 +201,7 @@
                 <div id="tissue" class="jso-formcontent" style="overflow-y:scroll; height:100px" hidden="{{additionHidden}}">
                     <template is="dom-repeat" items="{{selectedTissueSet}}">
                         <label class="jso-control">
-                            <input type="radio" name$="{{tissueSet}}" checked$="{{item.selected}}" value$="{{item.name}}">
+                            <input type="radio" name$="{{tissueSet}}" checked$="{{item.selected}}" value="{{item.name}}">
                             <span>{{item.name}}</span>
                         </label>
                     </template>

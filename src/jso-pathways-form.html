@@ -1,0 +1,686 @@
+<dom-module id="jso-pathways-form">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            transition: all 0.2s;
+        }
+
+        #form {
+            margin: 0px auto 0px auto;
+            max-width: 1000px;
+            padding: 15px 40px;
+            border: 1px solid #c6d0da;
+            background-color: #FFFFFF;
+            box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
+        }
+
+        #title {
+            text-align: center;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .coment {
+            color: #666;
+        }
+
+        .conditionTextArea {
+            box-sizing: border-box;
+            width: 25%;
+            height: 25px;
+            resize: none;
+        }
+
+        .errmsg {
+            color: #8b0000;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        #pathwaysContent {
+            height: 300px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .jso-btn {
+            width: 200px;
+        }
+
+        jso-select {
+            width: 200px;
+        }
+    </style>
+    <template>
+        <form id="form">
+            <p id="title">
+                <strong>PATHWAYS form</strong>
+            </p>
+            <!-- <div class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
+            </div>
+            <br> -->
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Species
+                </div>
+                <div class="jso-formcontent ">
+                    <label class="jso-control">
+                        <input type="radio" name="species" checked="true" on-click="selectHumanSpecie">
+                        <span>Human (Homo sapiens)</span>
+                    </label>
+                    <!-- <label class="jso-control">
+                        <input type="radio" name="species" on-click="selectMouseSpecie">
+                        <span>Mouse (Mus musculus)</span>
+                    </label> -->
+                </div>
+            </div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Input data
+                </div>
+                <div class="jso-formcontent">
+                    <div>Expression matrix file: &nbsp;
+                        <jso-opencga-file-origin id="exp_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="checkExpFile">
+                        </jso-opencga-file-origin>
+                        <span id="exp_fileError" class="errmsg"></span>
+                    </div>
+                    <br>
+                    <div>Experimental design file: &nbsp;
+                        <jso-opencga-file-origin id="design_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{bioformats}}" projects="{{projects}}" on-ok-click="checkDesignFile">
+                        </jso-opencga-file-origin>
+                        <span id="design_fileError" class="errmsg"></span>
+                    </div>
+                    <br>
+                    <label class="jso">Condition 1:</label>
+                    <jso-select id="condition1Select">
+                        <template is="dom-repeat" items={{designConditions}}>
+                            <jso-option value={{item}}>{{item}}</jso-option>
+                        </template>
+                    </jso-select>
+                    <div id="condition1SelectError" class="errmsg"></div>
+
+                    <label class="jso">Condition 2:</label>
+                    <jso-select id="condition2Select">
+                        <template is="dom-repeat" items={{designConditions}}>
+                            <jso-option value={{item}}>{{item}}</jso-option>
+                        </template>
+                    </jso-select>
+                    <span id="condition2SelectError" class="errmsg"></span>
+                    <span id="conditionError" class="errmsg"></span>
+                    <!-- <div class="horizontal layout" style="line-height: 25px;">Condition 1: &nbsp;
+                        <input type="text" id="condition1" class="jso" style="width:200px;" />
+                        <span id="condition1Error" class="errmsg"></span>
+                    </div>
+                    <div class="horizontal layout" style="line-height: 25px;">Condition 2: &nbsp;
+                        <input type="text" id="condition2" class="jso" style="width:200px;" />
+                        <span id="condition2Error" class="errmsg"></span>
+                    </div> -->
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Parameters
+                </div>
+                <div class="jso-formcontent">
+                    <label class="jso-control">
+                        <input type="checkbox" name="decompose">
+                        <span>Decompose paths</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="difexp">
+                        <span>Color nodes by differential expression</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Function level analysis
+                </div>
+                <div class="jso-formcontent">
+                    <label class="jso-control">
+                        <input type="checkbox" name="go">
+                        <span>Gene ontology</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="uniprot">
+                        <span>Uniprot keywords</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout">
+                    <div class="flex">Pathways</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="selectAllPw">Select all</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="deselectAllPw">Deselect all</div>
+                </div>
+                <span class="errmsg">{{errorPathways}}</span>
+                <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll;">
+                    <template is="dom-repeat" items="{{selectPathwaysSet}}">
+                        <label class="jso-control">
+                            <input type="checkbox" value="{{item.value}}" checked$="{{item.selected}}">
+                            <span>{{item.name}}</span>
+                        </label>
+                    </template>
+                </div>
+            </div> -->
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Job information
+                </div>
+                <div class="jso-formcontent">
+                    <div>Output folder: &nbsp;
+                        <jso-opencga-file-origin id="output_folder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}">
+                        </jso-opencga-file-origin>
+                        <span id="output_folderError" class="errmsg"></span>
+                    </div>
+                    <br>
+                    <div class="coment">Job name</div>
+                    <input type="text" id="jobName" class="jso" style="width:200px;" value="Pathways job" />
+                    <div class="coment">Description</div>
+                    <textarea id="jobDescription" class="jso" style="width:200px;"></textarea>
+                </div>
+            </div>
+
+            <span class="errmsg">{{errorMessage}}</span>
+            <div class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw jso-btn-big" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+            </div>
+            <br>
+        </form>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'jso-pathways-form',
+            behaviors: [JsoOpencgaManagerBehavior],
+            properties: {
+                toolId: {
+                    type: String,
+                    value: 'pathways'
+                },
+                execution: {
+                    type: String,
+                    value: 'pathways'
+                },
+                errorMessage: {
+                    type: String,
+                },
+                designConditions: {
+                    type: Array
+                },
+                pathwaysHumanSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getPathwaysHumanSet();
+                    }
+                },
+                pathwaysMouseSet: {
+                    type: Array,
+                    value: function() {
+                        return this.getPathwaysMouseSet();
+                    }
+                },
+                selectPathwaysSet: {
+                    type: Array
+                }
+            },
+
+            ready: function() {
+                this.set('selectPathwaysSet', this.pathwaysHumanSet);
+            },
+
+            checkExpFile: function(e) {
+                var file = e.currentTarget.selectedFile;
+                var bool = (file != null && Utils.endsWith(file.name, ".txt") && file.bioformat == "IDLIST");
+                if (bool) {
+                    this.txtFileMessage = '';
+                } else {
+                    this.txtFileMessage = 'This file is not TXT';
+                }
+                return bool;
+            },
+
+            checkDesignFile: function(e) {
+                var file = e.currentTarget.selectedFile;
+                this._getConditionsFromDesignFile(file);
+
+                var bool = (file != null && Utils.endsWith(file.name, ".txt") && file.bioformat == "IDLIST");
+                if (bool) {
+                    this.fileMessage = '';
+                } else {
+                    this.fileMessage = 'This file is not TXT';
+                }
+                return bool;
+            },
+            _getConditionsFromDesignFile: function(file) {
+                var me = this;
+                this._getFileContent(file.id, function(content) {
+                    var conditionMap = {};
+                    var conditionArray = [];
+                    var line, fields, field;
+                    var lines = content.split('\n');
+                    if (lines.length > 0) {
+                        for (var i = 0; i < lines.length; i++) {
+                            line = lines[i];
+                            if (line != '') {
+                                fields = line.split('\t');
+                                if (conditionMap[fields[1]] !== true) {
+                                    conditionMap[fields[1]] = true;
+                                    conditionArray.push(fields[1]);
+                                }
+                            }
+                        }
+                    }
+                    conditionArray.reverse();
+                    me.$.condition2Select.value = conditionArray[1];
+                    me.set('designConditions', conditionArray);
+                });
+            },
+
+            runExample: function() {
+
+                OpencgaManager.jobs.create({
+                    query: {
+
+                        execution: this.execution,
+                        toolId: this.toolName,
+                        name: "Pathiways example",
+                        description: this.descrip,
+
+                        species: 'hsapiens',
+                        platform: 'HGU133Plus2',
+                        expdesigntype: 'categorical',
+                        control: 'CONTROL',
+                        disease: 'CRC',
+                        summ: 'per90',
+                        test: 'multilevel',
+                        pathways: "hsa03320,hsa04012,hsa04020,hsa04060,hsa04080,hsa04115,hsa04150,hsa04210,hsa04310,hsa04330,hsa04340,hsa04370,hsa04512,hsa04514,hsa04530,hsa04540,hsa04612,hsa04620,hsa04630,hsa04660,hsa04662,hsa04664,hsa04910,hsa04912,hsa04916,hsa04920",
+
+                        normmatrix: 'example_GSE4107.txt',
+                        expdesign: 'example_ED_GSE4107.txt',
+
+                    },
+
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var jobId = response.response[0].result[0].id;
+                                me.selectedOption = "jobLaunched"
+                            } else {
+                                me.message = response.response[0].errorMsg;
+                            }
+                            me.selectedStudy = null;
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
+
+            },
+            _setError: function(id, msg) {
+                this.$[id + 'Error'].innerHTML = msg;
+                this.errorMessage = "There are errors in the form. Correct them before launching the job.";
+            },
+            _clearError: function(id) {
+                this.$[id + 'Error'].innerHTML = '';
+                this.errorMessage = '';
+            },
+            _clean: function() {
+                this.errorMessage = '';
+                this.$.exp_file.reset();
+                this.$.design_file.reset();
+                this.$.output_folder.reset();
+            },
+            launchJob: function(e) {
+                var me = this;
+
+                var query = {
+                    sid: Cookies("bioinfo_sid"),
+                    toolId: this.toolId,
+                    execution: this.execution,
+                    name: this.$.jobName.value,
+                    description: this.$.jobDescription.value
+                };
+
+                if (this.$.output_folder.selectedFile == null) {
+                    this._setError('output_folder', "No folder selected");
+                } else {
+                    this._clearError('output_folder');
+                    query['output_folder'] = this.$.output_folder.selectedFile.id;
+                    query['studyId'] = this.$.output_folder.selectedStudy.id;
+                }
+
+                if (this.$.exp_file.selectedFile == null) {
+                    this._setError('exp_file', 'No expression matrix file selected');
+                } else {
+                    this._clearError('exp_file');
+                    query['exp_file'] = this.$.exp_file.selectedFile.id;
+                }
+
+                if (this.$.design_file.selectedFile == null) {
+                    this._setError('design_file', 'No experimental design file selected');
+                } else {
+                    this._clearError('design_file');
+                    query['design_file'] = this.$.design_file.selectedFile.id;
+                }
+
+                if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
+                    this._setError('condition1Select', 'Condition 1 not selected.');
+                } else {
+                    this._clearError('condition1Select');
+                    query['cond1'] = this.$.condition1Select.value;
+                }
+
+                if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
+                    this._setError('condition2Select', 'Condition 2 not selected.');
+                } else {
+                    this._clearError('condition2Select');
+                    query['cond2'] = this.$.condition2Select.value;
+                }
+
+                if (query['cond2'] != null && query['cond1'] != null && query['cond2'] == query['cond1']) {
+                    this._setError('condition', 'Condition 2 is the same as condition 1.');
+                } else if (query['cond2'] != null && query['cond1'] != null) {
+                    this._clearError('condition');
+                }
+
+                if (this.$.form.elements['go'].checked) {
+                    query['go'] = '';
+                }
+                if (this.$.form.elements['uniprot'].checked) {
+                    query['uniprot'] = '';
+                }
+                if (this.$.form.elements['decompose'].checked) {
+                    query['decompose'] = '';
+                }
+                if (this.$.form.elements['difexp'].checked) {
+                    query['difexp'] = '';
+                }
+
+                // query['species'] = this.species;
+
+                // if (this.species == 'hsa') {
+                //     s = this.$.human.querySelectorAll('input[type=radio]');
+                //     for (var i = 0; i < s.length; i++) {
+                //         if (s[i].checked) {
+                //             query['platform'] = s[i].value;
+                //         }
+                //     }
+                // }
+                // if (this.species == 'mmu') {
+                //     s = this.$.mouse.querySelectorAll('input[type=radio]');
+                //     for (var i = 0; i < s.length; i++) {
+                //         if (s[i].checked) {
+                //             query['platform'] = s[i].value;
+                //         }
+                //     }
+                // }
+
+                // var pathways = [];
+                // var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                // for (var i = 0; i < els.length; i++) {
+                //     var pathway = els[i];
+                //     if (pathway.checked) {
+                //         pathways.push('hsa' + pathway.value);
+                //     }
+                // }
+                // if (pathways.length > 0) {
+                //     this.errorPathways = '';
+                //     query['pathways'] = pathways;
+                // } else {
+                //     this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                //     this.errorPathways = 'Please select at least one Pathway';
+                // }
+
+                if (this.errorMessage === '' && this.$.form.checkValidity()) {
+                    console.log(this.$.form.checkValidity())
+                    OpencgaManager.jobs.create({
+                        query: query,
+                        request: {
+                            //method: 'POST',
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    var job = response.response[0].result[0];
+                                    me.selectedOption = "jobLaunched"
+                                    console.log(job);
+                                    // me._clean();
+                                    me.fire('job-launched');
+                                    //                                    me.message = job.commandLine;
+                                } else {
+                                    me.message = response.response[0].errorMsg;
+                                }
+                            },
+                            error: function() {
+                                me.message = 'Server error, try again later.';
+                            }
+                        }
+                    });
+                }
+
+            },
+
+            selectAllPw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = true;
+                }
+            },
+
+            deselectAllPw: function(e) {
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    els[i].checked = false;
+                }
+            },
+            /* */
+            getPathwaysHumanSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04020'
+                }, {
+                    name: 'CYTOKINE-CYTOKINE RECEPTOR',
+                    selected: false,
+                    value: '04060',
+                    id: 'pathways04060' + this.id
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'p53 SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04115',
+                    id: 'pathways04115' + this.id
+                }, {
+                    name: 'mTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04150',
+                    id: 'pathways04150' + this.id
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'HEDGEHOG SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04340',
+                    id: 'pathways04340' + this.id
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'ECM-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04512',
+                    id: 'pathways04512' + this.id
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'TIGH JUNCTION',
+                    selected: false,
+                    value: '04530',
+                    id: 'pathways04530' + this.id
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04620',
+                    id: 'pathways04620' + this.id
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'T CELL RECPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04660',
+                    id: 'pathways04660' + this.id
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            },
+
+            getPathwaysMouseSet: function() {
+                return [{
+                    name: 'PPAR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '03320'
+                }, {
+                    name: 'ERBB SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04012'
+                }, {
+                    name: 'CALCIUM SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04020'
+                }, {
+                    name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                    selected: false,
+                    value: '04080'
+                }, {
+                    name: 'APOPTOSIS',
+                    selected: false,
+                    value: '04210'
+                }, {
+                    name: 'WNT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04310'
+                }, {
+                    name: 'NOTCH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04330'
+                }, {
+                    name: 'VEGF SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04370'
+                }, {
+                    name: 'CELL ADHESION MOLECULES',
+                    selected: false,
+                    value: '04514'
+                }, {
+                    name: 'GAP JUNCTION',
+                    selected: false,
+                    value: '04540'
+                }, {
+                    name: 'ANTIGEN PROCESING AND PRESENTATION',
+                    selected: false,
+                    value: '04612'
+                }, {
+                    name: 'JAK-STAT SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04630'
+                }, {
+                    name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04662'
+                }, {
+                    name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04664'
+                }, {
+                    name: 'INSULIN SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04910'
+                }, {
+                    name: 'GnRH SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04912'
+                }, {
+                    name: 'MELANOGENESIS',
+                    selected: false,
+                    value: '04916'
+                }, {
+                    name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                    selected: false,
+                    value: '04920'
+                }];
+            }
+        });
+    </script>
+</dom-module>

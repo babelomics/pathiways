@@ -1,0 +1,294 @@
+<dom-module id="jso-pathways-result">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+        /*:host > * {
+            padding: 10px 0;
+        }
+
+        jso-table {
+            width: 1000px;
+            border: 1px solid var(--divider-color);
+        }
+
+        jso-network-viewer {
+            width: calc(100% - 300px);
+            border: 1px solid var(--divider-color);
+        }
+
+        #right {
+            width: 300px;
+            heigth: 100%;
+        }
+
+        jso-select-box {
+            height: 200px;
+        }*/
+    </style>
+    <template>
+
+        <!-- <div class="pathway_selector_item bbb">
+            HOLAAAAAAAAAAAAAAAAAAAAAA
+        </div>
+
+        <div id="heatmap">
+        </div>
+        <div id="pca">
+        </div>
+        <div id="significance">
+        </div> -->
+
+        <!-- <div class="horizontal layout" style="height:700px; position:relative;"> -->
+        <!-- <jso-network-viewer id="nv"></jso-network-viewer> -->
+        <!-- <jso-network-viewer lite hide-node-render hide-edge-render></jso-network-viewer> -->
+        <!-- <jso-network-viewer id="nv" lite hide-bar hide-tool-bar hide-edition-bar hide-status-bar hide-node-render hide-edge-render></jso-network-viewer>
+            <div id="right">
+                <label class="jso">
+                    Pathways list:
+                </label>
+                <jso-select-box id="pathwaysSelectBox" name-attribute="name" title-attribute="name" on-select="handlePathwaySelect">
+                </jso-select-box>
+
+                <label class="jso">
+                    Available subpaths
+                </label>
+                <jso-select-box></jso-select-box>
+            </div>
+        </div> -->
+        <!-- <div></div> -->
+        <!-- <div></div> -->
+        <!-- <div></div> -->
+    </template>
+    <script>
+        Polymer({
+            is: 'jso-pathways-result',
+            behaviors: [JsoOpencgaManagerBehavior],
+            properties: {
+                job: {
+                    type: Object,
+                    observer: 'jobChanged'
+                },
+                fileNameMap: {
+                    type: Object
+                }
+            },
+            ready: function() {
+                // this.$.nv.backgroundColor = '#F1F5F5';
+            },
+            jobChanged: function(neo, old) {
+                var me = this;
+                if (neo) {
+                    this._getFilesBeans(this.job.output, function(files) {
+                        me.processResultFiles(files);
+                    });
+                }
+            },
+            handlePathwaySelect: function(e) {
+                var me = this;
+                var file = e.detail;
+                var pwName = file.name.replace('.sif', '');
+                this._getFileContent(file.id, function(content) {
+                    me._getFileContent(me.fileNameMap[pwName + '.natt'].id, function(n_content) {
+                        me._getFileContent(me.fileNameMap[pwName + '.eatt'].id, function(e_content) {
+                            me.$.nv.loadSif(content);
+                            me.$.nv.loadNodeAttributes(n_content, true);
+                            me.$.nv.loadEdgeAttributes(e_content, true);
+                            me._applyPathwayVisualSettings();
+                        });
+                    });
+                });
+            },
+            _applyPathwayVisualSettings: function() {
+                // this.$.nv.$.nodeRender.applyDirect('color', 'color');
+                this.$.nv.$.nodeRender.applyDirect('color', 'strokeColor');
+                this.$.nv.$.nodeRender.applyDirect('diff.exp', 'color');
+                this.$.nv.$.nodeRender.applyDirect('shape', 'shape');
+                this.$.nv.$.nodeRender.applyDirect('width', 'size');
+                this.$.nv.$.nodeRender.applyDirect('labelSize', 'labelSize');
+                this.$.nv.$.edgeRender.applyDirect('color', 'color');
+                this.$.nv.$.edgeRender.applyDirect('head', 'shape');
+                this.$.nv.setVertexDefaultPositionX('X', true, false);
+                this.$.nv.setVertexDefaultPositionY('Y', true, true);
+                this.$.nv.setVertexDefaultLabelAttribute('label');
+            },
+            processResultFiles: function(files) {
+                var me = this;
+                var sifFiles = [];
+                this.fileNameMap = {};
+                for (var i = 0; i < files.length; i++) {
+                    var f = files[i];
+                    this.fileNameMap[f.name] = f;
+                    // if (f.name == "paths_heatmap.png") {
+                    //     var img = document.createElement('img');
+                    //     img.src = this._getFileURL(f.id);
+                    //     Polymer.dom(this.$.heatmap).appendChild(img);
+                    // }
+                    // if (f.name == "paths_pca.png") {
+                    //     var img = document.createElement('img');
+                    //     img.src = this._getFileURL(f.id);
+                    //     Polymer.dom(this.$.pca).appendChild(img);
+                    // }
+                    // if (f.name == "paths_comparison.txt") {
+                    //     var table = document.createElement('jso-table');
+                    //     table.setAttribute('enable-paging', '');
+                    //     this._getFileContent(f.id, function(content) {
+                    //         var parsedContent = me._parseTabularFile(content);
+                    //         table.set('data', parsedContent.data);
+                    //         table.set('columns', parsedContent.columns);
+                    //         console.log(parsedContent)
+                    //         Polymer.dom(me.$.significance).appendChild(table);
+                    //     });
+                    // }
+                    // if (f.name.indexOf('.sif') != -1) {
+                    //     sifFiles.push(f);
+                    // }
+
+                    if (f.name === 'index.html') {
+                        me._getFileContent(f.id, function(content) {
+                            var parser = new DOMParser();
+
+                            var doc = parser.parseFromString(content, "text/html");
+                            var indexStyle = doc.querySelector('style');
+                            var indexScript = doc.querySelector('script[data-var]');
+                            var contextVar = indexScript.dataset.var;
+                            var indexBody = doc.querySelector('body');
+
+                            /*fix index-body*/
+                            indexBody.removeChild(indexBody.querySelector('.supertitle'));
+                            var els = indexBody.querySelectorAll('.pathway_selector_item');
+                            for (var i = 0; i < els.length; i++) {
+                                var el = els[i];
+                                el.removeAttribute('onclick');
+                                el.setAttribute('on-click', 'handlePathwayClick');
+                            }
+                            var els = indexBody.querySelectorAll('img');
+                            for (var i = 0; i < els.length; i++) {
+                                var el = els[i];
+                                el.setAttribute('src', me._getFileURL(me.fileNameMap[el.getAttribute('src')].id));
+                            }
+                            var els = indexBody.querySelectorAll('a');
+                            for (var i = 0; i < els.length; i++) {
+                                var el = els[i];
+                                var split = el.getAttribute('href').split('/');
+                                var name = split[split.length - 1];
+                                el.setAttribute('href', me._getFileURL(me.fileNameMap[name].id));
+                                el.setAttribute('data-filename', name);
+                                el.setAttribute('data-fileid', me.fileNameMap[name].id);
+                            }
+                            /**/
+
+                            var scriptTextContent = indexScript.textContent;
+                            scriptTextContent = scriptTextContent.replace('pathSelector.appendChild(div)', 'Polymer.dom(pathSelector).appendChild(div)');
+                            eval(scriptTextContent);
+                            var obj = eval(contextVar);
+
+                            /* Create custom element */
+                            var domModule = document.createElement('dom-module');
+                            var style = document.createElement('style');
+                            style.textContent = indexStyle.textContent;
+                            var template = document.createElement('template');
+                            template.innerHTML = indexBody.innerHTML;
+                            domModule.appendChild(style);
+                            domModule.appendChild(template);
+
+                            var rndstr = Utils.randomString(15);
+                            var elname = 'jso-pathways-result-' + rndstr;
+                            domModule.register(elname);
+
+                            var moduleConfig = {
+                                is: elname,
+                                behaviors: [JsoOpencgaManagerBehavior],
+                                ready: function() {
+                                    var me = this;
+                                    this.init(Polymer.dom(this.root));
+
+                                    this._createTable("paths_comparison.txt");
+                                    this._createTable("go_comparison.txt");
+                                    this._createTable("uniprot_comparison.txt");
+
+
+                                },
+                                handlePathwayClick: function(e) {
+                                    this.loadPathway(e.currentTarget.dataset.pathway, e.currentTarget.dataset.pathwayname, Polymer.dom(this.root));
+                                },
+                                _createTable:function(filename){
+                                    var me = this;
+                                    var el = Polymer.dom(this.root).querySelector('a[data-filename="'+filename+'"]');
+                                    if(el != null){
+                                        var table = document.createElement('jso-table');
+                                        table.setAttribute('enable-paging', '');
+                                        table.style.width = "1000px";
+                                        table.style.marginTop = "10px";
+                                        table.style.border = "1px solid lightgray";
+                                        this._getFileContent(el.dataset.fileid, function(content) {
+                                            var parsedContent = me._parseTabularFile(content);
+                                            table.set('data', parsedContent.data);
+                                            table.set('columns', parsedContent.columns);
+                                            // console.log(parsedContent)
+                                            Polymer.dom(el).parentNode.appendChild(table);
+                                        });
+                                    }
+                                },
+                                _parseTabularFile: function(textContent) {
+                                    var lines = textContent.split('\n');
+                                    if (lines.length > 0) {
+                                        var line, fields, field, data = [],
+                                            columns = [],
+                                            obj;
+                                        var firstLine = lines[0].replace('#', '');
+                                        fields = firstLine.split('\t');
+                                        for (var i = 0; i < fields.length; i++) {
+                                            field = fields[i];
+                                            field = field.trim();
+                                            var name = field.replace(/ /gi, '_');
+                                            columns.push({
+                                                name: name,
+                                                title: name,
+                                                width: 200
+                                            });
+                                        }
+
+                                        if (columns.length) {
+                                            for (var i = 1; i < lines.length; i++) {
+                                                line = lines[i];
+                                                if (line != '') {
+                                                    fields = line.split('\t');
+                                                    obj = {};
+                                                    for (var j = 0; j < fields.length; j++) {
+                                                        field = fields[j].trim();
+                                                        column = columns[j];
+                                                        obj[column.name] = field;
+                                                    }
+                                                    data.push(obj);
+                                                }
+                                            }
+                                        }
+                                        return {
+                                            columns: columns,
+                                            data: data
+                                        };
+                                    }
+                                }
+                            }
+                            for (var prop in obj) {
+                                if (hasOwnProperty.call(obj, prop)) {
+                                    moduleConfig[prop] = obj[prop];
+                                }
+                            }
+
+                            Polymer(moduleConfig);
+                            var res = document.createElement(elname);
+                            Polymer.dom(me.root).appendChild(res);
+                        });
+                    }
+                }
+                // this.$.pathwaysSelectBox.set('options', sifFiles);
+            }
+        });
+    </script>
+</dom-module>

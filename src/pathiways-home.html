@@ -4,13 +4,19 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            margin: 0px auto 0px auto;
-            width: 70%;
-            max-width: 780px;
             color: #FFF;
             font-size: 22px;
-            line-height: 25px;
             font-weight: 300;
+        }
+
+        #main {
+            margin: 0px auto 0px auto;
+            max-width: 780px;
+            padding: 20px;
+        }
+
+        #image {
+            width: 300px;
         }
 
         .paragraph {
@@ -65,10 +71,8 @@
 
         .megatitle {
             font-size: 80px;
-            padding-top: 30px;
-            padding-bottom: 10px;
             color: white;
-            text-shadow: 3px 3px 5px #314559;
+            text-shadow: 3px 3px 5px var(--dark-primary-color);
         }
 
         .megadescription {
@@ -81,121 +85,105 @@
             text-align: center;
         }
 
-        .infobox {
-            position: relative;
-            padding: 10px 10px 10px 40px;
-            border-left: 5px solid #e9d295;
-            background-color: #faf3d7;
-            color: #585858;
-            font-size: 16px;
-            font-weight: normal;
-            text-align: center;
-            width: 500px;
-            margin: 10px auto;
-            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.5);
+        @media (max-width: 1100px) {
+            #image {
+                width: 230px;
+            }
         }
 
-        .infobox:after {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-            box-sizing: border-box;
-            font-family: FontAwesome;
-            content: '\f071';
-            color: #bf9947;
-            font-size: 16px;
+        @media (max-width: 800px) {
+            #image {
+                width: 150px;
+            }
+            .megatitle {
+                font-size: 50px;
+            }
         }
     </style>
     <template>
-
-        <br>
-        <br>
-        <!--<div class="infobox">-->
-        <!--On March 30th, 2015 there will be interruptions due to electrical cuts. <br>Mainly from 7pm to 9pm GMT +1. Sorry for the inconvenience.-->
-        <!--</div>-->
-
-        <br>
-
-        <div class="horizontal layout">
-            <div flex>
-                <img src="./images/pathiways-logo.svg" style="width:300px;">
-                <!--<img src="logo_2.svg" style="width:300px;">-->
+        <div id="main">
+            <br>
+            <br>
+            <div class="horizontal layout center">
+                <div class="flex"></div>
+                <div>
+                    <img id="image" src="./images/pathiways-logo.svg">
+                    <!--<img src="logo_2.svg" style="width:300px;">-->
+                </div>
+                <div class="vertical layout center" style="width:500px;">
+                    <div class="megatitle">hiPathia</div>
+                    <!-- <div class="megatitle">hi<span style="font-weight:normal;">Path</span>ia</div> -->
+                    <!--<div class="megadescription">-->
+                    <!--GENE EXPRESSION, GENOME VARIATION AND FUNCTIONAL PROFILING ANALYSIS SUITE-->
+                    <!--</div>-->
+                    <template if="{{!isLogged}}">
+                        <div class="megabutton" on-click="{{annonymousLogin}}">
+                            <!--<font-awesome icon="hand-o-left"></font-awesome>-->
+                            <font-awesome icon="sign-in"></font-awesome>
+                            &nbsp;&nbsp;&nbsp; Try it now
+                        </div>
+                    </template>
+                </div>
+                <div class="flex"></div>
             </div>
-            <div vertical layout center style="width:500px;">
-                <br>
-                <br>
-                <div class="megatitle">PATHiWAYS</div>
-                <!--<div class="megadescription">-->
-                <!--GENE EXPRESSION, GENOME VARIATION AND FUNCTIONAL PROFILING ANALYSIS SUITE-->
-                <!--</div>-->
-                <br>
 
-                <template if="{{!isLogged}}">
-                    <div class="megabutton" on-click="{{annonymousLogin}}">
-                        <!--<font-awesome icon="hand-o-left"></font-awesome>-->
-                        <font-awesome icon="sign-in"></font-awesome>
-                        &nbsp;&nbsp;&nbsp; Try it now
-                    </div>
-                </template>
+            <!--SUITE_INFO = '<div style=" width: 800px;">'-->
+            <!--+ '<h4>Overview</h4><br>'-->
+            <!--+ '<h3>PATHiWAYS</h3>'-->
+            <!--+ '<p align="justify">PATHiWAYS is a web tool for the interpretation of the consequences of the combined changes in expression levels of genes in the context of signaling pathways. Specifically, this tool allows the user to identify the stimulus-response subpathways that are significantly activated or deactivated in the typical case/control experiment. PATHiWAYS identifies all the stimulus-response subpathways of KEGG signaling pathways, calculates the probability of activation of each one, based on the individual gene expression values and identifies those with a significant differential activity between the two conditions compared.</p>'-->
+            <!--+ '<br>'-->
+            <!--+ '<h3>PATHiPRED</h3>'-->
+            <!--+ '<p align="justify">The aim of PATHiPRED web tool is to provide a classifier that takes advantage of the activity values of signal transduction along the elementary components of signaling pathways. PATHiPRED differentiates between two classes or a continuous variable using activation probabilities of stimulus-response sub-pathways calculated by PATHiWAYS methodology. PATHiPRED performs a SVM modelling with cross-validation and the results include the prediction model, the statistical parameters that assess the goodness of the model, the confusion matrix of the prediction, the activation probabilities matrix, the mechanism-based biomarkers and pathways graphs with the selected sub-pathways highlighted. Moreover, the prediction model obtained can be applied to a new dataset within PATHiPRED web tool.</p>'-->
+            <!--+ '<br>'-->
+            <!--+ '<p align="justify"><h4>Note</h4><br>This web application makes an intensive use of new web technologies and standards like HTML5, so browsers that are fully supported for this site are: Chrome 14+, Firefox 7+, Safari 5+ and Opera 11+. Older browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported at all.</p>'-->
+            <!--+ '</div>';-->
+            <!-- <div class="title">Overview</div> -->
+            <!--<p class="title2">PATHiWAYS</p>-->
 
+            <!--<div class="paragraph">PATHiWAYS is a web tool for the interpretation of the consequences of the combined-->
+            <!--changes-->
+            <!--in expression levels of genes in the context of signaling pathways. Specifically, this tool allows the-->
+            <!--user-->
+            <!--to identify the stimulus-response subpathways that are significantly activated or deactivated in the-->
+            <!--typical-->
+            <!--case/control experiment. PATHiWAYS identifies all the stimulus-response subpathways of KEGG signaling-->
+            <!--pathways, calculates the probability of activation of each one, based on the individual gene expression-->
+            <!--values and identifies those with a significant differential activity between the two conditions-->
+            <!--compared.</div>-->
+
+            <!--<p class="title2">PATHiPRED</p>-->
+
+            <!--<p class="paragraph">The aim of PATHiPRED web tool is to provide a classifier that takes advantage of the activity-->
+            <!--values of signal transduction along the elementary components of signaling pathways. PATHiPRED differentiates-->
+            <!--between two classes or a continuous variable using activation probabilities of stimulus-response sub-pathways-->
+            <!--calculated by PATHiWAYS methodology. PATHiPRED performs a SVM modelling with cross-validation and the results-->
+            <!--include the prediction model, the statistical parameters that assess the goodness of the model, the confusion-->
+            <!--matrix of the prediction, the activation probabilities matrix, the mechanism-based biomarkers and pathways graphs-->
+            <!--with the selected sub-pathways highlighted. Moreover, the prediction model obtained can be applied to a new-->
+            <!--dataset within PATHiPRED web tool.</p>-->
+
+
+            <!--<p class="title2">PATHiVAR</p>-->
+
+            <!-- <div class="paragraph">
+                PATHiVAR estimates the functional impact that mutations have over the human signalling network.
             </div>
+
+            <div class="paragraph">
+                PATHiVAR analyses VCF files, extract the deleterious mutations, locate them over the signalling pathways in the selected tissue (with the appropriate expression pattern) and provides a comprehensive, graphic and interactive view of the predicted signal transduction probabilities across the different signalling pathways.
+            </div>
+
+            <div class="title2">Note:</div>
+            <div class="paragraph2">
+                PATHiVAR web application makes an intensive use of the HTML5 standard and other cutting-edge web technologies such as Web Components, so only modern web browsers are fully supported, these include Chrome 36+, Firefox 32+, IE 10+, Safari 7+ and Opera 24+.
+            </div> -->
+            <!--<p style="text-align:justify;font-size: 16px">This web application makes an intensive use of new web technologies and standards-->
+            <!--like HTML5, so browsers that are fully supported for this site are: Chrome 14, Firefox 7, Safari 5 and Opera 11. Older-->
+            <!--browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported-->
+            <!--at all.</p>-->
+
+            <p class="title2">High throughput pathway inference analysis.</p>
         </div>
-
-        <!--SUITE_INFO = '<div style=" width: 800px;">'-->
-        <!--+ '<h4>Overview</h4><br>'-->
-        <!--+ '<h3>PATHiWAYS</h3>'-->
-        <!--+ '<p align="justify">PATHiWAYS is a web tool for the interpretation of the consequences of the combined changes in expression levels of genes in the context of signaling pathways. Specifically, this tool allows the user to identify the stimulus-response subpathways that are significantly activated or deactivated in the typical case/control experiment. PATHiWAYS identifies all the stimulus-response subpathways of KEGG signaling pathways, calculates the probability of activation of each one, based on the individual gene expression values and identifies those with a significant differential activity between the two conditions compared.</p>'-->
-        <!--+ '<br>'-->
-        <!--+ '<h3>PATHiPRED</h3>'-->
-        <!--+ '<p align="justify">The aim of PATHiPRED web tool is to provide a classifier that takes advantage of the activity values of signal transduction along the elementary components of signaling pathways. PATHiPRED differentiates between two classes or a continuous variable using activation probabilities of stimulus-response sub-pathways calculated by PATHiWAYS methodology. PATHiPRED performs a SVM modelling with cross-validation and the results include the prediction model, the statistical parameters that assess the goodness of the model, the confusion matrix of the prediction, the activation probabilities matrix, the mechanism-based biomarkers and pathways graphs with the selected sub-pathways highlighted. Moreover, the prediction model obtained can be applied to a new dataset within PATHiPRED web tool.</p>'-->
-        <!--+ '<br>'-->
-        <!--+ '<p align="justify"><h4>Note</h4><br>This web application makes an intensive use of new web technologies and standards like HTML5, so browsers that are fully supported for this site are: Chrome 14+, Firefox 7+, Safari 5+ and Opera 11+. Older browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported at all.</p>'-->
-        <!--+ '</div>';-->
-        <div class="title">Overview</div>
-        <!--<p class="title2">PATHiWAYS</p>-->
-
-        <!--<div class="paragraph">PATHiWAYS is a web tool for the interpretation of the consequences of the combined-->
-        <!--changes-->
-        <!--in expression levels of genes in the context of signaling pathways. Specifically, this tool allows the-->
-        <!--user-->
-        <!--to identify the stimulus-response subpathways that are significantly activated or deactivated in the-->
-        <!--typical-->
-        <!--case/control experiment. PATHiWAYS identifies all the stimulus-response subpathways of KEGG signaling-->
-        <!--pathways, calculates the probability of activation of each one, based on the individual gene expression-->
-        <!--values and identifies those with a significant differential activity between the two conditions-->
-        <!--compared.</div>-->
-
-        <!--<p class="title2">PATHiPRED</p>-->
-
-        <!--<p class="paragraph">The aim of PATHiPRED web tool is to provide a classifier that takes advantage of the activity-->
-        <!--values of signal transduction along the elementary components of signaling pathways. PATHiPRED differentiates-->
-        <!--between two classes or a continuous variable using activation probabilities of stimulus-response sub-pathways-->
-        <!--calculated by PATHiWAYS methodology. PATHiPRED performs a SVM modelling with cross-validation and the results-->
-        <!--include the prediction model, the statistical parameters that assess the goodness of the model, the confusion-->
-        <!--matrix of the prediction, the activation probabilities matrix, the mechanism-based biomarkers and pathways graphs-->
-        <!--with the selected sub-pathways highlighted. Moreover, the prediction model obtained can be applied to a new-->
-        <!--dataset within PATHiPRED web tool.</p>-->
-
-
-        <!--<p class="title2">PATHiVAR</p>-->
-
-        <div class="paragraph">
-            PATHiVAR estimates the functional impact that mutations have over the human signalling network.
-        </div>
-
-        <div class="paragraph">
-            PATHiVAR analyses VCF files, extract the deleterious mutations, locate them over the signalling pathways in the selected tissue (with the appropriate expression pattern) and provides a comprehensive, graphic and interactive view of the predicted signal
-            transduction probabilities across the different signalling pathways.
-        </div>
-
-        <div class="title2">Note:</div>
-        <div class="paragraph2">
-            PATHiVAR web application makes an intensive use of the HTML5 standard and other cutting-edge web technologies such as Web Components, so only modern web browsers are fully supported, these include Chrome 36+, Firefox 32+, IE 10+, Safari 7+ and Opera 24+.
-        </div>
-        <!--<p style="text-align:justify;font-size: 16px">This web application makes an intensive use of new web technologies and standards-->
-        <!--like HTML5, so browsers that are fully supported for this site are: Chrome 14, Firefox 7, Safari 5 and Opera 11. Older-->
-        <!--browser like Chrome13-, Firefox 5- or Internet Explorer 9 may rise some errors. Internet Explorer 6 and 7 are no supported-->
-        <!--at all.</p>-->
     </template>
     <script>
         Polymer({
