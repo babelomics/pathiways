@@ -57,10 +57,10 @@
             <p id="title">
                 <strong>Differential signaling form</strong>
             </p>
-            <!-- <div class="horizontal layout center-justified">
-                <div class="jso-btn jso-btn-shdw"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
+            <div class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw" on-click="_runExample"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
             </div>
-            <br> -->
+            <br>
 
             <div class="jso-formbox">
                 <div class="jso-formtitle">
@@ -135,12 +135,12 @@
                             <span>Correlation with continous variable</span>
                         </label>
                         <label class="jso-control" hidden$="{{checkNullFile(variantFile)}}">
-                            <input type="radio" name="design_type" value="mutation" on-click="handleDesignType">
+                            <input type="radio" name="design_type" value="mutation_effect" on-click="handleDesignType">
                             <span>Mutation effect</span>
                         </label>
                     </div>
                     <br>
-                    <div hidden$="{{!_checkValue('mutation', design_type)}}">Experimental design file: &nbsp;
+                    <div hidden$="{{!_checkValue('mutation_effect', design_type)}}">Experimental design file: &nbsp;
                         <jso-opencga-file-origin id="design_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{designBioformat}}" projects="{{projects}}" on-ok-click="checkDesignFile">
                         </jso-opencga-file-origin>
                         <span id="design_fileError" class="errmsg"></span>
@@ -165,7 +165,7 @@
                         <span id="conditionError" class="errmsg"></span>
                     </div>
 
-                    <div hidden$="{{_checkValue('mutation', design_type)}}">
+                    <div hidden$="{{_checkValue('mutation_effect', design_type)}}">
                         <label class="jso">Expression vs (Expression + Variant file)</label>
                     </div>
 
@@ -190,48 +190,54 @@
                         <input type="radio" name="species" value="rno" disabled$="{{!checkNullFile(variantFile)}}">
                         <span>Rat (Rattus norvegicus)</span>
                     </label>
-
-
-                    <div hidden$="{{checkNullFile(variantFile)}}">
-                        <label class="jso" style="margin-top:10px;">Reference genome:</label>
-                        <label class="jso-control">
-                            <input type="radio" name="ref_genome" value="hg19" checked="true">
-                            <span>GRCh37</span>
-                        </label>
-                        <label class="jso-control">
-                            <input type="radio" name="ref_genome" value="hg38">
-                            <span>GRCh38</span>
-                        </label>
-                        <label class="jso" style="margin-top:10px;">Inheritance pattern:</label>
-                        <label class="jso-control">
-                            <input type="radio" name="inheritance_pattern" value="recessive" checked="true">
-                            <span>Recessive</span>
-                        </label>
-                        <label class="jso-control">
-                            <input type="radio" name="inheritance_pattern" value="dominant">
-                            <span>Dominant</span>
-                        </label>
-                        <br>
-                        <label class="jso-control">
-                            <input type="checkbox" name="compound_hetero">
-                            <span>Compound hetero</span>
-                        </label>
-                        <br>
-                        <label class="jso-control">
-                            <input type="checkbox" name="sift" checked>
-                            <span>SIFT</span>
-                        </label>
-                        <label class="jso-control">
-                            <input type="checkbox" name="polyphen">
-                            <span>PolyPhen</span>
-                        </label>
-                        <label class="jso-control">
-                            <input type="checkbox" name="phastcons">
-                            <span>PhastCons</span>
-                        </label>
-                    </div>
                 </div>
             </div>
+
+
+            <div hidden$="{{checkNullFile(variantFile)}}" class="jso-formbox">
+                <div class="jso-formtitle">
+                    Mutation impact
+                </div>
+                <div class="jso-formcontent ">
+                    <label class="jso" style="margin-top:10px;">Reference genome:</label>
+                    <label class="jso-control">
+                        <input type="radio" name="ref_genome" value="hg19" checked="true">
+                        <span>GRCh37</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="radio" name="ref_genome" value="hg38">
+                        <span>GRCh38</span>
+                    </label>
+                    <label class="jso" style="margin-top:10px;">Inheritance pattern:</label>
+                    <label class="jso-control">
+                        <input type="radio" name="inheritance_pattern" value="recessive" checked="true">
+                        <span>Recessive</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="radio" name="inheritance_pattern" value="dominant">
+                        <span>Dominant</span>
+                    </label>
+                    <br>
+                    <label class="jso-control">
+                        <input type="checkbox" name="compound_hetero">
+                        <span>Compound hetero</span>
+                    </label>
+                    <br>
+                    <label class="jso-control">
+                        <input type="checkbox" name="sift" checked>
+                        <span>SIFT</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="polyphen">
+                        <span>PolyPhen</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="phastcons">
+                        <span>PhastCons</span>
+                    </label>
+                </div>
+            </div>
+
 
             <div class="jso-formbox">
                 <div class="jso-formtitle">
@@ -379,6 +385,52 @@
                 this.$.exp_file.reset();
                 this.$.design_file.reset();
                 this.$.output_folder.reset();
+                this.$.variant_file.reset();
+
+                this.set('designConditions', []);
+                this.$.condition1Select.selectedOptionText = '';
+                this.$.condition2Select.selectedOptionText = '';
+
+                this.$.form.elements['compound_hetero'].checked = false;
+                this.$.form.elements['sift'].checked = false;
+                this.$.form.elements['polyphen'].checked = false;
+                this.$.form.elements['phastcons'].checked = false;
+
+                this.expressionMode = 'matrix';
+                this.$.form.elements['expression'].value = 'matrix';
+                this.design_type = 'categorical';
+                this.$.form.elements['design_type'].value = 'categorical';
+
+                this.$.form.elements['species'].value = 'hsa';
+
+                this.$.form.elements['ref_genome'].value = 'hg19';
+                this.$.form.elements['inheritance_pattern'].value = 'recessive';
+
+                this.$.form.elements['go'].checked = false;
+                this.$.form.elements['uniprot'].checked = false;
+                this.$.form.elements['decompose'].checked = false;
+                this.$.form.elements['difexp'].checked = false;
+
+                this.$.jobName.value = 'Differential signaling job';
+                this.$.jobDescription.value = '';
+
+                this._uncheckTissues();
+                this.set('selectedTissueSet', this.ea);
+                this.set('exp_db', 'ea');
+                this.$.form.elements['exp_db'].value = 'ea';
+
+                this._clearError('output_folder');
+                this._clearError('exp_file');
+                this._clearError('variant_file');
+                this._clearError('tissue');
+                this._clearError('design_file');
+                this._clearError('condition1Select');
+                this._clearError('condition2Select');
+                this._clearError('condition');
+                this._clearError('pathways');
+            },
+            _runExample: function() {
+
             },
             launchJob: function(e) {
                 var me = this;
@@ -451,31 +503,33 @@
                     }
                 }
 
-                if (this.$.design_file.selectedFile == null) {
-                    this._setError('design_file', 'No experimental design file selected');
-                } else {
-                    this._clearError('design_file');
-                    query['design_file'] = this.$.design_file.selectedFile.id;
-                }
+                if (query['design_type'] !== 'mutation_effect') {
+                    if (this.$.design_file.selectedFile == null) {
+                        this._setError('design_file', 'No experimental design file selected');
+                    } else {
+                        this._clearError('design_file');
+                        query['design_file'] = this.$.design_file.selectedFile.id;
+                    }
 
-                if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
-                    this._setError('condition1Select', 'Condition 1 not selected.');
-                } else {
-                    this._clearError('condition1Select');
-                    query['cond1'] = this.$.condition1Select.value;
-                }
+                    if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
+                        this._setError('condition1Select', 'Condition 1 not selected.');
+                    } else {
+                        this._clearError('condition1Select');
+                        query['cond1'] = this.$.condition1Select.value;
+                    }
 
-                if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
-                    this._setError('condition2Select', 'Condition 2 not selected.');
-                } else {
-                    this._clearError('condition2Select');
-                    query['cond2'] = this.$.condition2Select.value;
-                }
+                    if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
+                        this._setError('condition2Select', 'Condition 2 not selected.');
+                    } else {
+                        this._clearError('condition2Select');
+                        query['cond2'] = this.$.condition2Select.value;
+                    }
 
-                if (query['cond2'] != null && query['cond1'] != null && query['cond2'] == query['cond1']) {
-                    this._setError('condition', 'Condition 2 is the same as condition 1.');
-                } else if (query['cond2'] != null && query['cond1'] != null) {
-                    this._clearError('condition');
+                    if (query['cond2'] != null && query['cond1'] != null && query['cond2'] == query['cond1']) {
+                        this._setError('condition', 'Condition 2 is the same as condition 1.');
+                    } else if (query['cond2'] != null && query['cond1'] != null) {
+                        this._clearError('condition');
+                    }
                 }
 
                 if (this.$.form.elements['go'].checked) {

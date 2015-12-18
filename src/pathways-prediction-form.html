@@ -194,10 +194,10 @@
                                 <input type="radio" name="design_type" value="continuous" on-click="handleDesignType">
                                 <span>Correlation with continous variable</span>
                             </label>
-                            <label class="jso-control" hidden$="{{checkNullFile(variantFile)}}">
+                            <!-- <label class="jso-control" hidden$="{{checkNullFile(variantFile)}}">
                                 <input type="radio" name="design_type" value="mutation" on-click="handleDesignType">
                                 <span>Mutation effect</span>
-                            </label>
+                            </label> -->
                         </div>
                         <br>
                         <div hidden$="{{!_checkValue('mutation', design_type)}}">Experimental design file: &nbsp;
@@ -249,47 +249,51 @@
                             <input type="radio" name="species" value="rno" disabled$="{{!checkNullFile(variantFile)}}">
                             <span>Rat (Rattus norvegicus)</span>
                         </label>
+                    </div>
+                </div>
 
 
-
-                        <div hidden$="{{checkNullFile(variantFile)}}">
-                            <label class="jso" style="margin-top:10px;">Reference genome:</label>
-                            <label class="jso-control">
-                                <input type="radio" name="ref_genome" value="hg19" checked="true">
-                                <span>GRCh37</span>
-                            </label>
-                            <label class="jso-control">
-                                <input type="radio" name="ref_genome" value="hg38">
-                                <span>GRCh38</span>
-                            </label>
-                            <label class="jso" style="margin-top:10px;">Inheritance pattern:</label>
-                            <label class="jso-control">
-                                <input type="radio" name="inheritance_pattern" value="recessive" checked="true">
-                                <span>Recessive</span>
-                            </label>
-                            <label class="jso-control">
-                                <input type="radio" name="inheritance_pattern" value="dominant">
-                                <span>Dominant</span>
-                            </label>
-                            <br>
-                            <label class="jso-control">
-                                <input type="checkbox" name="compound_hetero">
-                                <span>Compound hetero</span>
-                            </label>
-                            <br>
-                            <label class="jso-control">
-                                <input type="checkbox" name="sift" checked>
-                                <span>SIFT</span>
-                            </label>
-                            <label class="jso-control">
-                                <input type="checkbox" name="polyphen">
-                                <span>PolyPhen</span>
-                            </label>
-                            <label class="jso-control">
-                                <input type="checkbox" name="phastcons">
-                                <span>PhastCons</span>
-                            </label>
-                        </div>
+                <div hidden$="{{checkNullFile(variantFile)}}" class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Mutation impact
+                    </div>
+                    <div class="jso-formcontent ">
+                        <label class="jso" style="margin-top:10px;">Reference genome:</label>
+                        <label class="jso-control">
+                            <input type="radio" name="ref_genome" value="hg19" checked="true">
+                            <span>GRCh37</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="ref_genome" value="hg38">
+                            <span>GRCh38</span>
+                        </label>
+                        <label class="jso" style="margin-top:10px;">Inheritance pattern:</label>
+                        <label class="jso-control">
+                            <input type="radio" name="inheritance_pattern" value="recessive" checked="true">
+                            <span>Recessive</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="inheritance_pattern" value="dominant">
+                            <span>Dominant</span>
+                        </label>
+                        <br>
+                        <label class="jso-control">
+                            <input type="checkbox" name="compound_hetero">
+                            <span>Inclide compound heterozygotes</span>
+                        </label>
+                        <br>
+                        <label class="jso-control">
+                            <input type="checkbox" name="sift" checked>
+                            <span>SIFT</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="checkbox" name="polyphen">
+                            <span>PolyPhen</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="checkbox" name="phastcons">
+                            <span>PhastCons</span>
+                        </label>
                     </div>
                 </div>
 
@@ -378,10 +382,10 @@
                     type: Array
                 },
                 modelDesignFile: {
-                    type: String
+                    type: Object
                 },
                 modelFile: {
-                    type: String
+                    type: Object
                 }
             },
 
@@ -396,6 +400,7 @@
 
             handleType: function(e) {
                 this.set('type', e.currentTarget.value);
+                this._clean();
             },
             handleModelJobSelect: function(e) {
                 var me = this;
@@ -488,6 +493,53 @@
                 this.$.exp_file.reset();
                 this.$.design_file.reset();
                 this.$.output_folder.reset();
+                this.$.variant_file.reset();
+
+                this.set('designConditions', []);
+                this.$.condition1Select.value = '';
+                this.$.condition2Select.value = '';
+
+                this.$.form.elements['compound_hetero'].checked = false;
+                this.$.form.elements['sift'].checked = false;
+                this.$.form.elements['polyphen'].checked = false;
+                this.$.form.elements['phastcons'].checked = false;
+
+                this.expressionMode = 'matrix';
+                this.$.form.elements['expression'].value = 'matrix';
+                this.design_type = 'categorical';
+                this.$.form.elements['design_type'].value = 'categorical';
+
+                this.$.form.elements['species'].value = 'hsa';
+
+                this.$.form.elements['ref_genome'].value = 'hg19';
+                this.$.form.elements['inheritance_pattern'].value = 'recessive';
+
+                this.$.form.elements['decompose'].checked = false;
+                this.$.form.elements['filter_paths'].checked = false;
+
+                this.$.jobName.value = '';
+                this.$.jobDescription.value = '';
+
+                this._uncheckTissues();
+                this.set('selectedTissueSet', this.ea);
+                this.set('exp_db', 'ea');
+                this.$.form.elements['exp_db'].value = 'ea';
+
+                this.set('modelJob', null);
+                this.set('modelStats', []);
+                this.set('modelDesignFile', null);
+                this.set('modelFile', null);
+
+                this._clearError('output_folder');
+                this._clearError('exp_file');
+                this._clearError('variant_file');
+                this._clearError('tissue');
+                this._clearError('design_file');
+                this._clearError('condition1Select');
+                this._clearError('condition2Select');
+                this._clearError('condition');
+                this._clearError('pathways');
+                this._clearError('model');
             },
             launchJob: function(e) {
                 var me = this;
@@ -543,8 +595,6 @@
                     }
                 }
 
-
-
                 if (this.type === 'train') {
 
                     if (this.$.variant_file.selectedFile != null) {
@@ -564,7 +614,6 @@
                             query['phastcons'] = '';
                         }
                     }
-
 
                     query['species'] = this.$.form.elements['species'].value;
                     query['design_type'] = this.$.form.elements['design_type'].value;

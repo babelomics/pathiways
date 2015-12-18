@@ -194,7 +194,7 @@
             </div>
 
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <a href="http://pathact.babelomics.org/doc" target="_blank">
+                <a href="http://hipathia.babelomics.org/doc" target="_blank">
                     <i class="fa fa-book"></i> &nbsp; Documentation
                 </a>
             </jso-help-menu>
@@ -267,6 +267,7 @@
                 }
             },
             handleJobLaunched: function() {
+                this.setMenu('home');
                 this.$.jobsPanel.show();
             },
             handleCloseJobResult: function(e) {
@@ -283,7 +284,8 @@
                 this.$.browseMyJobsOption.removeAttribute('hidden');
             },
             handleLogout: function() {
-                this.$.browserPanel.hidden = true;
+                this.$.browserPanel.hide();
+                this.$.jobsPanel.hide();
                 this.$.browseMyDataOption.setAttribute('hidden', '');
                 this.$.browseMyJobsOption.setAttribute('hidden', '');
             },
