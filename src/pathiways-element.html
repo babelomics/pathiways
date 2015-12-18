@@ -14,8 +14,9 @@
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/results/jso-job-result.html">
 
+<link rel="import" href="pathways-signaling-form.html">
+<link rel="import" href="pathways-prediction-form.html">
 <link rel="import" href="jso-pathivar-form.html">
-<link rel="import" href="jso-pathways-form.html">
 <link rel="import" href="jso-pathipred-form.html">
 <link rel="import" href="jso-pathways-result.html">
 <!--<link rel="import" href="jso-pathivar-result.html"> -->
@@ -33,26 +34,6 @@
             background-color: var(--default-primary-color);
             height: 100%;
             width: 100%;
-        }
-
-        #menu div.option {
-            box-sizing: border-box;
-            margin-right: 1vw;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            text-align: center;
-            line-height: 30px;
-            padding: 0 5px;
-        }
-
-        #menu div.option:hover {
-            border-bottom: 1px solid var(--divider-color);
-        }
-
-        #menu div.option[active] {
-            font-weight: normal;
-            border-bottom: 2px solid var(--accent-color);
         }
 
         jso-opencga-header {
@@ -79,14 +60,14 @@
 
         #browserPanel {
             position: absolute;
-            top: 0px;
+            top: 0;
             left: 0;
             width: 600px;
         }
 
         #jobsPanel {
             position: absolute;
-            top: 0px;
+            top: 0;
             right: 0;
             width: 600px;
         }
@@ -96,7 +77,7 @@
             height: 400px;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 900px) {
             .option-text {
                 display: none;
             }
@@ -117,9 +98,8 @@
             overflow-y: auto;
         }
 
-        jso-pathways-form,
-        jso-pathipred-form,
-        jso-pathivar-form,
+        pathways-prediction-form,
+        pathways-signaling-form,
         jso-pathways-result {
             height: calc(100vh - 60px);
             overflow-y: auto;
@@ -127,7 +107,7 @@
     </style>
     <template>
         <div class="content" menu-option="home">
-            <pathiways-home id="pathiwaysHome" on-annonymous="annonymousLogin" isLogged="{{isLogged}}">
+            <pathiways-home id="pathiwaysHome" on-start="handleHomeStart" isLogged="{{isLogged}}">
             </pathiways-home>
         </div>
 
@@ -141,12 +121,9 @@
                     <i class="fa fa-rocket"></i>&nbsp; Browse jobs
                 </div>
                 <div class="container flex">
-                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-job-browser>
+                    <jso-opencga-job-browser id="jobrowser" on-jobselect="handleJobSelect" allowed-tools="{{allowedTools}}" projects="{{projects}}" on-need-refresh="handleUserNeedRefresh" disable-relaunch></jso-opencga-job-browser>
                 </div>
             </jso-panel>
-        </div>
-
-        <div class="content" menu-option="home,job,pathiways,pathipred,pathivar">
             <jso-panel id="browserPanel" hidden collapsible movable closable on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-cloud"></i>&nbsp; Browse my data
@@ -157,11 +134,11 @@
 
 
         <div class="content" menu-option="pathiways">
-            <jso-pathways-form id="pathiwaysForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}" on-job-launched="handleJobLaunched"></jso-pathways-form>
+            <pathways-signaling-form id="signalingForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}" on-job-launched="handleJobLaunched"></pathways-signaling-form>
         </div>
 
         <div class="content" menu-option="pathipred">
-            <jso-pathipred-form id="pathipredForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}"></jso-pathipred-form>
+            <pathways-prediction-form id="predictionForm" selectedOption="{{selectedOption}}" bioformats="{{bioformats}}" projects="{{projects}}" on-job-launched="handleJobLaunched"></pathways-prediction-form>
         </div>
 
         <div class="content" menu-option="pathivar">
@@ -170,24 +147,28 @@
 
         <jso-opencga-header id="jsoHeader" hide-jobs hide-browse selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout">
             <div class="icon">
-                <img src="./images/pathiways-logo.svg" style="height: 54px;margin: 3px 5px 0 0;">
+                <!-- <img src="./images/pathiways-logo.svg" style="height: 54px;margin: 3px 5px 0 0;"> -->
             </div>
-            <span class="title">hi
-                <span>P</span>athia</span>
             <!-- <span class="title">hiPathia</span> -->
+            <div class="title horizontal layout">
+                <div>hi</div>
+                <div style="font-weight:normal">P</div>
+                <div>athia</div>
+            </div>
             <span id="description" class="description">
-                <span style="color:rgb(152, 197, 205);padding-right:15px;">Beta</span> Pathways analysis suite
+                <!-- <span style="color:rgb(152, 197, 205);padding-right:15px;">Beta</span>  -->
+                Pathways analysis suite
             </span>
 
             <div id="menu" class="menu horizontal layout flex">
                 <div style="margin-left:4vw;"></div>
                 <div title="Open Pathiways form" class="option" on-click="handleLoggedOnlyMenuOption" data-option="pathiways">
                     <i class="fa fa-magic"></i>
-                    <span class="option-text">Pathways</span>
+                    <span class="option-text">Differential signaling</span>
                 </div>
-                <div hidden title="Open Pathipred form" class="option" on-click="handleLoggedOnlyMenuOption" data-option="pathipred">
+                <div title="Open Pathipred form" class="option" on-click="handleLoggedOnlyMenuOption" data-option="pathipred">
                     <i class="fa fa-magic"></i>
-                    <span class="option-text">Pathipred</span>
+                    <span class="option-text">Prediction</span>
                 </div>
                 <div hidden title="Open Pathivar form" class="option" on-click="handleLoggedOnlyMenuOption" data-option="pathivar">
                     <i class="fa fa-magic"></i>
@@ -196,40 +177,31 @@
 
                 <div class="flex" style="margin-left:2vw;"></div>
 
-                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
+                <div id="browseMyDataOption" title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="browserPanel">
                     <i class="fa fa-cloud"></i>
                     <span class="option-text">My data</span>
                 </div>
-                <div title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="jobsPanel">
+                <div id="browseMyJobsOption" title="Browse my jobs" class="option" on-click="handleLoggedOnlyMenuPanel" data-panel="jobsPanel">
                     <i class="fa fa-rocket"></i>
                     <span class="option-text">My jobs</span>
                 </div>
 
-                <!--<div class="flex" style="margin-left:2vw;"></div>-->
+                <div style="margin-left:2vw;"></div>
                 <!--<div title="Settings" class="option" on-click="handleMenuOption" data-panel="settingsPanel">-->
                 <!--<i class="fa fa-wrench"></i>-->
                 <!--<span class="option-text">Settings</span>-->
                 <!--</div>-->
             </div>
 
-            <!-- <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}"> -->
-            <!-- <a href="https://github.com/babelomics/pathiways" target="_blank">
-                    <i class="fa fa-list-alt"></i> &nbsp; About
-                </a> -->
-            <!-- <a href="https://github.com/babelomics/pathiways/wiki/Pathiways-documentation" target="_blank">
-                    <i class="fa fa-book"></i> &nbsp; Pathiways
-                </a> -->
-            <!-- <a href="https://github.com/babelomics/pathiways/wiki/Pathipred-documentation" target="_blank">
-                    <i class="fa fa-book"></i> &nbsp; Pathipred
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <a href="http://pathact.babelomics.org/doc" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Documentation
                 </a>
-                <a href="https://github.com/babelomics/pathiways/wiki/Pathivar-documentation" target="_blank">
-                    <i class="fa fa-book"></i> &nbsp; Pathivar
-                </a> -->
-            <!-- </jso-help-menu> -->
+            </jso-help-menu>
         </jso-opencga-header>
 
         <jso-opencga-footer menu-option="home,login,signup,profile,remember">
-            PATHiWAYS
+            hi<b>P</b>athia
             <br> Created by
             <span style="font-weight:bold;">Computational Genomics Department</span>
             <br> Principe Felipe Research Center, Valencia, Spain
@@ -242,24 +214,24 @@
             is: "pathiways-element",
             behaviors: [JsoApplicationBehavior, JsoOpencgaManagerBehavior],
             properties: {
-                // bioformats: {
-                //     type: Array,
-                //     notify: true,
-                //     value: [{
-                //         value: 'IDLIST',
-                //         text: 'ID list'
-                //     }, {
-                //         value: 'IDLIST_RANKED',
-                //         text: 'ID list ranked'
-                //     }, {
-                //         value: 'VARIANT',
-                //         text: 'VCF',
-                //         validator: VCFValidator
-                //     }]
-                // },
+                bioformats: {
+                    type: Array,
+                    notify: true,
+                    value: [{
+                        value: 'DATAMATRIX_EXPRESSION',
+                        text: 'Data matrix expression'
+                    }, {
+                        value: 'VARIANT',
+                        text: 'Variant (VCF)',
+                        // validator: VCFValidator
+                    }, {
+                        value: 'IDLIST',
+                        text: 'Experimental design'
+                    }, ]
+                },
                 allowedTools: {
                     type: Array,
-                    value: ['pathways']
+                    value: ['pathways.differential-signaling', 'pathways.prediction-train', 'pathways.prediction-test']
                 },
                 cellBaseHost: {
                     type: String,
@@ -287,8 +259,9 @@
                         this.$.jobContent.removeChild(this.$.jobContent.firstChild);
                     }
                     this.set('selectedOption', 'job');
-                    var execution = job.commandLine.substring(job.commandLine.indexOf("/pathways/") + "/pathways/".length, job.commandLine.indexOf(".sh"));
-                    var result = document.createElement('jso-' + execution + '-result');
+                    // var execution = job.commandLine.substring(job.commandLine.indexOf("/pathways/") + "/pathways/".length, job.commandLine.indexOf(".sh"));
+                    // var result = document.createElement('jso-' + execution + '-result');
+                    var result = document.createElement('jso-' + 'pathways' + '-result');
                     Polymer.dom(me.$.jobContent).appendChild(result);
                     result.set('job', job);
                 }
@@ -305,16 +278,24 @@
                     this._lastLogedRequest.hidden = false;
                     this._lastLogedRequest = null;
                 }
+
+                this.$.browseMyDataOption.removeAttribute('hidden');
+                this.$.browseMyJobsOption.removeAttribute('hidden');
             },
             handleLogout: function() {
                 this.$.browserPanel.hidden = true;
+                this.$.browseMyDataOption.setAttribute('hidden', '');
+                this.$.browseMyJobsOption.setAttribute('hidden', '');
             },
             handleUserNeedRefresh: function() {
                 this.$.jsoHeader.getUserInfo(true);
             },
-            annonymousLogin: function() {
-                this.$.jsoHeader.anonymousSign();
-            },
+            handleHomeStart: function() {
+                if (this.$.jsoHeader.isLogged != true) {
+                    this.$.jsoHeader.anonymousSign();
+                }
+                this.setMenu('pathiways');
+            }
 
         });
     </script>

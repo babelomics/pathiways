@@ -5,64 +5,76 @@
             position: relative;
             box-sizing: border-box;
             background-color: #FFFFFF;
-            padding: 20px;
-        }
-        /*:host > * {
-            padding: 10px 0;
+            padding: 20px 40px;
         }
 
-        jso-table {
+        .section:first-child {
+            margin: 0px 0 5px 0;
+        }
+
+        .section {
+            font-size: 30px;
+            font-weight: lighter;
+            margin: 30px 0 5px 0;
+            color: var(--secondary-text-color);
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        .download,
+        .param,
+        .image,
+        .table {
+            font-size: 18px;
+            display: block;
+        }
+
+        .download > a:hover,
+        .image > a:hover,
+        .table > a:hover {
+            text-decoration: underline;
+        }
+
+        .download > a,
+        .image > a,
+        .table > a {
+            color: var(--secondary-text-color);
+            text-decoration: none;
+        }
+
+        .download > i,
+        .image > i,
+        .table > i {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        .param > .key {
+            color: var(--secondary-text-color);
+            margin-right: 5px;
+        }
+
+        .param > .val {
+            color: var(--accent-color);
+        }
+
+        .image > img {
+            display: block;
+            margin-bottom: 30px;
+        }
+
+        .table > jso-table {
             width: 1000px;
+            margin-top: 10px;
+            margin-bottom: 20px;
             border: 1px solid var(--divider-color);
+            height: 380px;
         }
 
-        jso-network-viewer {
-            width: calc(100% - 300px);
-            border: 1px solid var(--divider-color);
+        .html {
+            color: var(--secondary-text-color);
         }
-
-        #right {
-            width: 300px;
-            heigth: 100%;
-        }
-
-        jso-select-box {
-            height: 200px;
-        }*/
     </style>
     <template>
-
-        <!-- <div class="pathway_selector_item bbb">
-            HOLAAAAAAAAAAAAAAAAAAAAAA
-        </div>
-
-        <div id="heatmap">
-        </div>
-        <div id="pca">
-        </div>
-        <div id="significance">
-        </div> -->
-
-        <!-- <div class="horizontal layout" style="height:700px; position:relative;"> -->
-        <!-- <jso-network-viewer id="nv"></jso-network-viewer> -->
-        <!-- <jso-network-viewer lite hide-node-render hide-edge-render></jso-network-viewer> -->
-        <!-- <jso-network-viewer id="nv" lite hide-bar hide-tool-bar hide-edition-bar hide-status-bar hide-node-render hide-edge-render></jso-network-viewer>
-            <div id="right">
-                <label class="jso">
-                    Pathways list:
-                </label>
-                <jso-select-box id="pathwaysSelectBox" name-attribute="name" title-attribute="name" on-select="handlePathwaySelect">
-                </jso-select-box>
-
-                <label class="jso">
-                    Available subpaths
-                </label>
-                <jso-select-box></jso-select-box>
-            </div>
-        </div> -->
-        <!-- <div></div> -->
-        <!-- <div></div> -->
-        <!-- <div></div> -->
     </template>
     <script>
         Polymer({
@@ -77,217 +89,252 @@
                     type: Object
                 }
             },
-            ready: function() {
-                // this.$.nv.backgroundColor = '#F1F5F5';
-            },
+            ready: function() {},
             jobChanged: function(neo, old) {
                 var me = this;
                 if (neo) {
-                    this._getFilesBeans(this.job.output, function(files) {
+                    var fileIds = this.job.input.concat(this.job.output);
+                    this._getFilesBeans(fileIds, function(files) {
                         me.processResultFiles(files);
                     });
                 }
             },
-            handlePathwaySelect: function(e) {
-                var me = this;
-                var file = e.detail;
-                var pwName = file.name.replace('.sif', '');
-                this._getFileContent(file.id, function(content) {
-                    me._getFileContent(me.fileNameMap[pwName + '.natt'].id, function(n_content) {
-                        me._getFileContent(me.fileNameMap[pwName + '.eatt'].id, function(e_content) {
-                            me.$.nv.loadSif(content);
-                            me.$.nv.loadNodeAttributes(n_content, true);
-                            me.$.nv.loadEdgeAttributes(e_content, true);
-                            me._applyPathwayVisualSettings();
-                        });
-                    });
-                });
-            },
-            _applyPathwayVisualSettings: function() {
-                // this.$.nv.$.nodeRender.applyDirect('color', 'color');
-                this.$.nv.$.nodeRender.applyDirect('color', 'strokeColor');
-                this.$.nv.$.nodeRender.applyDirect('diff.exp', 'color');
-                this.$.nv.$.nodeRender.applyDirect('shape', 'shape');
-                this.$.nv.$.nodeRender.applyDirect('width', 'size');
-                this.$.nv.$.nodeRender.applyDirect('labelSize', 'labelSize');
-                this.$.nv.$.edgeRender.applyDirect('color', 'color');
-                this.$.nv.$.edgeRender.applyDirect('head', 'shape');
-                this.$.nv.setVertexDefaultPositionX('X', true, false);
-                this.$.nv.setVertexDefaultPositionY('Y', true, true);
-                this.$.nv.setVertexDefaultLabelAttribute('label');
-            },
             processResultFiles: function(files) {
                 var me = this;
-                var sifFiles = [];
                 this.fileNameMap = {};
                 for (var i = 0; i < files.length; i++) {
                     var f = files[i];
                     this.fileNameMap[f.name] = f;
-                    // if (f.name == "paths_heatmap.png") {
-                    //     var img = document.createElement('img');
-                    //     img.src = this._getFileURL(f.id);
-                    //     Polymer.dom(this.$.heatmap).appendChild(img);
-                    // }
-                    // if (f.name == "paths_pca.png") {
-                    //     var img = document.createElement('img');
-                    //     img.src = this._getFileURL(f.id);
-                    //     Polymer.dom(this.$.pca).appendChild(img);
-                    // }
-                    // if (f.name == "paths_comparison.txt") {
-                    //     var table = document.createElement('jso-table');
-                    //     table.setAttribute('enable-paging', '');
-                    //     this._getFileContent(f.id, function(content) {
-                    //         var parsedContent = me._parseTabularFile(content);
-                    //         table.set('data', parsedContent.data);
-                    //         table.set('columns', parsedContent.columns);
-                    //         console.log(parsedContent)
-                    //         Polymer.dom(me.$.significance).appendChild(table);
-                    //     });
-                    // }
-                    // if (f.name.indexOf('.sif') != -1) {
-                    //     sifFiles.push(f);
-                    // }
+                }
+                this._getFileContent(this.fileNameMap['report.xml'].id, function(content) {
+                    me.processReportFile(content);
+                });
+            },
+            processReportFile: function(fileContent) {
+                var parser = new DOMParser();
+                var reportXML = parser.parseFromString(fileContent, "text/xml");
+                var inputParamsEl = reportXML.querySelector('input-params');
+                var outputParamsEl = reportXML.querySelector('output-params');
+                var outputParams = outputParamsEl.childNodes;
 
-                    if (f.name === 'index.html') {
-                        me._getFileContent(f.id, function(content) {
-                            var parser = new DOMParser();
-
-                            var doc = parser.parseFromString(content, "text/html");
-                            var indexStyle = doc.querySelector('style');
-                            var indexScript = doc.querySelector('script[data-var]');
-                            var contextVar = indexScript.dataset.var;
-                            var indexBody = doc.querySelector('body');
-
-                            /*fix index-body*/
-                            indexBody.removeChild(indexBody.querySelector('.supertitle'));
-                            var els = indexBody.querySelectorAll('.pathway_selector_item');
-                            for (var i = 0; i < els.length; i++) {
-                                var el = els[i];
-                                el.removeAttribute('onclick');
-                                el.setAttribute('on-click', 'handlePathwayClick');
+                for (var i = 0; i < outputParams.length; i++) {
+                    var outEl = outputParams[i];
+                    if (outEl.tagName != null) {
+                        var functionPath = '_' + outEl.tagName + 'Tag';
+                        if (this[functionPath] != null) {
+                            var name = outEl.getAttribute('file');
+                            if (name != null && this.fileNameMap[name] == null) {
+                                console.log('File :' + name + ' not found !');
                             }
-                            var els = indexBody.querySelectorAll('img');
-                            for (var i = 0; i < els.length; i++) {
-                                var el = els[i];
-                                el.setAttribute('src', me._getFileURL(me.fileNameMap[el.getAttribute('src')].id));
-                            }
-                            var els = indexBody.querySelectorAll('a');
-                            for (var i = 0; i < els.length; i++) {
-                                var el = els[i];
-                                var split = el.getAttribute('href').split('/');
-                                var name = split[split.length - 1];
-                                el.setAttribute('href', me._getFileURL(me.fileNameMap[name].id));
-                                el.setAttribute('data-filename', name);
-                                el.setAttribute('data-fileid', me.fileNameMap[name].id);
-                            }
-                            /**/
-
-                            var scriptTextContent = indexScript.textContent;
-                            scriptTextContent = scriptTextContent.replace('pathSelector.appendChild(div)', 'Polymer.dom(pathSelector).appendChild(div)');
-                            eval(scriptTextContent);
-                            var obj = eval(contextVar);
-
-                            /* Create custom element */
-                            var domModule = document.createElement('dom-module');
-                            var style = document.createElement('style');
-                            style.textContent = indexStyle.textContent;
-                            var template = document.createElement('template');
-                            template.innerHTML = indexBody.innerHTML;
-                            domModule.appendChild(style);
-                            domModule.appendChild(template);
-
-                            var rndstr = Utils.randomString(15);
-                            var elname = 'jso-pathways-result-' + rndstr;
-                            domModule.register(elname);
-
-                            var moduleConfig = {
-                                is: elname,
-                                behaviors: [JsoOpencgaManagerBehavior],
-                                ready: function() {
-                                    var me = this;
-                                    this.init(Polymer.dom(this.root));
-
-                                    this._createTable("paths_comparison.txt");
-                                    this._createTable("go_comparison.txt");
-                                    this._createTable("uniprot_comparison.txt");
-
-
-                                },
-                                handlePathwayClick: function(e) {
-                                    this.loadPathway(e.currentTarget.dataset.pathway, e.currentTarget.dataset.pathwayname, Polymer.dom(this.root));
-                                },
-                                _createTable:function(filename){
-                                    var me = this;
-                                    var el = Polymer.dom(this.root).querySelector('a[data-filename="'+filename+'"]');
-                                    if(el != null){
-                                        var table = document.createElement('jso-table');
-                                        table.setAttribute('enable-paging', '');
-                                        table.style.width = "1000px";
-                                        table.style.marginTop = "10px";
-                                        table.style.border = "1px solid lightgray";
-                                        this._getFileContent(el.dataset.fileid, function(content) {
-                                            var parsedContent = me._parseTabularFile(content);
-                                            table.set('data', parsedContent.data);
-                                            table.set('columns', parsedContent.columns);
-                                            // console.log(parsedContent)
-                                            Polymer.dom(el).parentNode.appendChild(table);
-                                        });
-                                    }
-                                },
-                                _parseTabularFile: function(textContent) {
-                                    var lines = textContent.split('\n');
-                                    if (lines.length > 0) {
-                                        var line, fields, field, data = [],
-                                            columns = [],
-                                            obj;
-                                        var firstLine = lines[0].replace('#', '');
-                                        fields = firstLine.split('\t');
-                                        for (var i = 0; i < fields.length; i++) {
-                                            field = fields[i];
-                                            field = field.trim();
-                                            var name = field.replace(/ /gi, '_');
-                                            columns.push({
-                                                name: name,
-                                                title: name,
-                                                width: 200
-                                            });
-                                        }
-
-                                        if (columns.length) {
-                                            for (var i = 1; i < lines.length; i++) {
-                                                line = lines[i];
-                                                if (line != '') {
-                                                    fields = line.split('\t');
-                                                    obj = {};
-                                                    for (var j = 0; j < fields.length; j++) {
-                                                        field = fields[j].trim();
-                                                        column = columns[j];
-                                                        obj[column.name] = field;
-                                                    }
-                                                    data.push(obj);
-                                                }
-                                            }
-                                        }
-                                        return {
-                                            columns: columns,
-                                            data: data
-                                        };
-                                    }
-                                }
-                            }
-                            for (var prop in obj) {
-                                if (hasOwnProperty.call(obj, prop)) {
-                                    moduleConfig[prop] = obj[prop];
-                                }
-                            }
-
-                            Polymer(moduleConfig);
-                            var res = document.createElement(elname);
-                            Polymer.dom(me.root).appendChild(res);
-                        });
+                            this[functionPath](outEl);
+                        } else {
+                            console.log('* ' + outEl.tagName + ' * tag function renderer is not defined');
+                        }
                     }
                 }
-                // this.$.pathwaysSelectBox.set('options', sifFiles);
+            },
+            _addTag: function(el, outEl) {
+                el.classList.add(outEl.tagName);
+                Polymer.dom(this.root).appendChild(el);
+            },
+            _sectionTag: function(outEl) {
+                var el = document.createElement('div');
+                el.innerHTML = outEl.getAttribute('title');
+                this._addTag(el, outEl);
+            },
+            _downloadTag: function(outEl) {
+                var name = outEl.getAttribute('file');
+                var el = document.createElement('div');
+
+                var i = document.createElement('i');
+                i.classList.add('fa', 'fa-download');
+
+                var a = document.createElement('a');
+                a.innerHTML = outEl.getAttribute('title');
+                a.setAttribute('href', this._getFileURL(this.fileNameMap[name].id));
+
+                el.appendChild(i);
+                el.appendChild(a);
+                this._addTag(el, outEl);
+            },
+            _paramTag: function(outEl) {
+                // <param key='Decomposed paths' value='FALSE'></param>
+                var el = document.createElement('div');
+
+                var keyEl = document.createElement('span');
+                keyEl.classList.add('key');
+                keyEl.innerHTML = outEl.getAttribute('key') + ':';
+
+                var valEl = document.createElement('span');
+                valEl.classList.add('val');
+                valEl.innerHTML = outEl.getAttribute('value');
+
+                el.appendChild(keyEl);
+                el.appendChild(valEl);
+                this._addTag(el, outEl);
+            },
+            _imageTag: function(outEl) {
+                // <image title='Heatmap' file='paths_heatmap.png'></image>
+                var name = outEl.getAttribute('file');
+                var el = document.createElement('div');
+
+                var i = document.createElement('i');
+                i.classList.add('fa', 'fa-image');
+
+                var a = document.createElement('a');
+                a.innerHTML = outEl.getAttribute('title');
+                a.setAttribute('href', this._getFileURL(this.fileNameMap[name].id));
+
+                var img = document.createElement('img');
+                img.setAttribute('src', this._getFileURL(this.fileNameMap[name].id));
+
+                el.appendChild(i);
+                el.appendChild(a);
+                el.appendChild(img);
+                this._addTag(el, outEl);
+            },
+            _tableTag: function(outEl) {
+                var me = this;
+                // <table title='Path significance' file='paths_comparison.txt'  page-size='10'></table>
+                var name = outEl.getAttribute('file');
+
+                var el = document.createElement('div');
+                var i = document.createElement('i');
+                i.classList.add('fa', 'fa-th');
+
+                var a = document.createElement('a');
+                a.innerHTML = outEl.getAttribute('title');
+                a.setAttribute('href', this._getFileURL(this.fileNameMap[name].id));
+
+                var table = document.createElement('jso-table');
+                table.setAttribute('enable-paging', '');
+                table.setAttribute('page-size', outEl.getAttribute('page-size'));
+
+                this._getFileContent(this.fileNameMap[name].id, function(content) {
+                    var parsedContent = me._parseTabularFile(content);
+                    table.set('data', parsedContent.data);
+                    table.set('columns', parsedContent.columns);
+                });
+
+                el.appendChild(i);
+                el.appendChild(a);
+                el.appendChild(table);
+                this._addTag(el, outEl);
+            },
+
+            _htmlTag: function(outEl) {
+                var me = this;
+                var name = outEl.getAttribute('file');
+                this._getFileContent(this.fileNameMap[name].id, function(content) {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(content, "text/html");
+                    me._processHTML(doc, outEl);
+                });
+            },
+
+            _processHTML: function(doc, outEl) {
+                var indexStyle = doc.querySelector('style');
+                var indexScript = doc.querySelector('script[data-var]');
+                var contextVar = indexScript.dataset.var;
+                var content = doc.querySelector('#content');
+
+                /*fix index-body*/
+                var els = content.querySelectorAll('.pathway_selector_item');
+                for (var i = 0; i < els.length; i++) {
+                    var el = els[i];
+                    el.removeAttribute('onclick');
+                    el.setAttribute('on-click', 'handlePathwayClick');
+                }
+                var els = content.querySelectorAll('img');
+                for (var i = 0; i < els.length; i++) {
+                    var el = els[i];
+                    var split = el.getAttribute('src').split('/');
+                    var name = split[split.length - 1];
+                    el.setAttribute('src', this._getFileURL(this.fileNameMap[name].id));
+                }
+
+                var scriptTextContent = indexScript.textContent;
+                scriptTextContent = scriptTextContent.replace('pathSelector.appendChild(div)', 'Polymer.dom(pathSelector).appendChild(div)');
+                eval(scriptTextContent);
+                var obj = eval(contextVar);
+
+                /* Create custom element */
+                var domModule = document.createElement('dom-module');
+                var style = document.createElement('style');
+                style.textContent = indexStyle.textContent;
+                var template = document.createElement('template');
+                template.innerHTML = content.innerHTML;
+                domModule.appendChild(style);
+                domModule.appendChild(template);
+
+                var rndstr = Utils.randomString(15);
+                var elname = 'jso-pathways-result-' + rndstr;
+                domModule.register(elname);
+
+                var moduleConfig = {
+                    is: elname,
+                    behaviors: [JsoOpencgaManagerBehavior],
+                    ready: function() {
+                        var me = this;
+                        this.init(Polymer.dom(this.root));
+                    },
+                    handlePathwayClick: function(e) {
+                        this.loadPathway(e.currentTarget.dataset.pathway, e.currentTarget.dataset.pathwayname, Polymer.dom(this.root));
+                    }
+                }
+                for (var prop in obj) {
+                    if (hasOwnProperty.call(obj, prop)) {
+                        moduleConfig[prop] = obj[prop];
+                    }
+                }
+
+                Polymer(moduleConfig);
+                var res = document.createElement(elname);
+                res.classList.add(outEl.tagName);
+                Polymer.dom(this.root).appendChild(res);
+            },
+            _createReportHTMLElement: function() {
+
+            },
+            _parseTabularFile: function(textContent) {
+                var lines = textContent.split('\n');
+                if (lines.length > 0) {
+                    var line, fields, field, data = [],
+                        columns = [],
+                        obj;
+                    var firstLine = lines[0].replace('#', '');
+                    fields = firstLine.split('\t');
+                    for (var i = 0; i < fields.length; i++) {
+                        field = fields[i];
+                        field = field.trim();
+                        var name = field.replace(/ /gi, '_');
+                        columns.push({
+                            name: name,
+                            title: name,
+                            width: 200
+                        });
+                    }
+
+                    if (columns.length) {
+                        for (var i = 1; i < lines.length; i++) {
+                            line = lines[i];
+                            if (line != '') {
+                                fields = line.split('\t');
+                                obj = {};
+                                for (var j = 0; j < fields.length; j++) {
+                                    field = fields[j].trim();
+                                    column = columns[j];
+                                    obj[column.name] = field;
+                                }
+                                data.push(obj);
+                            }
+                        }
+                    }
+                    return {
+                        columns: columns,
+                        data: data
+                    };
+                }
             }
         });
     </script>

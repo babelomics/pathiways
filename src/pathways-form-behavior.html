@@ -1,0 +1,769 @@
+<script>
+    PathwaysFormBehavior = {
+        properties: {
+            toolId: {
+                type: String,
+                value: 'pathways'
+            },
+            execution: {
+                type: String
+            },
+            errorMessage: {
+                type: String,
+            },
+            designConditions: {
+                type: Array
+            },
+            pathwaysList: {
+                type: Array
+            },
+            variantBioformat: {
+                type: Array,
+                value: [{
+                    value: 'VARIANT',
+                    text: 'Variant (VCF)',
+                    // validator: VCFValidator
+                }]
+            },
+            matrixBioformat: {
+                type: Array,
+                value: [{
+                    value: 'DATAMATRIX_EXPRESSION',
+                    text: 'Data matrix expression'
+                }]
+            },
+            designBioformat: {
+                type: Array,
+                value: [{
+                    value: 'IDLIST',
+                    text: 'Experimental design'
+                }]
+            },
+            expressionMode: {
+                type: String,
+                value: 'matrix'
+            },
+            design_type: {
+                type: String,
+                value: 'categorical'
+            },
+            selectedTissueSet: {
+                type: Array,
+            },
+            ea: {
+                type: Array,
+                value: function() {
+                    return this.getExpressionSet();
+                }
+            },
+            hpa: {
+                type: Array,
+                value: function() {
+                    return this.getHumanSet();
+                }
+            },
+            exp_db: {
+                type: String
+            },
+            variantFile: {
+                type: Object,
+                value: null
+            },
+            projects: {
+                type: Array
+            },
+
+            runTest: {
+                type: Boolean,
+                value: false
+            }
+        },
+        _loadPathwaysList: function() {
+            var me = this;
+            var request = new XMLHttpRequest();
+            request.onload = function() {
+                var pathwaysList = [];
+                var pwMap = JSON.parse(this.responseText);
+                for (key in pwMap) {
+                    pathwaysList.push({
+                        name: pwMap[key],
+                        value: key,
+                        selected: true
+                    });
+                }
+                me.set('pathwaysList', pathwaysList);
+            };
+            request.onerror = function() {
+                console.log('Error loading pathway_list.json');
+            };
+            request.open("GET", './pathway_list.json');
+            request.send();
+        },
+        checkNullFile: function(file) {
+            return file == null;
+        },
+        _checkValue: function(val, currentVal) {
+            return val !== currentVal;
+        },
+        handleExpressionMode: function(e) {
+            this.set('expressionMode', e.currentTarget.value);
+        },
+        handleDesignType: function(e) {
+            this.set('design_type', e.currentTarget.value);
+        },
+        handleExpressionDatabase: function(e) {
+            this._uncheckTissues();
+            this.set('selectedTissueSet', this[e.currentTarget.value]);
+            this.exp_db = e.currentTarget.value;
+        },
+
+        _uncheckTissues: function() {
+            var eaRadio = this.$.tissue.querySelectorAll('input[type=radio][name=ea]');
+            var hpaRadio = this.$.tissue.querySelectorAll('input[type=radio][name=hpa]');
+            if (eaRadio != null) {
+                for (var i = 0; i < eaRadio.length; i++) {
+                    eaRadio[i].checked = false;
+                }
+            }
+            if (hpaRadio != null) {
+                for (var i = 0; i < hpaRadio.length; i++) {
+                    hpaRadio[i].checked = false;
+                }
+            }
+        },
+
+        checkExpFile: function(e) {
+            var file = e.currentTarget.selectedFile;
+            var bool = (file != null && Utils.endsWith(file.name, ".txt") && file.bioformat == "DATAMATRIX_EXPRESSION");
+            if (bool) {
+                this.$.exp_fileError.innerHTML = '';
+            } else {
+                this.$.exp_fileError.innerHTML = 'This file is not a matrix expression file';
+            }
+            return bool;
+        },
+
+        checkDesignFile: function(e) {
+            var file = e.currentTarget.selectedFile;
+            this._getConditionsFromDesignFile(file);
+
+            var bool = (file != null && Utils.endsWith(file.name, ".txt") && file.bioformat == "IDLIST");
+            if (bool) {
+                this.$.design_fileError.innerHTML = '';
+            } else {
+                this.$.design_fileError.innerHTML = 'This file is not a idlist design file';
+            }
+            return bool;
+        },
+
+        checkVariantFile: function(e) {
+            var file = e.currentTarget.selectedFile;
+            var bool = (file != null && Utils.endsWith(file.name, ".vcf") && file.bioformat == "VARIANT");
+            if (bool) {
+                this.$.variant_fileError.innerHTML = '';
+                this.set('variantFile', file);
+                this.$.form.elements['species'].value = 'hsa';
+            } else {
+                this.$.variant_fileError.innerHTML = 'This file is not a variant file';
+            }
+            return bool;
+        },
+
+        _getConditionsFromDesignFile: function(file) {
+            var me = this;
+            this._getFileContent(file.id, function(content) {
+                var conditionMap = {};
+                var conditionArray = [];
+                var line, fields, field;
+                var lines = content.split('\n');
+                var isNumber;
+                if (lines.length > 0) {
+                    for (var i = 0; i < lines.length; i++) {
+                        line = lines[i];
+                        if (line != '') {
+                            fields = line.split('\t');
+                            if (conditionMap[fields[1]] !== true) {
+                                conditionMap[fields[1]] = true;
+                                conditionArray.push(fields[1]);
+                            }
+                        }
+                    }
+                }
+                conditionArray.reverse();
+                me.$.condition2Select.value = conditionArray[1];
+                me.set('designConditions', conditionArray);
+            });
+        },
+
+        _setError: function(id, msg) {
+            this.$[id + 'Error'].innerHTML = msg;
+            this.errorMessage = "There are errors in the form. Correct them before launching the job.";
+        },
+        _clearError: function(id) {
+            this.$[id + 'Error'].innerHTML = '';
+        },
+
+        handleSelectPW: function(e) {
+            console.log(e.currentTarget.checked)
+            if (e.currentTarget.checked === true) {
+                this.selectAllPw();
+            } else {
+                this.deselectAllPw();
+            }
+        },
+        selectAllPw: function(e) {
+            var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+            for (var i = 0; i < els.length; i++) {
+                els[i].checked = true;
+            }
+        },
+
+        deselectAllPw: function(e) {
+            var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+            for (var i = 0; i < els.length; i++) {
+                els[i].checked = false;
+            }
+        },
+        getExpressionSet: function() {
+            return [{
+                name: "adipose tissue normal",
+                selected: false
+            }, {
+                name: "adipose-derived adult stem cells",
+                selected: false
+            }, {
+                name: "amygdala",
+                selected: false
+            }, {
+                name: "B cell",
+                selected: false
+            }, {
+                name: "bladder",
+                selected: false
+            }, {
+                name: "bladder mucosa",
+                selected: false
+            }, {
+                name: "blood",
+                selected: false
+            }, {
+                name: "bone",
+                selected: false
+            }, {
+                name: "brain",
+                selected: false
+            }, {
+                name: "bronchial epithelia",
+                selected: false
+            }, {
+                name: "bronchoalveolar lavage cell",
+                selected: false
+            }, {
+                name: "caudate nucleus",
+                selected: false
+            }, {
+                name: "CD138+ plasma cell",
+                selected: false
+            }, {
+                name: "CD33+ cells",
+                selected: false
+            }, {
+                name: "CD34+ blood cell",
+                selected: false
+            }, {
+                name: "CD34+ blood cell thymus",
+                selected: false
+            }, {
+                name: "cerebellum",
+                selected: false
+            }, {
+                name: "conjunctiva",
+                selected: false
+            }, {
+                name: "connective tissue fibroblast",
+                selected: false
+            }, {
+                name: "dendritic cell",
+                selected: false
+            }, {
+                name: "embryonic lung fibroblast",
+                selected: false
+            }, {
+                name: "endothelial cell",
+                selected: false
+            }, {
+                name: "epidermis",
+                selected: false
+            }, {
+                name: "erythrocyte",
+                selected: false
+            }, {
+                name: "esophagus epithelium",
+                selected: false
+            }, {
+                name: "fetal lung",
+                selected: false
+            }, {
+                name: "frontal cortex",
+                selected: false
+            }, {
+                name: "granulocyte",
+                selected: false
+            }, {
+                name: "heart",
+                selected: false
+            }, {
+                name: "hematopoietic stem cell",
+                selected: false
+            }, {
+                name: "hippocampus CA1",
+                selected: false
+            }, {
+                name: "hypopharynx",
+                selected: false
+            }, {
+                name: "hypothalamus",
+                selected: false
+            }, {
+                name: "keratinocyte",
+                selected: false
+            }, {
+                name: "kidney",
+                selected: false
+            }, {
+                name: "kidney epithelium",
+                selected: false
+            }, {
+                name: "leukocyte",
+                selected: false
+            }, {
+                name: "liver",
+                selected: false
+            }, {
+                name: "lung",
+                selected: true
+            }, {
+                name: "lymph node",
+                selected: false
+            }, {
+                name: "lymphocyte",
+                selected: false
+            }, {
+                name: "macrophage",
+                selected: false
+            }, {
+                name: "mesangial cell",
+                selected: false
+            }, {
+                name: "mesenchymal stem cell",
+                selected: false
+            }, {
+                name: "monocyte",
+                selected: false
+            }, {
+                name: "mononuclear cell",
+                selected: false
+            }, {
+                name: "multipotent adult progenitor cell",
+                selected: false
+            }, {
+                name: "myometrium",
+                selected: false
+            }, {
+                name: "oropharynx",
+                selected: false
+            }, {
+                name: "ovary",
+                selected: false
+            }, {
+                name: "placenta basal plate",
+                selected: false
+            }, {
+                name: "prefrontal cortex",
+                selected: false
+            }, {
+                name: "prostate gland",
+                selected: false
+            }, {
+                name: "skeletal muscle",
+                selected: false
+            }, {
+                name: "skin",
+                selected: false
+            }, {
+                name: "small intestine",
+                selected: false
+            }, {
+                name: "smooth muscle",
+                selected: false
+            }, {
+                name: "T cell",
+                selected: false
+            }, {
+                name: "testis",
+                selected: false
+            }, {
+                name: "theca",
+                selected: false
+            }, {
+                name: "thymocyte",
+                selected: false
+            }, {
+                name: "thyrocyte",
+                selected: false
+            }, {
+                name: "thyroid gland",
+                selected: false
+            }, {
+                name: "tonsil",
+                selected: false
+            }, {
+                name: "trabecular meshwork cell",
+                selected: false
+            }, {
+                name: "umbilical vein endothelial cell",
+                selected: false
+            }];
+        },
+
+        getHumanSet: function() {
+            return [{
+                name: "adrenal gland",
+                selected: false
+            }, {
+                name: "appendix",
+                selected: false
+            }, {
+                name: "bone marrow",
+                selected: false
+            }, {
+                name: "breast",
+                selected: false
+            }, {
+                name: "bronchus",
+                selected: false
+            }, {
+                name: "cerebellum",
+                selected: false
+            }, {
+                name: "cerebral cortex",
+                selected: false
+            }, {
+                name: "cervix, uterine",
+                selected: false
+            }, {
+                name: "colon",
+                selected: false
+            }, {
+                name: "duodenum",
+                selected: false
+            }, {
+                name: "endometrium 1",
+                selected: false
+            }, {
+                name: "endometrium 2",
+                selected: false
+            }, {
+                name: "epididymis",
+                selected: false
+            }, {
+                name: "esophagus",
+                selected: false
+            }, {
+                name: "fallopian tube",
+                selected: false
+            }, {
+                name: "gallbladder",
+                selected: false
+            }, {
+                name: "heart muscle",
+                selected: false
+            }, {
+                name: "hippocampus",
+                selected: false
+            }, {
+                name: "kidney",
+                selected: false
+            }, {
+                name: "lateral ventricle",
+                selected: false
+            }, {
+                name: "liver",
+                selected: false
+            }, {
+                name: "lung",
+                selected: false
+            }, {
+                name: "lymph node",
+                selected: false
+            }, {
+                name: "nasopharynx",
+                selected: false
+            }, {
+                name: "oral mucosa",
+                selected: false
+            }, {
+                name: "ovary",
+                selected: false
+            }, {
+                name: "pancreas",
+                selected: false
+            }, {
+                name: "parathyroid gland",
+                selected: false
+            }, {
+                name: "placenta",
+                selected: false
+            }, {
+                name: "prostate",
+                selected: false
+            }, {
+                name: "rectum",
+                selected: false
+            }, {
+                name: "salivary gland",
+                selected: false
+            }, {
+                name: "seminal vesicle",
+                selected: false
+            }, {
+                name: "skeletal muscle",
+                selected: false
+            }, {
+                name: "skin 1",
+                selected: false
+            }, {
+                name: "skin 2",
+                selected: false
+            }, {
+                name: "small intestine",
+                selected: false
+            }, {
+                name: "smooth muscle",
+                selected: false
+            }, {
+                name: "soft tissue 1",
+                selected: false
+            }, {
+                name: "soft tissue 2",
+                selected: false
+            }, {
+                name: "spleen",
+                selected: false
+            }, {
+                name: "stomach 1",
+                selected: false
+            }, {
+                name: "stomach 2",
+                selected: false
+            }, {
+                name: "testis",
+                selected: false
+            }, {
+                name: "thyroid gland",
+                selected: false
+            }, {
+                name: "tonsil",
+                selected: false
+            }, {
+                name: "urinary bladder",
+                selected: false
+            }, {
+                name: "vagina",
+                selected: false
+            }];
+        },
+
+        getPathwaysHumanSet: function() {
+            return [{
+                name: 'PPAR SIGNALING PATHWAY',
+                selected: false,
+                value: '03320'
+            }, {
+                name: 'ERBB SIGNALING PATHWAY',
+                selected: false,
+                value: '04012'
+            }, {
+                name: 'CALCIUM SIGNALING PATHWAY',
+                selected: false,
+                value: '04020'
+            }, {
+                name: 'CYTOKINE-CYTOKINE RECEPTOR',
+                selected: false,
+                value: '04060',
+                id: 'pathways04060' + this.id
+            }, {
+                name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                selected: false,
+                value: '04080'
+            }, {
+                name: 'p53 SIGNALING PATHWAY',
+                selected: false,
+                value: '04115',
+                id: 'pathways04115' + this.id
+            }, {
+                name: 'mTOR SIGNALING PATHWAY',
+                selected: false,
+                value: '04150',
+                id: 'pathways04150' + this.id
+            }, {
+                name: 'APOPTOSIS',
+                selected: false,
+                value: '04210'
+            }, {
+                name: 'WNT SIGNALING PATHWAY',
+                selected: false,
+                value: '04310'
+            }, {
+                name: 'NOTCH SIGNALING PATHWAY',
+                selected: false,
+                value: '04330'
+            }, {
+                name: 'HEDGEHOG SIGNALING PATHWAY',
+                selected: false,
+                value: '04340',
+                id: 'pathways04340' + this.id
+            }, {
+                name: 'VEGF SIGNALING PATHWAY',
+                selected: false,
+                value: '04370'
+            }, {
+                name: 'ECM-RECEPTOR INTERACTION',
+                selected: false,
+                value: '04512',
+                id: 'pathways04512' + this.id
+            }, {
+                name: 'CELL ADHESION MOLECULES',
+                selected: false,
+                value: '04514'
+            }, {
+                name: 'TIGH JUNCTION',
+                selected: false,
+                value: '04530',
+                id: 'pathways04530' + this.id
+            }, {
+                name: 'GAP JUNCTION',
+                selected: false,
+                value: '04540'
+            }, {
+                name: 'ANTIGEN PROCESING AND PRESENTATION',
+                selected: false,
+                value: '04612'
+            }, {
+                name: 'TOLL-LIKE RECEPTOR SIGNALING PATHWAY',
+                selected: false,
+                value: '04620',
+                id: 'pathways04620' + this.id
+            }, {
+                name: 'JAK-STAT SIGNALING PATHWAY',
+                selected: false,
+                value: '04630'
+            }, {
+                name: 'T CELL RECPTOR SIGNALING PATHWAY',
+                selected: false,
+                value: '04660',
+                id: 'pathways04660' + this.id
+            }, {
+                name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                selected: false,
+                value: '04662'
+            }, {
+                name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                selected: false,
+                value: '04664'
+            }, {
+                name: 'INSULIN SIGNALING PATHWAY',
+                selected: false,
+                value: '04910'
+            }, {
+                name: 'GnRH SIGNALING PATHWAY',
+                selected: false,
+                value: '04912'
+            }, {
+                name: 'MELANOGENESIS',
+                selected: false,
+                value: '04916'
+            }, {
+                name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                selected: false,
+                value: '04920'
+            }];
+        },
+
+        getPathwaysMouseSet: function() {
+            return [{
+                name: 'PPAR SIGNALING PATHWAY',
+                selected: false,
+                value: '03320'
+            }, {
+                name: 'ERBB SIGNALING PATHWAY',
+                selected: false,
+                value: '04012'
+            }, {
+                name: 'CALCIUM SIGNALING PATHWAY',
+                selected: false,
+                value: '04020'
+            }, {
+                name: 'NEUROACTIVE LIGAND-RECEPTOR INTERACTION',
+                selected: false,
+                value: '04080'
+            }, {
+                name: 'APOPTOSIS',
+                selected: false,
+                value: '04210'
+            }, {
+                name: 'WNT SIGNALING PATHWAY',
+                selected: false,
+                value: '04310'
+            }, {
+                name: 'NOTCH SIGNALING PATHWAY',
+                selected: false,
+                value: '04330'
+            }, {
+                name: 'VEGF SIGNALING PATHWAY',
+                selected: false,
+                value: '04370'
+            }, {
+                name: 'CELL ADHESION MOLECULES',
+                selected: false,
+                value: '04514'
+            }, {
+                name: 'GAP JUNCTION',
+                selected: false,
+                value: '04540'
+            }, {
+                name: 'ANTIGEN PROCESING AND PRESENTATION',
+                selected: false,
+                value: '04612'
+            }, {
+                name: 'JAK-STAT SIGNALING PATHWAY',
+                selected: false,
+                value: '04630'
+            }, {
+                name: 'B CELL RECEPTOR SIGNALING PATHWAY',
+                selected: false,
+                value: '04662'
+            }, {
+                name: 'Fc EPSILON RI SIGNALING PATHWAY',
+                selected: false,
+                value: '04664'
+            }, {
+                name: 'INSULIN SIGNALING PATHWAY',
+                selected: false,
+                value: '04910'
+            }, {
+                name: 'GnRH SIGNALING PATHWAY',
+                selected: false,
+                value: '04912'
+            }, {
+                name: 'MELANOGENESIS',
+                selected: false,
+                value: '04916'
+            }, {
+                name: 'ADIPOCYTOKINE SIGNALING PATHWAY',
+                selected: false,
+                value: '04920'
+            }];
+        }
+    };
+</script>

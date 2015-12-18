@@ -1,0 +1,538 @@
+<link rel="import" href="pathways-form-behavior.html">
+<dom-module id="pathways-signaling-form">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        #form {
+            margin: 0px auto 0px auto;
+            max-width: 1000px;
+            padding: 15px 40px;
+            border: 1px solid #c6d0da;
+            background-color: #FFFFFF;
+            box-shadow: 2px 6px 15px 8px rgba(0, 0, 0, 0.30);
+        }
+
+        #title {
+            text-align: center;
+            font-size: 20px;
+            color: #666;
+        }
+
+        #tissue {
+            overflow-y: scroll;
+            height: 200px;
+            border: 1px solid var(--divider-color);
+            background-color: var(--light-primary-color);
+            padding: 5px;
+        }
+
+        .errmsg {
+            color: #8b0000;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        #pathwaysContent {
+            height: 300px;
+        }
+
+        jso-select {
+            width: 200px;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .key {
+            color: var(--secondary-text-color);
+        }
+    </style>
+    <template>
+        <form id="form">
+            <p id="title">
+                <strong>Differential signaling form</strong>
+            </p>
+            <!-- <div class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
+            </div>
+            <br> -->
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Input data
+                </div>
+                <div class="jso-formcontent">
+                    <div class="horizontal layout">
+                        <label class="jso-control">
+                            <input type="radio" name="expression" checked="true" value="matrix" on-click="handleExpressionMode">
+                            <span>Expression matrix</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="expression" value="database" on-click="handleExpressionMode">
+                            <span>Expression database</span>
+                        </label>
+                    </div>
+                    <br>
+                    <div hidden$="{{_checkValue('matrix', expressionMode)}}">Expression matrix file: &nbsp;
+                        <jso-opencga-file-origin id="exp_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{matrixBioformat}}" projects="{{projects}}" on-ok-click="checkExpFile">
+                        </jso-opencga-file-origin>
+                        <span id="exp_fileError" class="errmsg"></span>
+                    </div>
+                    <div hidden$="{{_checkValue('database', expressionMode)}}">
+                        <label class="jso">Tissues databases:</label>
+                        <br>
+                        <div class="horizontal layout">
+                            <label class="jso-control">
+                                <input type="radio" name="exp_db" checked="true" value="ea" on-click="handleExpressionDatabase">
+                                <span>Expression atlas</span>
+                            </label>
+                            <label class="jso-control">
+                                <input type="radio" name="exp_db" value="hpa" on-click="handleExpressionDatabase">
+                                <span>Human protein atlas</span>
+                            </label>
+                        </div>
+                        <br>
+                        <label class="jso">Tissue names:</label>
+                        <br>
+                        <div id="tissue">
+                            <template is="dom-repeat" items="{{selectedTissueSet}}">
+                                <label class="jso-control">
+                                    <input type="radio" name$="{{exp_db}}" checked$="{{item.selected}}" value="{{item.name}}">
+                                    <span>{{item.name}}</span>
+                                </label>
+                            </template>
+                        </div>
+                        <span id="tissueError" class="errmsg"></span>
+                    </div>
+
+                    <br>
+                    <div>Variant file:
+                        <span class="key">(Required when using expression database)</span> &nbsp;
+                        <jso-opencga-file-origin id="variant_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{variantBioformat}}" projects="{{projects}}" on-ok-click="checkVariantFile">
+                        </jso-opencga-file-origin>
+                        <span id="variant_fileError" class="errmsg"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Design data
+                </div>
+                <div class="jso-formcontent">
+                    <div class="horizontal layout">
+                        <label class="jso-control">
+                            <input type="radio" name="design_type" checked="true" value="categorical" on-click="handleDesignType">
+                            <span>Two group comparison</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="design_type" value="continuous" on-click="handleDesignType">
+                            <span>Correlation with continous variable</span>
+                        </label>
+                        <label class="jso-control" hidden$="{{checkNullFile(variantFile)}}">
+                            <input type="radio" name="design_type" value="mutation" on-click="handleDesignType">
+                            <span>Mutation effect</span>
+                        </label>
+                    </div>
+                    <br>
+                    <div hidden$="{{!_checkValue('mutation', design_type)}}">Experimental design file: &nbsp;
+                        <jso-opencga-file-origin id="design_file" selectedStudy="{{selectedStudy}}" selection-mode="file" bioformats="{{designBioformat}}" projects="{{projects}}" on-ok-click="checkDesignFile">
+                        </jso-opencga-file-origin>
+                        <span id="design_fileError" class="errmsg"></span>
+                    </div>
+
+                    <div hidden="{{_checkValue('categorical', design_type)}}" style="padding:5px 0 0 5px;">
+                        <label class="jso">Condition 1:</label>
+                        <jso-select id="condition1Select">
+                            <template is="dom-repeat" items={{designConditions}}>
+                                <jso-option value={{item}}>{{item}}</jso-option>
+                            </template>
+                        </jso-select>
+                        <div id="condition1SelectError" class="errmsg"></div>
+
+                        <label class="jso">Condition 2:</label>
+                        <jso-select id="condition2Select">
+                            <template is="dom-repeat" items={{designConditions}}>
+                                <jso-option value={{item}}>{{item}}</jso-option>
+                            </template>
+                        </jso-select>
+                        <span id="condition2SelectError" class="errmsg"></span>
+                        <span id="conditionError" class="errmsg"></span>
+                    </div>
+
+                    <div hidden$="{{_checkValue('mutation', design_type)}}">
+                        <label class="jso">Expression vs (Expression + Variant file)</label>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Species
+                </div>
+                <div class="jso-formcontent ">
+                    <label class="jso-control">
+                        <input type="radio" name="species" value="hsa" checked="true">
+                        <span>Human (Homo sapiens)</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="radio" name="species" value="mmu" disabled$="{{!checkNullFile(variantFile)}}">
+                        <span>Mouse (Mus musculus)</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="radio" name="species" value="rno" disabled$="{{!checkNullFile(variantFile)}}">
+                        <span>Rat (Rattus norvegicus)</span>
+                    </label>
+
+
+                    <div hidden$="{{checkNullFile(variantFile)}}">
+                        <label class="jso" style="margin-top:10px;">Reference genome:</label>
+                        <label class="jso-control">
+                            <input type="radio" name="ref_genome" value="hg19" checked="true">
+                            <span>GRCh37</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="ref_genome" value="hg38">
+                            <span>GRCh38</span>
+                        </label>
+                        <label class="jso" style="margin-top:10px;">Inheritance pattern:</label>
+                        <label class="jso-control">
+                            <input type="radio" name="inheritance_pattern" value="recessive" checked="true">
+                            <span>Recessive</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="radio" name="inheritance_pattern" value="dominant">
+                            <span>Dominant</span>
+                        </label>
+                        <br>
+                        <label class="jso-control">
+                            <input type="checkbox" name="compound_hetero">
+                            <span>Compound hetero</span>
+                        </label>
+                        <br>
+                        <label class="jso-control">
+                            <input type="checkbox" name="sift" checked>
+                            <span>SIFT</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="checkbox" name="polyphen">
+                            <span>PolyPhen</span>
+                        </label>
+                        <label class="jso-control">
+                            <input type="checkbox" name="phastcons">
+                            <span>PhastCons</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Parameters
+                </div>
+                <div class="jso-formcontent">
+                    <label class="jso-control">
+                        <input type="checkbox" name="decompose">
+                        <span>Decompose paths</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="difexp">
+                        <span>Color nodes by differential expression</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Function level analysis
+                </div>
+                <div class="jso-formcontent">
+                    <label class="jso-control">
+                        <input type="checkbox" name="go">
+                        <span>Gene ontology</span>
+                    </label>
+                    <label class="jso-control">
+                        <input type="checkbox" name="uniprot">
+                        <span>Uniprot keywords</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle horizontal layout center">
+                    <div class="flex">Pathways</div>
+                    <label class="jso-control">
+                        <input type="checkbox" checked on-change="handleSelectPW">
+                        <span style="font-size:13px;">All</span>
+                    </label>
+                </div>
+                <span id="pathwaysError" class="errmsg"></span>
+                <div id="pathwaysContent" class="jso-formcontent" style="overflow-y:scroll;">
+                    <template is="dom-repeat" items="{{pathwaysList}}">
+                        <label class="jso-control">
+                            <input type="checkbox" value="{{item.value}}" checked$="{{item.selected}}">
+                            <span>{{item.name}}</span>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Job information
+                </div>
+                <div class="jso-formcontent">
+                    <div>Output folder: &nbsp;
+                        <jso-opencga-file-origin id="output_folder" selection-mode="folder" bioformats="{{bioformats}}" projects="{{projects}}">
+                        </jso-opencga-file-origin>
+                        <span id="output_folderError" class="errmsg"></span>
+                    </div>
+                    <br>
+                    <label class="jso">Job name:</label>
+                    <input type="text" id="jobName" class="jso" style="width:200px;" value="Differential signaling job" />
+                    <label class="jso">Description:</label>
+                    <textarea id="jobDescription" class="jso" style="width:200px;"></textarea>
+                </div>
+            </div>
+
+            <span class="errmsg">{{errorMessage}}</span>
+            <div class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw jso-btn-big" on-click="launchJob"><i class="fa fa-rocket"></i> &nbsp; Launch Job</div>
+            </div>
+            <br>
+        </form>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'pathways-signaling-form',
+            behaviors: [JsoOpencgaManagerBehavior, PathwaysFormBehavior],
+            properties: {
+                execution: {
+                    type: String,
+                    value: 'differential-signaling'
+                }
+            },
+            created: function() {
+                this._loadPathwaysList();
+            },
+            ready: function() {
+                this.set('selectedTissueSet', this.ea);
+                this.set('exp_db', 'ea');
+                // this.set('selectPathwaysSet', this.pathwaysHumanSet);
+            },
+            runExample: function() {
+
+                OpencgaManager.jobs.create({
+                    query: {
+
+                        execution: this.execution,
+                        toolId: this.toolName,
+                        name: "Pathiways example",
+                        description: this.descrip,
+
+                        species: 'hsapiens',
+                        platform: 'HGU133Plus2',
+                        expdesigntype: 'categorical',
+                        control: 'CONTROL',
+                        disease: 'CRC',
+                        summ: 'per90',
+                        test: 'multilevel',
+                        pathways: "hsa03320,hsa04012,hsa04020,hsa04060,hsa04080,hsa04115,hsa04150,hsa04210,hsa04310,hsa04330,hsa04340,hsa04370,hsa04512,hsa04514,hsa04530,hsa04540,hsa04612,hsa04620,hsa04630,hsa04660,hsa04662,hsa04664,hsa04910,hsa04912,hsa04916,hsa04920",
+
+                        normmatrix: 'example_GSE4107.txt',
+                        expdesign: 'example_ED_GSE4107.txt',
+
+                    },
+
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var jobId = response.response[0].result[0].id;
+                                me.selectedOption = "jobLaunched"
+                            } else {
+                                me.message = response.response[0].errorMsg;
+                            }
+                            me.selectedStudy = null;
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
+
+            },
+            _clean: function() {
+                this.errorMessage = '';
+                this.$.exp_file.reset();
+                this.$.design_file.reset();
+                this.$.output_folder.reset();
+            },
+            launchJob: function(e) {
+                var me = this;
+
+                this.errorMessage = '';
+
+                var query = {
+                    sid: Cookies("bioinfo_sid"),
+                    toolId: this.toolId,
+                    execution: this.execution,
+                    name: this.$.jobName.value,
+                    description: this.$.jobDescription.value
+                };
+
+                query['species'] = this.$.form.elements['species'].value;
+                query['design_type'] = this.$.form.elements['design_type'].value;
+
+                if (this.$.output_folder.selectedFile == null) {
+                    this._setError('output_folder', "No folder selected");
+                } else {
+                    this._clearError('output_folder');
+                    query['output_folder'] = this.$.output_folder.selectedFile.id;
+                    query['studyId'] = this.$.output_folder.selectedStudy.id;
+                }
+
+                if (this.expressionMode === 'matrix') {
+                    if (this.$.exp_file.selectedFile == null) {
+                        this._setError('exp_file', 'No expression matrix file selected');
+                    } else {
+                        this._clearError('exp_file');
+                        query['exp_file'] = this.$.exp_file.selectedFile.id;
+                    }
+
+                    if (this.$.variant_file.selectedFile != null) {
+                        query['variant_file'] = this.$.variant_file.selectedFile.id;
+                    }
+
+                } else if (this.expressionMode === 'database') {
+                    if (this.$.variant_file.selectedFile == null) {
+                        this._setError('variant_file', 'Variant file must be selected when using an expression database');
+                    } else {
+                        this._clearError('variant_file');
+                        query['variant_file'] = this.$.variant_file.selectedFile.id;
+                    }
+
+                    query['exp_db'] = this.$.form.elements['exp_db'].value;
+                    if (this.$.form.elements[query['exp_db']].value == '') {
+                        this._setError('tissue', 'A tissue must be selected');
+                    } else {
+                        this._clearError('tissue');
+                        query['tissue'] = this.$.form.elements[query['exp_db']].value
+                    }
+                }
+
+                if (this.$.variant_file.selectedFile != null) {
+                    query['ref_genome'] = this.$.form.elements['ref_genome'].value
+                    query['inheritance_pattern'] = this.$.form.elements['inheritance_pattern'].value
+
+                    if (this.$.form.elements['compound_hetero'].checked) {
+                        query['compound_hetero'] = '';
+                    }
+                    if (this.$.form.elements['sift'].checked) {
+                        query['sift'] = '';
+                    }
+                    if (this.$.form.elements['polyphen'].checked) {
+                        query['polyphen'] = '';
+                    }
+                    if (this.$.form.elements['phastcons'].checked) {
+                        query['phastcons'] = '';
+                    }
+                }
+
+                if (this.$.design_file.selectedFile == null) {
+                    this._setError('design_file', 'No experimental design file selected');
+                } else {
+                    this._clearError('design_file');
+                    query['design_file'] = this.$.design_file.selectedFile.id;
+                }
+
+                if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
+                    this._setError('condition1Select', 'Condition 1 not selected.');
+                } else {
+                    this._clearError('condition1Select');
+                    query['cond1'] = this.$.condition1Select.value;
+                }
+
+                if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
+                    this._setError('condition2Select', 'Condition 2 not selected.');
+                } else {
+                    this._clearError('condition2Select');
+                    query['cond2'] = this.$.condition2Select.value;
+                }
+
+                if (query['cond2'] != null && query['cond1'] != null && query['cond2'] == query['cond1']) {
+                    this._setError('condition', 'Condition 2 is the same as condition 1.');
+                } else if (query['cond2'] != null && query['cond1'] != null) {
+                    this._clearError('condition');
+                }
+
+                if (this.$.form.elements['go'].checked) {
+                    query['go'] = '';
+                }
+                if (this.$.form.elements['uniprot'].checked) {
+                    query['uniprot'] = '';
+                }
+                if (this.$.form.elements['decompose'].checked) {
+                    query['decompose'] = '';
+                }
+                if (this.$.form.elements['difexp'].checked) {
+                    query['difexp'] = '';
+                }
+
+                var pathways = [];
+                var els = this.$.pathwaysContent.querySelectorAll('input[type=checkbox]');
+                for (var i = 0; i < els.length; i++) {
+                    var pathway = els[i];
+                    if (pathway.checked) {
+                        // pathways.push('hsa' + pathway.value);
+                        pathways.push(pathway.value);
+                    }
+                }
+                if (pathways.length < 1) {
+                    this._setError('pathways', 'Please select at least one Pathway');
+                } else {
+                    this._clearError('pathways');
+                    query['pathways_list'] = pathways;
+                }
+
+                console.log(query);
+                if (this.errorMessage === '' && this.$.form.checkValidity() && this.runTest === false) {
+                    OpencgaManager.jobs.create({
+                        query: query,
+                        request: {
+                            //method: 'POST',
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    var job = response.response[0].result[0];
+                                    me.selectedOption = "jobLaunched"
+                                    console.log(job);
+                                    me._clean();
+                                    me.fire('job-launched');
+                                    //                                    me.message = job.commandLine;
+                                } else {
+                                    me.message = response.response[0].errorMsg;
+                                }
+                            },
+                            error: function() {
+                                me.message = 'Server error, try again later.';
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+    </script>
+</dom-module>
