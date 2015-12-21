@@ -193,10 +193,19 @@
                 <!--</div>-->
             </div>
 
-            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+            <jso-help-menu class="helpmenu" menu-width="270" selectedOption="{{selectedOption}}">
                 <a href="http://hipathia.babelomics.org/doc" target="_blank">
                     <i class="fa fa-book"></i> &nbsp; Documentation
                 </a>
+                <div style="margin-top:15px;" on-mousedown="handleExample" data-example-name="differential-signaling">
+                    <i class="fa fa-lightbulb-o"></i> &nbsp; Differential signaling example
+                </div>
+                <div on-mousedown="handleExample" data-example-name="prediction-train">
+                    <i class="fa fa-lightbulb-o"></i> &nbsp; Prediction train example
+                </div>
+                <div on-mousedown="handleExample" data-example-name="prediction-test">
+                    <i class="fa fa-lightbulb-o"></i> &nbsp; Prediction test example
+                </div>
             </jso-help-menu>
         </jso-opencga-header>
 
@@ -243,7 +252,12 @@
                 },
                 networkViewer: {
                     type: Object
-                }
+                },
+                projects: {
+                    type: Array,
+                    notify: true,
+                    observer: 'projectsChanged'
+                },
             },
             handleFileSelect: function(e) {
                 console.log("file");
@@ -297,6 +311,37 @@
                     this.$.jsoHeader.anonymousSign();
                 }
                 this.setMenu('pathiways');
+            },
+            handleExample: function(e) {
+                if (this.$.jsoHeader.isLogged != true) {
+                    this._lastExampleRequest = e.currentTarget.dataset['exampleName'];
+                    this.$.jsoHeader.anonymousSign();
+                } else {
+                    this.runExample(e.currentTarget.dataset['exampleName']);
+                    this.$.jobsPanel.show();
+                }
+            },
+            runExample: function(exname) {
+                if (exname === 'differential-signaling') {
+                    this.$.signalingForm.runExample();
+                }
+                if (exname === 'prediction-train') {
+                    this.$.predictionForm.runTrainExample();
+                }
+                if (exname === 'prediction-test') {
+                    this.$.predictionForm.runTestExample();
+                }
+            },
+            projectsChanged: function(neo, old) {
+                if (this.$.jsoHeader.isLogged == true) {
+                    if (neo.length > 0) {
+                        if (this._lastExampleRequest != null) {
+                            this.runExample(this._lastExampleRequest);
+                            this.$.jobsPanel.show();
+                            this._lastExampleRequest = null;
+                        }
+                    }
+                }
             }
 
         });

@@ -124,7 +124,13 @@
                         if (this[functionPath] != null) {
                             var name = outEl.getAttribute('file');
                             if (name != null && this.fileNameMap[name] == null) {
-                                console.log('File :' + name + ' not found !');
+                                console.log('####### File : ' + name + ' not found !');
+                                //transform to param;
+                                var newOutEl = reportXML.createElement('param');
+                                newOutEl.setAttribute('key',outEl.getAttribute('title'));
+                                newOutEl.setAttribute('value',outEl.getAttribute('file'));
+                                functionPath = '_' + newOutEl.tagName + 'Tag';
+                                outEl = newOutEl;
                             }
                             this[functionPath](outEl);
                         } else {

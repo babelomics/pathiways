@@ -57,10 +57,10 @@
             <p id="title">
                 <strong>Differential signaling form</strong>
             </p>
-            <div class="horizontal layout center-justified">
+            <!-- <div class="horizontal layout center-justified">
                 <div class="jso-btn jso-btn-shdw" on-click="_runExample"><i class="fa fa-rocket"></i> &nbsp; Run example</div>
             </div>
-            <br>
+            <br> -->
 
             <div class="jso-formbox">
                 <div class="jso-formtitle">
@@ -339,46 +339,60 @@
                 // this.set('selectPathwaysSet', this.pathwaysHumanSet);
             },
             runExample: function() {
+                var me = this;
+                var studyId = this.projects[0].studies[0].id;
+                console.log(studyId);
 
-                OpencgaManager.jobs.create({
-                    query: {
+                this._createFolder(studyId, '', 'example', function(folder) {
 
-                        execution: this.execution,
-                        toolId: this.toolName,
-                        name: "Pathiways example",
-                        description: this.descrip,
-
-                        species: 'hsapiens',
-                        platform: 'HGU133Plus2',
-                        expdesigntype: 'categorical',
-                        control: 'CONTROL',
-                        disease: 'CRC',
-                        summ: 'per90',
-                        test: 'multilevel',
-                        pathways: "hsa03320,hsa04012,hsa04020,hsa04060,hsa04080,hsa04115,hsa04150,hsa04210,hsa04310,hsa04330,hsa04340,hsa04370,hsa04512,hsa04514,hsa04530,hsa04540,hsa04612,hsa04620,hsa04630,hsa04660,hsa04662,hsa04664,hsa04910,hsa04912,hsa04916,hsa04920",
-
-                        normmatrix: 'example_GSE4107.txt',
-                        expdesign: 'example_ED_GSE4107.txt',
-
-                    },
-
-                    request: {
-                        //method: 'POST',
-                        success: function(response) {
-                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                var jobId = response.response[0].result[0].id;
-                                me.selectedOption = "jobLaunched"
-                            } else {
-                                me.message = response.response[0].errorMsg;
-                            }
-                            me.selectedStudy = null;
+                    OpencgaManager.jobs.create({
+                        query: {
+                            sid: Cookies("bioinfo_sid"),
+                            studyId: studyId,
+                            output_folder: folder.id,
+                            toolId: "pathways",
+                            execution: "differential-signaling",
+                            name: "Example BRCA differential signaling",
+                            description: "",
+                            exp_file: 'example_brca_example1_40__exp.txt',
+                            design_file: 'example_brca_example1_40__design.txt',
+                            species: "hsa",
+                            cond1: "Tumor",
+                            cond2: "Normal",
+                            design_type: "categorical",
+                            difexp: "",
+                            go: "",
+                            uniprot: "",
+                            pathways_list: [
+                                "04014", "04015", "04010", "04012", "04310", "04330", "04340", "04350",
+                                "04390", "04370", "04630", "04064", "04668", "04066", "04068", "04020",
+                                "04071", "04024", "04022", "04151", "04152", "04150", "04110", "04114",
+                                "04210", "04115", "04510", "04520", "04530", "04540", "04611", "04620",
+                                "04621", "04622", "04650", "04660", "04662", "04664", "04666", "04670",
+                                "04062", "04910", "04922", "04920", "03320", "04912", "04915", "04914",
+                                "04921", "04919", "04916", "04261", "04270", "04722", "05200", "05231",
+                                "05202", "05205"
+                            ]
                         },
-                        error: function() {
-                            me.message = 'Server error, try again later.';
+                        request: {
+                            //method: 'POST',
+                            success: function(response) {
+                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                    var job = response.response[0].result[0];
+                                    console.log(job);
+                                    // me._clean();
+                                    // me.fire('job-launched');
+                                    //                                    me.message = job.commandLine;
+                                } else {
+                                    me.message = response.response[0].errorMsg;
+                                }
+                            },
+                            error: function() {
+                                me.message = 'Server error, try again later.';
+                            }
                         }
-                    }
+                    });
                 });
-
             },
             _clean: function() {
                 this.errorMessage = '';
@@ -428,9 +442,6 @@
                 this._clearError('condition2Select');
                 this._clearError('condition');
                 this._clearError('pathways');
-            },
-            _runExample: function() {
-
             },
             launchJob: function(e) {
                 var me = this;
@@ -570,7 +581,6 @@
                             success: function(response) {
                                 if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                     var job = response.response[0].result[0];
-                                    me.selectedOption = "jobLaunched"
                                     console.log(job);
                                     me._clean();
                                     me.fire('job-launched');
