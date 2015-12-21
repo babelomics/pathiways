@@ -23,7 +23,8 @@
         .download,
         .param,
         .image,
-        .table {
+        .table,
+        .message {
             font-size: 18px;
             display: block;
         }
@@ -43,7 +44,8 @@
 
         .download > i,
         .image > i,
-        .table > i {
+        .table > i,
+        .message > i {
             color: var(--accent-color);
             margin-right: 10px;
         }
@@ -127,8 +129,8 @@
                                 console.log('####### File : ' + name + ' not found !');
                                 //transform to param;
                                 var newOutEl = reportXML.createElement('param');
-                                newOutEl.setAttribute('key',outEl.getAttribute('title'));
-                                newOutEl.setAttribute('value',outEl.getAttribute('file'));
+                                newOutEl.setAttribute('key', outEl.getAttribute('title'));
+                                newOutEl.setAttribute('value', outEl.getAttribute('file'));
                                 functionPath = '_' + newOutEl.tagName + 'Tag';
                                 outEl = newOutEl;
                             }
@@ -177,6 +179,21 @@
 
                 el.appendChild(keyEl);
                 el.appendChild(valEl);
+                this._addTag(el, outEl);
+            },
+            _messageTag: function(outEl) {
+                // <message text='...'></message>
+                var el = document.createElement('div');
+
+                var i = document.createElement('i');
+                i.classList.add('fa', 'fa-comment-o');
+
+                var span = document.createElement('span');
+                span.innerHTML = outEl.getAttribute('text');
+
+                el.appendChild(i);
+                el.appendChild(span);
+
                 this._addTag(el, outEl);
             },
             _imageTag: function(outEl) {
@@ -314,10 +331,14 @@
                         field = fields[i];
                         field = field.trim();
                         var name = field.replace(/ /gi, '_');
+                        var width = 150;
+                        if (i === 0) {
+                            width = 400;
+                        }
                         columns.push({
                             name: name,
                             title: name,
-                            width: 200
+                            width: width
                         });
                     }
 
