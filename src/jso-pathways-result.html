@@ -248,11 +248,13 @@
             _htmlTag: function(outEl) {
                 var me = this;
                 var name = outEl.getAttribute('file');
+                var el = document.createElement('div');
                 this._getFileContent(this.fileNameMap[name].id, function(content) {
                     var parser = new DOMParser();
                     var doc = parser.parseFromString(content, "text/html");
-                    me._processHTML(doc, outEl);
+                    me._processHTML(doc, el);
                 });
+                this._addTag(el, outEl);
             },
 
             _processHTML: function(doc, outEl) {
@@ -313,8 +315,7 @@
 
                 Polymer(moduleConfig);
                 var res = document.createElement(elname);
-                res.classList.add(outEl.tagName);
-                Polymer.dom(this.root).appendChild(res);
+                outEl.appendChild(res);
             },
             _createReportHTMLElement: function() {
 
