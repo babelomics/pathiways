@@ -40,8 +40,9 @@
             height: 300px;
         }
 
-        jso-select {
-            width: 200px;
+        jso-select-box {
+            width: 300px;
+            height: 80px;
         }
 
         textarea {
@@ -148,19 +149,13 @@
 
                     <div hidden="{{_checkValue('categorical', design_type)}}" style="padding:5px 0 0 5px;">
                         <label class="jso">Condition 1:</label>
-                        <jso-select id="condition1Select">
-                            <template is="dom-repeat" items={{designConditions}}>
-                                <jso-option value={{item}}>{{item}}</jso-option>
-                            </template>
-                        </jso-select>
+                        <jso-select-box id="condition1Select" options="{{designConditions}}" title-attribute="name">
+                        </jso-select-box>
                         <div id="condition1SelectError" class="errmsg"></div>
 
                         <label class="jso">Condition 2:</label>
-                        <jso-select id="condition2Select">
-                            <template is="dom-repeat" items={{designConditions}}>
-                                <jso-option value={{item}}>{{item}}</jso-option>
-                            </template>
-                        </jso-select>
+                        <jso-select-box id="condition2Select" options="{{designConditions}}" title-attribute="name">
+                        </jso-select-box>
                         <span id="condition2SelectError" class="errmsg"></span>
                         <span id="conditionError" class="errmsg"></span>
                     </div>
@@ -459,14 +454,6 @@
                 query['species'] = this.$.form.elements['species'].value;
                 query['design_type'] = this.$.form.elements['design_type'].value;
 
-                if (this.$.output_folder.selectedFile == null) {
-                    this._setError('output_folder', "No folder selected");
-                } else {
-                    this._clearError('output_folder');
-                    query['output_folder'] = this.$.output_folder.selectedFile.id;
-                    query['studyId'] = this.$.output_folder.selectedStudy.id;
-                }
-
                 if (this.expressionMode === 'matrix') {
                     if (this.$.exp_file.selectedFile == null) {
                         this._setError('exp_file', 'No expression matrix file selected');
@@ -522,22 +509,22 @@
                         query['design_file'] = this.$.design_file.selectedFile.id;
                     }
 
-                    if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
+                    if (this.$.condition1Select.selected == null) {
                         this._setError('condition1Select', 'Condition 1 not selected.');
-                    } else if(this.$.condition1Select.value.indexOf(' ') != -1) {
+                    } else if (this.$.condition1Select.selected.name.indexOf(' ') != -1) {
                         this._setError('condition1Select', 'Spaces are not allowed in conditions.');
                     } else {
                         this._clearError('condition1Select');
-                        query['cond1'] = this.$.condition1Select.value;
+                        query['cond1'] = this.$.condition1Select.selected.name;
                     }
 
-                    if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
+                    if (this.$.condition2Select.selected == null) {
                         this._setError('condition2Select', 'Condition 2 not selected.');
-                    } else if(this.$.condition2Select.value.indexOf(' ') != -1) {
+                    } else if (this.$.condition2Select.selected.name.indexOf(' ') != -1) {
                         this._setError('condition2Select', 'Spaces are not allowed in conditions.');
                     } else {
                         this._clearError('condition2Select');
-                        query['cond2'] = this.$.condition2Select.value;
+                        query['cond2'] = this.$.condition2Select.selected.name;
                     }
 
                     if (query['cond2'] != null && query['cond1'] != null && query['cond2'] == query['cond1']) {
@@ -578,28 +565,39 @@
 
                 console.log(query);
                 if (this.errorMessage === '' && this.$.form.checkValidity() && this.runTest === false) {
-                    OpencgaManager.jobs.create({
-                        query: query,
-                        request: {
-                            //method: 'POST',
-                            success: function(response) {
-                                if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                    var job = response.response[0].result[0];
-                                    console.log(job);
-                                    me._clean();
-                                    me.fire('job-launched');
-                                    //                                    me.message = job.commandLine;
-                                } else {
-                                    me.message = response.response[0].errorMsg;
-                                }
-                            },
-                            error: function() {
-                                me.message = 'Server error, try again later.';
-                            }
-                        }
-                    });
+                    if (this.$.output_folder.selectedFile == null) {
+                        var studyId = this.projects[0].studies[0].id;
+                        this._createFolder(studyId, '', 'analysis', function(folder) {
+                            query['output_folder'] = folder.id;
+                            query['studyId'] = studyId;
+                            me._createJob(query);
+                        });
+                    } else {
+                        me._createJob(query);
+                    }
                 }
-
+            },
+            _createJob: function(query) {
+                var me = this;
+                OpencgaManager.jobs.create({
+                    query: query,
+                    request: {
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var job = response.response[0].result[0];
+                                console.log(job);
+                                me._clean();
+                                me.fire('job-launched');
+                                //                                    me.message = job.commandLine;
+                            } else {
+                                me.message = response.response[0].errorMsg;
+                            }
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
             }
         });
     </script>

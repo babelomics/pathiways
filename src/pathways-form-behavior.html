@@ -184,14 +184,18 @@
                             fields = line.split('\t');
                             if (conditionMap[fields[1]] !== true) {
                                 conditionMap[fields[1]] = true;
-                                conditionArray.push(fields[1]);
+                                conditionArray.push({
+                                    name: fields[1]
+                                });
                             }
                         }
                     }
                 }
-                conditionArray.reverse();
-                me.$.condition2Select.value = conditionArray[1];
+                me.$.condition1Select.set('selected', null);
+                me.$.condition2Select.set('selected', null);
                 me.set('designConditions', conditionArray);
+                me.$.condition1Select.set('selected', conditionArray[0]);
+                me.$.condition2Select.set('selected', conditionArray[1]);
             });
         },
 
