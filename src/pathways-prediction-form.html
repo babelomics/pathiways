@@ -729,6 +729,8 @@
                             me._createJob(query);
                         });
                     } else {
+                        query['output_folder'] = this.$.output_folder.selectedFile.id;
+                        query['studyId'] = this.$.output_folder.selectedStudy.id;
                         me._createJob(query);
                     }
                 }
