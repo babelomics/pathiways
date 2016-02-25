@@ -524,6 +524,8 @@
 
                     if (this.$.condition1Select.value == '' || this.$.condition1Select.value == null) {
                         this._setError('condition1Select', 'Condition 1 not selected.');
+                    } else if(this.$.condition1Select.value.indexOf(' ') != -1) {
+                        this._setError('condition1Select', 'Spaces are not allowed in conditions.');
                     } else {
                         this._clearError('condition1Select');
                         query['cond1'] = this.$.condition1Select.value;
@@ -531,6 +533,8 @@
 
                     if (this.$.condition2Select.value == '' || this.$.condition2Select.value == null) {
                         this._setError('condition2Select', 'Condition 2 not selected.');
+                    } else if(this.$.condition2Select.value.indexOf(' ') != -1) {
+                        this._setError('condition2Select', 'Spaces are not allowed in conditions.');
                     } else {
                         this._clearError('condition2Select');
                         query['cond2'] = this.$.condition2Select.value;
