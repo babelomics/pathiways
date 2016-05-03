@@ -250,6 +250,7 @@
                 var name = outEl.getAttribute('file');
                 var el = document.createElement('div');
                 this._getFileContent(this.fileNameMap[name].id, function(content) {
+                    content = content.replace("pathwayResult.networkViewer = document.createElement('network-viewer');", "pathwayResult.networkViewer = document.createElement('jso-network-viewer');");
                     var parser = new DOMParser();
                     var doc = parser.parseFromString(content, "text/html");
                     me._processHTML(doc, el);
