@@ -158,6 +158,11 @@
                         </jso-select-box>
                         <span id="condition2SelectError" class="errmsg"></span>
                         <span id="conditionError" class="errmsg"></span>
+                        <br>
+                        <label class="jso-control">
+                            <input type="checkbox" name="paired">
+                            <span>Are samples paired?</span>
+                        </label>
                     </div>
 
                     <div hidden$="{{_checkValue('mutation_effect', design_type)}}">
@@ -409,6 +414,7 @@
                 this.$.form.elements['expression'].value = 'matrix';
                 this.design_type = 'categorical';
                 this.$.form.elements['design_type'].value = 'categorical';
+                this.$.form.elements['paired'].value = false;
 
                 this.$.form.elements['species'].value = 'hsa';
 
@@ -531,6 +537,11 @@
                         this._setError('condition', 'Condition 2 is the same as condition 1.');
                     } else if (query['cond2'] != null && query['cond1'] != null) {
                         this._clearError('condition');
+                    }
+                }
+                if (query['design_type'] == 'categorical') {
+                    if (this.$.form.elements['paired'].checked) {
+                        query['paired'] = '';
                     }
                 }
 
